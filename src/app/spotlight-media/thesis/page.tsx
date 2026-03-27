@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import SectionWrapper from '@/components/ui/SectionWrapper';
 
-const domains = ['Education & Technology', 'Public Health', 'Economics & Entrepreneurship', 'Agriculture & Food Systems', 'Climate & Environment', 'Governance & Policy', 'Arts & Culture', 'Gender & Social Justice'];
+const domains = ['Education & Technology', 'Public Health', 'Economics & Entrepreneurship', 'Agriculture & Food Systems', 'Climate & Environment', 'Governance & Policy', 'Arts & Culture', 'Social Justice'];
 
 const process = [
   { step: 1, title: 'Submit Application', desc: 'Complete the online form with your research abstract, key findings, and intended community impact.' },
@@ -38,7 +38,7 @@ export default function ThesisSpotlightPage() {
           </motion.h1>
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
             className="text-white/65 text-lg mb-8 max-w-2xl mx-auto">
-            We translate Master's and PhD research into community implementation frameworks —
+            These are excellent projects with the potential of high impact. We translate Master's and PhD research into community implementation frameworks —
             because knowledge that stays in journals doesn't transform communities.
           </motion.p>
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}
