@@ -15,7 +15,6 @@ const navLinks = [
   { label: 'Impact', href: '/impact' },
   { label: 'About', href: '/about' },
   { label: 'Events', href: '/events' },
-  { label: 'Contact', href: '/contact' },
 ];
 
 export default function Navbar() {
