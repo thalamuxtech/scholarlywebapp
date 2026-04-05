@@ -9,7 +9,7 @@ import { useRole } from '@/lib/useRole';
 import { useToast } from '@/components/Toast';
 import {
   Shield, Mail, Lock, Globe, Save, Loader2, ExternalLink, Database,
-  Users, Plus, Trash2, X, UserCheck, Eye, Crown
+  Users, Plus, Trash2, X, UserCheck, Eye, EyeOff, Crown
 } from 'lucide-react';
 
 type TeamMember = { id: string; email: string; role: string; createdAt: any };
@@ -28,6 +28,8 @@ export default function SettingsPage() {
   const [showAddUser, setShowAddUser] = useState(false);
   const [newUser, setNewUser] = useState({ email: '', password: '', role: 'viewer' });
   const [creating, setCreating] = useState(false);
+  const [showNewUserPw, setShowNewUserPw] = useState(false);
+  const [showUpdatePw, setShowUpdatePw] = useState(false);
 
   useEffect(() => {
     const q = query(collection(db, 'admin_users'), orderBy('createdAt', 'desc'));
@@ -200,9 +202,13 @@ export default function SettingsPage() {
                         <label className="text-xs font-bold text-slate-700 mb-1.5 block">Password *</label>
                         <div className="relative">
                           <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
-                          <input type="text" value={newUser.password} onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                          <input type={showNewUserPw ? 'text' : 'password'} value={newUser.password} onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
                             placeholder="Min 6 characters"
-                            className="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-slate-200 text-sm focus:outline-none focus:border-brand-400 transition-colors" />
+                            className="w-full pl-10 pr-10 py-3 rounded-xl border-2 border-slate-200 text-sm focus:outline-none focus:border-brand-400 transition-colors" />
+                          <button type="button" onClick={() => setShowNewUserPw(!showNewUserPw)}
+                            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-300 hover:text-slate-500 transition-colors">
+                            {showNewUserPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                          </button>
                         </div>
                       </div>
                       <div>
@@ -269,8 +275,12 @@ export default function SettingsPage() {
               <div className="flex gap-2">
                 <div className="relative flex-1">
                   <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
-                  <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="New password"
-                    className="w-full pl-10 pr-4 py-3 rounded-xl border-2 border-slate-200 text-sm focus:outline-none focus:border-brand-400 transition-colors" />
+                  <input type={showUpdatePw ? 'text' : 'password'} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="New password"
+                    className="w-full pl-10 pr-10 py-3 rounded-xl border-2 border-slate-200 text-sm focus:outline-none focus:border-brand-400 transition-colors" />
+                  <button type="button" onClick={() => setShowUpdatePw(!showUpdatePw)}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-300 hover:text-slate-500 transition-colors">
+                    {showUpdatePw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
                 </div>
                 <button onClick={handleUpdatePassword} disabled={!newPassword || saving === 'password'}
                   className="px-4 py-3 rounded-xl gradient-bg text-white text-sm font-bold shadow-md disabled:opacity-50 hover:-translate-y-0.5 transition-all flex items-center gap-1.5">
