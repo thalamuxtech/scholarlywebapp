@@ -58,8 +58,8 @@ const fieldConfig: Record<string, { label: string; type: string; placeholder: st
   email: { label: 'Email Address', type: 'email', placeholder: 'your@email.com', icon: Mail },
   phone: { label: 'Phone Number', type: 'tel', placeholder: '+1 234 567 8900', icon: Phone },
   dob: { label: 'Date of Birth', type: 'date', placeholder: '', icon: GraduationCap },
-  country: { label: 'Country', type: 'countrySelect', placeholder: 'Select country', icon: MapPin },
-  state: { label: 'State / Region', type: 'stateSelect', placeholder: 'e.g. Lagos, California', icon: MapPin },
+  country: { label: 'Country', type: 'text', placeholder: 'e.g. United States, Nigeria, UK', icon: MapPin },
+  state: { label: 'State / Region', type: 'text', placeholder: 'e.g. Maryland, Lagos', icon: MapPin },
   plan: { label: 'Pricing Plan', type: 'select', placeholder: '', icon: Sparkles },
   level: { label: 'Preferred Level', type: 'select', placeholder: '', icon: GraduationCap },
   priorExperience: { label: 'Prior Coding Experience', type: 'select', placeholder: '', icon: Brain },
@@ -228,10 +228,40 @@ export default function EnrollPage() {
                       </div>
 
                       <form onSubmit={handleSubmit} className="space-y-5">
-                        {program.fields.map((key, i) => {
+                        {program.fields.filter((k) => k !== 'state').map((key, i) => {
                           const field = fieldConfig[key];
                           if (!field) return null;
                           const FIcon = field.icon;
+
+                          // Country + State side by side
+                          if (key === 'country' && program.fields.includes('state')) {
+                            const stateField = fieldConfig['state'];
+                            return (
+                              <motion.div key="country-state" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
+                                className="grid grid-cols-2 gap-3">
+                                <div>
+                                  <label className="block text-[13px] font-bold text-slate-700 mb-1.5">{field.label}</label>
+                                  <div className="relative">
+                                    <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
+                                    <input type="text" value={formData.country || ''} required
+                                      onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                                      placeholder={field.placeholder}
+                                      className="w-full pl-11 pr-4 py-3.5 rounded-xl border-2 border-slate-200 focus:outline-none focus:border-brand-400 transition-colors text-slate-800 placeholder:text-slate-300 text-sm" />
+                                  </div>
+                                </div>
+                                <div>
+                                  <label className="block text-[13px] font-bold text-slate-700 mb-1.5">{stateField.label}</label>
+                                  <div className="relative">
+                                    <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
+                                    <input type="text" value={formData.state || ''} required
+                                      onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+                                      placeholder={stateField.placeholder}
+                                      className="w-full pl-11 pr-4 py-3.5 rounded-xl border-2 border-slate-200 focus:outline-none focus:border-brand-400 transition-colors text-slate-800 placeholder:text-slate-300 text-sm" />
+                                  </div>
+                                </div>
+                              </motion.div>
+                            );
+                          }
 
                           return (
                             <motion.div key={key}
