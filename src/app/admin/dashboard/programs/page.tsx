@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { collection, query, orderBy, onSnapshot, doc, updateDoc, addDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { useRole } from '@/lib/useRole';
 import {
   FolderKanban, Plus, X, Users, CheckCircle2, Trash2,
   ArrowRight, Search, Calendar, Loader2
@@ -18,6 +19,7 @@ export default function ProgramsPage() {
   const [showCreate, setShowCreate] = useState(false);
   const [newProg, setNewProg] = useState({ name: '', description: '', startDate: '', status: 'upcoming' });
   const [creating, setCreating] = useState(false);
+  const { isAdmin } = useRole();
   const [assigningTo, setAssigningTo] = useState<string | null>(null);
   const [selectedSubs, setSelectedSubs] = useState<Set<string>>(new Set());
   const [search, setSearch] = useState('');
@@ -75,10 +77,12 @@ export default function ProgramsPage() {
           <h2 className="text-xl font-extrabold text-slate-900" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>Programs</h2>
           <p className="text-slate-400 text-sm mt-1">Create programs and batch-assign enrollments.</p>
         </div>
-        <button onClick={() => setShowCreate(true)}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl gradient-bg text-white text-sm font-bold shadow-md hover:-translate-y-0.5 transition-all">
-          <Plus className="w-4 h-4" /> New Program
-        </button>
+        {isAdmin && (
+          <button onClick={() => setShowCreate(true)}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl gradient-bg text-white text-sm font-bold shadow-md hover:-translate-y-0.5 transition-all">
+            <Plus className="w-4 h-4" /> New Program
+          </button>
+        )}
       </div>
 
       {/* Create Program Modal */}
@@ -165,10 +169,10 @@ export default function ProgramsPage() {
                     }`}>
                     {assigningTo === prog.id ? 'Assigning...' : 'Assign Students'}
                   </button>
-                  <button onClick={() => deleteProgram(prog.id)}
+                  {isAdmin && <button onClick={() => deleteProgram(prog.id)}
                     className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-300 hover:text-red-500 hover:bg-red-50 transition-all opacity-0 group-hover:opacity-100">
                     <Trash2 className="w-3.5 h-3.5" />
-                  </button>
+                  </button>}
                 </div>
               </motion.div>
             );

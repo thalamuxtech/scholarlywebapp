@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { collection, query, orderBy, onSnapshot, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { useRole } from '@/lib/useRole';
 import {
   Mail, MessageSquare, Users, Gamepad2, Trash2, CheckCircle2, Search,
   Inbox, Clock, X, ExternalLink, Eye, Download
@@ -25,6 +26,7 @@ export default function SubmissionsPage() {
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState<Submission | null>(null);
   const [checked, setChecked] = useState<Set<string>>(new Set());
+  const { isAdmin } = useRole();
 
   const toggleCheck = (id: string) => {
     const next = new Set(checked);
@@ -174,7 +176,7 @@ export default function SubmissionsPage() {
                     <div className="text-xs text-slate-400">{fmtDate(sub.createdAt)}</div>
                     <div className="flex items-center justify-end gap-1">
                       <button onClick={(e) => { e.stopPropagation(); setSelected(sub); }} className="w-7 h-7 rounded-lg flex items-center justify-center text-slate-300 hover:text-brand-500 hover:bg-brand-50 transition-all opacity-0 group-hover:opacity-100"><Eye className="w-3.5 h-3.5" /></button>
-                      <button onClick={(e) => { e.stopPropagation(); remove(sub.id); }} className="w-7 h-7 rounded-lg flex items-center justify-center text-slate-300 hover:text-red-500 hover:bg-red-50 transition-all opacity-0 group-hover:opacity-100"><Trash2 className="w-3.5 h-3.5" /></button>
+                      {isAdmin && <button onClick={(e) => { e.stopPropagation(); remove(sub.id); }} className="w-7 h-7 rounded-lg flex items-center justify-center text-slate-300 hover:text-red-500 hover:bg-red-50 transition-all opacity-0 group-hover:opacity-100"><Trash2 className="w-3.5 h-3.5" /></button>}
                     </div>
                   </motion.div>
                 );
@@ -223,7 +225,7 @@ export default function SubmissionsPage() {
                 <div className="mt-6 pt-4 border-t border-slate-100 flex items-center gap-2 text-xs text-slate-400"><Clock className="w-3.5 h-3.5" /> {fmtFull(selected.createdAt)}</div>
                 <div className="flex gap-3 mt-6">
                   {selected.email && <a href={`mailto:${selected.email}`} className="flex-1 py-3.5 rounded-xl gradient-bg text-white text-sm font-bold text-center shadow-md hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2"><Mail className="w-4 h-4" /> Reply</a>}
-                  <button onClick={() => remove(selected.id)} className="px-5 py-3.5 rounded-xl border-2 border-red-100 text-red-500 text-sm font-bold hover:bg-red-50 transition-all flex items-center gap-2"><Trash2 className="w-4 h-4" /> Delete</button>
+                  {isAdmin && <button onClick={() => remove(selected.id)} className="px-5 py-3.5 rounded-xl border-2 border-red-100 text-red-500 text-sm font-bold hover:bg-red-50 transition-all flex items-center gap-2"><Trash2 className="w-4 h-4" /> Delete</button>}
                 </div>
               </div>
             </motion.div>
