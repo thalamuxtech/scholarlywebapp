@@ -105,50 +105,70 @@ export default function ProgramsPage() {
         )}
       </div>
 
-      {/* Create Program Modal */}
+      {/* Create Program Modal — centered + draggable */}
       <AnimatePresence>
         {showCreate && (
           <>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50" onClick={() => setShowCreate(false)} />
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
-              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white rounded-2xl shadow-2xl z-50 p-6">
-              <div className="flex items-center justify-between mb-5">
-                <h3 className="text-lg font-bold text-slate-900" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>{editingProg ? 'Edit Program' : 'Create Program'}</h3>
-                <button onClick={() => { setShowCreate(false); setEditingProg(null); setNewProg({ name: '', description: '', startDate: '', status: 'upcoming' }); }} className="w-8 h-8 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400"><X className="w-4 h-4" /></button>
-              </div>
-              <div className="space-y-4">
-                <div>
-                  <label className="text-xs font-bold text-slate-700 mb-1.5 block">Program Name *</label>
-                  <input value={newProg.name} onChange={(e) => setNewProg({ ...newProg, name: e.target.value })} placeholder="e.g. Summer of Code 2026"
-                    className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 text-sm focus:outline-none focus:border-brand-400 transition-colors" />
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50"
+              onClick={() => { setShowCreate(false); setEditingProg(null); setNewProg({ name: '', description: '', startDate: '', status: 'upcoming' }); }} />
+            <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
+              <motion.div
+                drag
+                dragMomentum={false}
+                dragElastic={0.1}
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                className="w-full max-w-md bg-white rounded-2xl shadow-[0_24px_80px_rgba(0,0,0,0.15)] pointer-events-auto"
+              >
+                {/* Drag handle */}
+                <div className="flex items-center justify-between px-6 pt-5 pb-3 cursor-grab active:cursor-grabbing select-none">
+                  <div className="flex items-center gap-3">
+                    <div className="w-1 h-5 rounded-full bg-slate-200" />
+                    <h3 className="text-lg font-bold text-slate-900" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+                      {editingProg ? 'Edit Program' : 'Create Program'}
+                    </h3>
+                  </div>
+                  <button onClick={() => { setShowCreate(false); setEditingProg(null); setNewProg({ name: '', description: '', startDate: '', status: 'upcoming' }); }}
+                    className="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-400 hover:text-slate-600 transition-colors">
+                    <X className="w-4 h-4" />
+                  </button>
                 </div>
-                <div>
-                  <label className="text-xs font-bold text-slate-700 mb-1.5 block">Description</label>
-                  <textarea value={newProg.description} onChange={(e) => setNewProg({ ...newProg, description: e.target.value })} rows={2} placeholder="Brief description..."
-                    className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 text-sm focus:outline-none focus:border-brand-400 transition-colors resize-none" />
-                </div>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="px-6 pb-6 space-y-4">
                   <div>
-                    <label className="text-xs font-bold text-slate-700 mb-1.5 block">Start Date</label>
-                    <input type="date" value={newProg.startDate} onChange={(e) => setNewProg({ ...newProg, startDate: e.target.value })}
+                    <label className="text-xs font-bold text-slate-700 mb-1.5 block">Program Name *</label>
+                    <input value={newProg.name} onChange={(e) => setNewProg({ ...newProg, name: e.target.value })} placeholder="e.g. Summer of Code 2026"
                       className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 text-sm focus:outline-none focus:border-brand-400 transition-colors" />
                   </div>
                   <div>
-                    <label className="text-xs font-bold text-slate-700 mb-1.5 block">Status</label>
-                    <select value={newProg.status} onChange={(e) => setNewProg({ ...newProg, status: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 text-sm focus:outline-none focus:border-brand-400 transition-colors bg-white">
-                      <option value="upcoming">Upcoming</option>
-                      <option value="active">Active</option>
-                      <option value="completed">Completed</option>
-                    </select>
+                    <label className="text-xs font-bold text-slate-700 mb-1.5 block">Description</label>
+                    <textarea value={newProg.description} onChange={(e) => setNewProg({ ...newProg, description: e.target.value })} rows={2} placeholder="Brief description..."
+                      className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 text-sm focus:outline-none focus:border-brand-400 transition-colors resize-none" />
                   </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-xs font-bold text-slate-700 mb-1.5 block">Start Date</label>
+                      <input type="date" value={newProg.startDate} onChange={(e) => setNewProg({ ...newProg, startDate: e.target.value })}
+                        className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 text-sm focus:outline-none focus:border-brand-400 transition-colors" />
+                    </div>
+                    <div>
+                      <label className="text-xs font-bold text-slate-700 mb-1.5 block">Status</label>
+                      <select value={newProg.status} onChange={(e) => setNewProg({ ...newProg, status: e.target.value })}
+                        className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 text-sm focus:outline-none focus:border-brand-400 transition-colors bg-white">
+                        <option value="upcoming">Upcoming</option>
+                        <option value="active">Active</option>
+                        <option value="completed">Completed</option>
+                      </select>
+                    </div>
+                  </div>
+                  <button onClick={createOrUpdateProgram} disabled={creating || !newProg.name}
+                    className="w-full py-3.5 rounded-xl gradient-bg text-white text-sm font-bold shadow-md hover:-translate-y-0.5 disabled:opacity-60 transition-all flex items-center justify-center gap-2">
+                    {creating ? <Loader2 className="w-4 h-4 animate-spin" /> : <>{editingProg ? 'Save Changes' : 'Create Program'} <ArrowRight className="w-4 h-4" /></>}
+                  </button>
                 </div>
-                <button onClick={createOrUpdateProgram} disabled={creating || !newProg.name}
-                  className="w-full py-3.5 rounded-xl gradient-bg text-white text-sm font-bold shadow-md hover:-translate-y-0.5 disabled:opacity-60 transition-all flex items-center justify-center gap-2">
-                  {creating ? <Loader2 className="w-4 h-4 animate-spin" /> : <>{editingProg ? 'Save Changes' : 'Create Program'} <ArrowRight className="w-4 h-4" /></>}
-                </button>
-              </div>
-            </motion.div>
+              </motion.div>
+            </div>
           </>
         )}
       </AnimatePresence>
