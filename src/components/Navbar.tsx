@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, ArrowRight, Lock, ChevronRight } from 'lucide-react';
+import { Menu, X, ArrowRight, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navLinks = [
@@ -109,14 +109,6 @@ export default function Navbar() {
 
           {/* ── CTA ── */}
           <div className="flex items-center gap-2">
-            <Link href="/admin/login"
-              className={cn(
-                'hidden lg:inline-flex items-center gap-1.5 text-[13px] font-medium px-3 py-2 rounded-lg transition-all duration-200',
-                scrolled ? 'text-slate-400 hover:text-slate-700 hover:bg-slate-100' : 'text-white/50 hover:text-white hover:bg-white/10'
-              )}>
-              <Lock className="w-3 h-3" /> Admin
-            </Link>
-
             <Link href="/enroll"
               className={cn(
                 'hidden lg:inline-flex items-center gap-1.5 text-[13px] font-semibold px-5 py-2.5 rounded-xl transition-all duration-300 group',
@@ -189,10 +181,6 @@ export default function Navbar() {
                   <Link href="/enroll" onClick={() => setMobileOpen(false)}
                     className="btn-primary justify-center text-[14px] py-3.5 group">
                     Enroll <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                  <Link href="/admin/login" onClick={() => setMobileOpen(false)}
-                    className="btn-secondary justify-center text-[14px] py-3.5">
-                    <Lock className="w-4 h-4" /> Admin Portal
                   </Link>
                 </motion.div>
               </div>

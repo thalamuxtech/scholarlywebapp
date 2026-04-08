@@ -7,7 +7,7 @@ import { db } from '@/lib/firebase';
 import { useRole } from '@/lib/useRole';
 import {
   FolderKanban, Plus, X, Users, CheckCircle2, Trash2,
-  ArrowRight, Search, Calendar, Loader2
+  ArrowRight, Search, Calendar, Loader2, Pencil
 } from 'lucide-react';
 
 type Program = { id: string; name: string; description: string; startDate: string; status: string; createdAt: any };
@@ -17,6 +17,7 @@ export default function ProgramsPage() {
   const [programs, setPrograms] = useState<Program[]>([]);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [showCreate, setShowCreate] = useState(false);
+  const [editingProg, setEditingProg] = useState<Program | null>(null);
   const [newProg, setNewProg] = useState({ name: '', description: '', startDate: '', status: 'upcoming' });
   const [creating, setCreating] = useState(false);
   const { isAdmin } = useRole();
@@ -34,16 +35,35 @@ export default function ProgramsPage() {
     return () => { unsub1(); unsub2(); };
   }, []);
 
-  const createProgram = async () => {
+  const createOrUpdateProgram = async () => {
     if (!newProg.name) return;
     setCreating(true);
-    await addDoc(collection(db, 'programs'), { ...newProg, createdAt: serverTimestamp() });
+    if (editingProg) {
+      await updateDoc(doc(db, 'programs', editingProg.id), { name: newProg.name, description: newProg.description, startDate: newProg.startDate, status: newProg.status });
+    } else {
+      await addDoc(collection(db, 'programs'), { ...newProg, createdAt: serverTimestamp() });
+    }
     setNewProg({ name: '', description: '', startDate: '', status: 'upcoming' });
+    setEditingProg(null);
     setShowCreate(false);
     setCreating(false);
   };
 
+  const startEdit = (prog: Program) => {
+    setEditingProg(prog);
+    setNewProg({ name: prog.name, description: prog.description || '', startDate: prog.startDate || '', status: prog.status || 'upcoming' });
+    setShowCreate(true);
+  };
+
   const deleteProgram = async (id: string) => {
+    const prog = programs.find((p) => p.id === id);
+    // Unassign all students from this program so they can be reassigned
+    if (prog) {
+      const assigned = submissions.filter((s) => s.assignedProgram === prog.name);
+      for (const sub of assigned) {
+        await updateDoc(doc(db, 'submissions', sub.id), { assignedProgram: '' });
+      }
+    }
     await deleteDoc(doc(db, 'programs', id));
   };
 
@@ -93,8 +113,8 @@ export default function ProgramsPage() {
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
               className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white rounded-2xl shadow-2xl z-50 p-6">
               <div className="flex items-center justify-between mb-5">
-                <h3 className="text-lg font-bold text-slate-900" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>Create Program</h3>
-                <button onClick={() => setShowCreate(false)} className="w-8 h-8 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400"><X className="w-4 h-4" /></button>
+                <h3 className="text-lg font-bold text-slate-900" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>{editingProg ? 'Edit Program' : 'Create Program'}</h3>
+                <button onClick={() => { setShowCreate(false); setEditingProg(null); setNewProg({ name: '', description: '', startDate: '', status: 'upcoming' }); }} className="w-8 h-8 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400"><X className="w-4 h-4" /></button>
               </div>
               <div className="space-y-4">
                 <div>
@@ -123,9 +143,9 @@ export default function ProgramsPage() {
                     </select>
                   </div>
                 </div>
-                <button onClick={createProgram} disabled={creating || !newProg.name}
+                <button onClick={createOrUpdateProgram} disabled={creating || !newProg.name}
                   className="w-full py-3.5 rounded-xl gradient-bg text-white text-sm font-bold shadow-md hover:-translate-y-0.5 disabled:opacity-60 transition-all flex items-center justify-center gap-2">
-                  {creating ? <Loader2 className="w-4 h-4 animate-spin" /> : <>Create Program <ArrowRight className="w-4 h-4" /></>}
+                  {creating ? <Loader2 className="w-4 h-4 animate-spin" /> : <>{editingProg ? 'Save Changes' : 'Create Program'} <ArrowRight className="w-4 h-4" /></>}
                 </button>
               </div>
             </motion.div>
@@ -169,6 +189,10 @@ export default function ProgramsPage() {
                     }`}>
                     {assigningTo === prog.id ? 'Assigning...' : 'Assign Students'}
                   </button>
+                  {isAdmin && <button onClick={() => startEdit(prog)}
+                    className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-300 hover:text-brand-500 hover:bg-brand-50 transition-all opacity-0 group-hover:opacity-100">
+                    <Pencil className="w-3.5 h-3.5" />
+                  </button>}
                   {isAdmin && <button onClick={() => deleteProgram(prog.id)}
                     className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-300 hover:text-red-500 hover:bg-red-50 transition-all opacity-0 group-hover:opacity-100">
                     <Trash2 className="w-3.5 h-3.5" />

@@ -205,6 +205,12 @@ export default function Footer() {
                 <Icon className="w-3.5 h-3.5" />
               </a>
             ))}
+            <Link href="/admin/login" aria-label="Admin"
+              className="w-8 h-8 rounded-lg bg-slate-800/50 flex items-center justify-center text-slate-600 hover:text-white/60 transition-all duration-200">
+              <div className="relative w-4 h-4">
+                <Image src="/logo-white.png" alt="" fill className="object-contain opacity-40 hover:opacity-70 transition-opacity" />
+              </div>
+            </Link>
           </div>
 
           <div className="flex flex-wrap items-center gap-3 sm:gap-5 text-[11px] text-slate-500">
