@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import {
   Twitter, Instagram, Youtube, Linkedin, Facebook,
-  Mail, MapPin, Heart, Globe, Brain, BookOpen
+  Mail, MapPin, Heart, Globe, Brain, BookOpen, Lock
 } from 'lucide-react';
 import NewsletterForm from '@/components/NewsletterForm';
 
@@ -206,10 +206,8 @@ export default function Footer() {
               </a>
             ))}
             <Link href="/admin/login" aria-label="Admin"
-              className="w-8 h-8 rounded-lg bg-slate-800/50 flex items-center justify-center text-slate-600 hover:text-white/60 transition-all duration-200">
-              <div className="relative w-4 h-4">
-                <Image src="/logo-white.png" alt="" fill className="object-contain opacity-40 hover:opacity-70 transition-opacity" />
-              </div>
+              className="ml-3 text-slate-700 hover:text-slate-400 transition-colors duration-200">
+              <Lock className="w-3.5 h-3.5" />
             </Link>
           </div>
 
