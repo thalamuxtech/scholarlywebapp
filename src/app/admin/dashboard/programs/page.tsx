@@ -14,7 +14,7 @@ import { useToast } from '@/components/Toast';
 
 type Program = { id: string; name: string; description: string; startDate: string; status: string; createdAt: any };
 type Submission = { id: string; formType: string; email?: string; name?: string; program?: string; assignedProgram?: string; officeHourSlot?: string; createdAt: any; read: boolean; [key: string]: any };
-type OfficeHour = { id: string; programId: string; title: string; day: string; startTime: string; endTime: string; slotMinutes: number; dateFrom: string; dateTo: string; bookings: any[]; createdAt: any };
+type OfficeHour = { id: string; programId: string; title: string; day?: string; days?: string[]; startTime: string; endTime: string; slotMinutes: number; dateFrom: string; dateTo: string; bookings: any[]; createdAt: any };
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
@@ -50,7 +50,7 @@ export default function ProgramsPage() {
   const [showOH, setShowOH] = useState(false);
   const [editingOH, setEditingOH] = useState<OfficeHour | null>(null);
   const [ohProgId, setOhProgId] = useState<string | null>(null);
-  const [newOH, setNewOH] = useState({ title: 'Instructor Office Hour', day: 'Monday', startTime: '09:00', endTime: '11:00', slotMinutes: '30', dateFrom: '', dateTo: '' });
+  const [newOH, setNewOH] = useState({ title: 'Instructor Office Hour', days: ['Monday'] as string[], startTime: '09:00', endTime: '11:00', slotMinutes: '30', dateFrom: '', dateTo: '' });
   const [creatingOH, setCreatingOH] = useState(false);
 
   useEffect(() => {
@@ -88,10 +88,11 @@ export default function ProgramsPage() {
   const toggleSub = (id: string) => { const n = new Set(selectedSubs); n.has(id) ? n.delete(id) : n.add(id); setSelectedSubs(n); };
 
   // Office Hours
-  const closeOH = () => { setShowOH(false); setEditingOH(null); setNewOH({ title: 'Instructor Office Hour', day: 'Monday', startTime: '09:00', endTime: '11:00', slotMinutes: '30', dateFrom: '', dateTo: '' }); };
+  const closeOH = () => { setShowOH(false); setEditingOH(null); setNewOH({ title: 'Instructor Office Hour', days: ['Monday'], startTime: '09:00', endTime: '11:00', slotMinutes: '30', dateFrom: '', dateTo: '' }); };
+  const toggleDay = (d: string) => { const n = newOH.days.includes(d) ? newOH.days.filter((x) => x !== d) : [...newOH.days, d]; setNewOH({ ...newOH, days: n }); };
   const saveOH = async () => {
-    if (!newOH.title || !ohProgId) return; setCreatingOH(true);
-    const data = { programId: ohProgId, title: newOH.title, day: newOH.day, startTime: newOH.startTime, endTime: newOH.endTime, slotMinutes: parseInt(newOH.slotMinutes) || 30, dateFrom: newOH.dateFrom, dateTo: newOH.dateTo, bookings: editingOH?.bookings || [] };
+    if (!newOH.title || !ohProgId || newOH.days.length === 0) return; setCreatingOH(true);
+    const data = { programId: ohProgId, title: newOH.title, days: newOH.days, startTime: newOH.startTime, endTime: newOH.endTime, slotMinutes: parseInt(newOH.slotMinutes) || 30, dateFrom: newOH.dateFrom, dateTo: newOH.dateTo, bookings: editingOH?.bookings || [] };
     if (editingOH) await updateDoc(doc(db, 'office_hours', editingOH.id), data);
     else await addDoc(collection(db, 'office_hours'), { ...data, createdAt: serverTimestamp() });
     closeOH(); setCreatingOH(false);
@@ -99,7 +100,8 @@ export default function ProgramsPage() {
   };
   const startEditOH = (oh: OfficeHour) => {
     setEditingOH(oh); setOhProgId(oh.programId);
-    setNewOH({ title: oh.title, day: oh.day, startTime: oh.startTime, endTime: oh.endTime, slotMinutes: String(oh.slotMinutes || 30), dateFrom: oh.dateFrom || '', dateTo: oh.dateTo || '' });
+    const days = oh.days || (oh.day ? [oh.day] : ['Monday']);
+    setNewOH({ title: oh.title, days, startTime: oh.startTime, endTime: oh.endTime, slotMinutes: String(oh.slotMinutes || 30), dateFrom: oh.dateFrom || '', dateTo: oh.dateTo || '' });
     setShowOH(true);
   };
   const deleteOH = async (id: string) => { await deleteDoc(doc(db, 'office_hours', id)); showToast('success', 'Office hour deleted.'); };
@@ -169,10 +171,15 @@ export default function ProgramsPage() {
                 <div className="px-6 pb-6 space-y-4">
                   <p className="text-xs text-slate-400">For: <strong className="text-slate-600">{programs.find((p) => p.id === ohProgId)?.name}</strong></p>
                   <div><label className="text-xs font-bold text-slate-700 mb-1.5 block">Session Title *</label><input value={newOH.title} onChange={(e) => setNewOH({ ...newOH, title: e.target.value })} className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 text-sm focus:outline-none focus:border-brand-400" /></div>
-                  <div><label className="text-xs font-bold text-slate-700 mb-1.5 block">Day of Week *</label>
-                    <select value={newOH.day} onChange={(e) => setNewOH({ ...newOH, day: e.target.value })} className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 text-sm focus:outline-none focus:border-brand-400 bg-white">
-                      {DAYS.map((d) => <option key={d} value={d}>{d}</option>)}
-                    </select>
+                  <div><label className="text-xs font-bold text-slate-700 mb-1.5 block">Days *</label>
+                    <div className="flex flex-wrap gap-1.5">
+                      {DAYS.map((d) => (
+                        <button key={d} type="button" onClick={() => toggleDay(d)}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${newOH.days.includes(d) ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}>
+                          {d.slice(0, 3)}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                   <div className="grid grid-cols-3 gap-3">
                     <div><label className="text-xs font-bold text-slate-700 mb-1.5 block">Start</label><input type="time" value={newOH.startTime} onChange={(e) => setNewOH({ ...newOH, startTime: e.target.value })} className="w-full px-3 py-3 rounded-xl border-2 border-slate-200 text-sm focus:outline-none focus:border-brand-400" /></div>
@@ -279,7 +286,12 @@ export default function ProgramsPage() {
                             <p className="text-sm font-medium text-slate-700 truncate">{s.name || 'No name'}</p>
                             <p className="text-[11px] text-slate-400 truncate">{s.email}</p>
                           </div>
-                          {s.officeHourSlot && <span className="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-600 text-[10px] font-bold border border-emerald-100 flex-shrink-0"><Clock className="w-2.5 h-2.5 inline mr-1" />{s.officeHourSlot}</span>}
+                          {(() => {
+                            const booking = progOH.flatMap((oh) => (oh.bookings || []).filter((b: any) => b.email === s.email).map((b: any) => b.slot || `${b.day} ${b.time}`)).filter(Boolean);
+                            return booking.length > 0 ? (
+                              <span className="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-600 text-[10px] font-bold border border-emerald-100 flex-shrink-0"><Clock className="w-2.5 h-2.5 inline mr-1" />{booking[0]}</span>
+                            ) : null;
+                          })()}
                           {isAdmin && <button onClick={() => removeFromProgram(s.id)} className="w-7 h-7 rounded-lg flex items-center justify-center text-slate-300 hover:text-red-500 hover:bg-red-50 transition-all opacity-0 group-hover/row:opacity-100"><UserMinus className="w-3.5 h-3.5" /></button>}
                         </div>
                       ))}</div>
@@ -301,7 +313,7 @@ export default function ProgramsPage() {
                           <Clock className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
                           <div className="flex-1 min-w-0">
                             <span className="font-semibold text-slate-700 text-xs">{oh.title}</span>
-                            <span className="text-slate-400 text-xs ml-2">Every {oh.day} · {oh.startTime}–{oh.endTime} · {slots.length} slots</span>
+                            <span className="text-slate-400 text-xs ml-2">{(oh.days || [oh.day]).filter(Boolean).map((d) => d!.slice(0, 3)).join(', ')} · {oh.startTime}–{oh.endTime} · {slots.length} slots</span>
                             {oh.dateFrom && <span className="text-slate-300 text-[10px] ml-2">({oh.dateFrom} → {oh.dateTo || '∞'})</span>}
                           </div>
                           <span className="text-[10px] font-bold text-emerald-600">{bookings.length} booked</span>
