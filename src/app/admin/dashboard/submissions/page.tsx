@@ -170,6 +170,12 @@ export default function SubmissionsPage() {
                       <div className="min-w-0">
                         <p className={`text-sm truncate ${!sub.read ? 'font-bold text-slate-900' : 'font-medium text-slate-600'}`}>{sub.name || sub.email || 'Anonymous'}</p>
                         <p className="text-xs text-slate-400 truncate">{sub.email || ''}</p>
+                        {(sub.phone || sub.level) && (
+                          <div className="flex flex-wrap items-center gap-1.5 mt-1">
+                            {sub.phone && <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[10px] font-semibold">📞 {sub.phone}</span>}
+                            {sub.level && <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-purple-50 text-purple-600 text-[10px] font-semibold">🎓 {sub.level}</span>}
+                          </div>
+                        )}
                       </div>
                     </div>
                     <div><span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-bold ${meta.color}`}><Icon className="w-3 h-3" /> {meta.label}</span></div>
