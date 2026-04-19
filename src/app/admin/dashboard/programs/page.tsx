@@ -301,10 +301,21 @@ export default function ProgramsPage() {
                             )}
                           </div>
                           {(() => {
-                            const booking = progOH.flatMap((oh) => (oh.bookings || []).filter((b: any) => b.email === s.email).map((b: any) => b.slot || `${b.day} ${b.time}`)).filter(Boolean);
-                            return booking.length > 0 ? (
-                              <span className="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-600 text-[10px] font-bold border border-emerald-100 flex-shrink-0"><Clock className="w-2.5 h-2.5 inline mr-1" />{booking[0]}</span>
-                            ) : null;
+                            const entries = progOH.flatMap((oh) => (oh.bookings || []).filter((b: any) => b.email === s.email).map((b: any) => ({ oh, b })));
+                            if (entries.length === 0) return null;
+                            return (
+                              <div className="flex flex-wrap items-center gap-1 flex-shrink-0 max-w-[55%] justify-end">
+                                {entries.map(({ oh, b }, idx) => (
+                                  <span key={`${oh.id}-${idx}`} className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-emerald-50 text-emerald-700 text-[10px] font-bold border border-emerald-100">
+                                    <Clock className="w-2.5 h-2.5" />
+                                    {(b.date || b.day) + ' · ' + (b.time || b.slot)}
+                                    {isAdmin && (
+                                      <button onClick={() => deleteBooking(oh.id, b)} title="Delete this slot" className="ml-1 text-emerald-500 hover:text-red-500"><X className="w-2.5 h-2.5" /></button>
+                                    )}
+                                  </span>
+                                ))}
+                              </div>
+                            );
                           })()}
                           {isAdmin && <button onClick={() => removeFromProgram(s.id)} className="w-7 h-7 rounded-lg flex items-center justify-center text-slate-300 hover:text-red-500 hover:bg-red-50 transition-all opacity-0 group-hover/row:opacity-100"><UserMinus className="w-3.5 h-3.5" /></button>}
                         </div>
