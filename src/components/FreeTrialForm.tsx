@@ -3,12 +3,24 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  User, Mail, Phone, MapPin, GraduationCap, Loader2,
-  CheckCircle2, ArrowRight, Sparkles, X, Calendar, HelpCircle
+  User, Mail, Phone, MapPin, Loader2,
+  CheckCircle2, ArrowRight, Sparkles, X, Calendar, HelpCircle,
+  Clock, MessageCircle
 } from 'lucide-react';
 import { submitForm } from '@/lib/formSubmit';
 import { useToast } from '@/components/Toast';
 import { COUNTRIES, US_STATES, US_COUNTRY, OTHER_OPTION } from '@/lib/locations';
+
+const URGENCY_OPTIONS = [
+  'Immediately (this week)',
+  'Within 1 week',
+  'This month',
+  'Next month',
+  'Just exploring',
+];
+
+const DAY_OPTIONS = ['Weekdays', 'Weekends', 'Any day'];
+const TIME_OPTIONS = ['Morning', 'Afternoon', 'Evening'];
 
 const HEAR_OPTIONS = [
   'Google search',
@@ -44,8 +56,29 @@ export default function FreeTrialForm({ variant = 'card', onClose, compact = fal
   const stateSel = data.stateSelect || '';
   const isStateOther = stateSel === OTHER_OPTION;
 
+  const toggle = (key: string, value: string) => {
+    const current = (data[key] || '').split(',').filter(Boolean);
+    const next = current.includes(value)
+      ? current.filter((v) => v !== value)
+      : [...current, value];
+    setData({ ...data, [key]: next.join(',') });
+  };
+  const has = (key: string, value: string) => (data[key] || '').split(',').includes(value);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!data.contactPreference) {
+      showToast('error', 'Please select how we can contact you.');
+      return;
+    }
+    if (!data.availableDays) {
+      showToast('error', 'Please pick at least one available day.');
+      return;
+    }
+    if (!data.availableTimes) {
+      showToast('error', 'Please pick at least one time of day.');
+      return;
+    }
     setStatus('loading');
     const { countrySelect, stateSelect, countryOther, stateOther, ...clean } = data;
     void countrySelect; void stateSelect; void countryOther; void stateOther;
@@ -196,6 +229,109 @@ export default function FreeTrialForm({ variant = 'card', onClose, compact = fal
             <option value="">Select an option...</option>
             {HEAR_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
           </select>
+        </div>
+      </div>
+
+      {/* Contact preference */}
+      <div>
+        <label className="block text-[13px] font-bold text-slate-700 mb-2">
+          <span className="inline-flex items-center gap-1.5">
+            <MessageCircle className="w-3.5 h-3.5 text-slate-400" />
+            How can we contact you?
+          </span>
+        </label>
+        <div className="grid grid-cols-3 gap-2">
+          {['Email', 'Phone', 'Both'].map((opt) => {
+            const active = has('contactPreference', opt);
+            return (
+              <label key={opt}
+                className={`cursor-pointer flex items-center justify-center gap-2 px-3 py-3 rounded-xl border-2 text-[13px] font-semibold transition-all select-none ${
+                  active
+                    ? 'border-brand-400 bg-brand-50 text-brand-700'
+                    : 'border-slate-200 text-slate-600 hover:border-slate-300 bg-white'
+                }`}>
+                <input type="checkbox" className="sr-only"
+                  checked={active}
+                  onChange={() => {
+                    if (opt === 'Both') {
+                      const turningOn = !active;
+                      setData({ ...data, contactPreference: turningOn ? 'Email,Phone,Both' : '' });
+                    } else {
+                      toggle('contactPreference', opt);
+                      const next = (data.contactPreference || '').split(',').filter(Boolean);
+                      const set = new Set(next.includes(opt) ? next.filter((v) => v !== opt) : [...next, opt]);
+                      if (set.has('Email') && set.has('Phone')) set.add('Both'); else set.delete('Both');
+                      setData({ ...data, contactPreference: Array.from(set).join(',') });
+                    }
+                  }} />
+                <span className={`w-4 h-4 rounded border-2 flex items-center justify-center flex-shrink-0 ${active ? 'border-brand-500 bg-brand-500' : 'border-slate-300'}`}>
+                  {active && <CheckCircle2 className="w-3 h-3 text-white" strokeWidth={3} />}
+                </span>
+                {opt}
+              </label>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Urgency / when */}
+      <div>
+        <label className="block text-[13px] font-bold text-slate-700 mb-1.5">
+          <span className="inline-flex items-center gap-1.5">
+            <Clock className="w-3.5 h-3.5 text-slate-400" />
+            When are you hoping to start?
+          </span>
+        </label>
+        <div className="relative">
+          <Clock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 pointer-events-none" />
+          <select required value={data.urgency || ''}
+            onChange={(e) => setData({ ...data, urgency: e.target.value })}
+            className="w-full pl-11 pr-4 py-3.5 rounded-xl border-2 border-slate-200 focus:outline-none focus:border-brand-400 transition-colors text-slate-700 text-sm bg-white appearance-none">
+            <option value="">Select timing...</option>
+            {URGENCY_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
+          </select>
+        </div>
+      </div>
+
+      {/* Availability — days */}
+      <div>
+        <label className="block text-[13px] font-bold text-slate-700 mb-2">Which days work for you?</label>
+        <div className="grid grid-cols-3 gap-2">
+          {DAY_OPTIONS.map((opt) => {
+            const active = has('availableDays', opt);
+            return (
+              <button key={opt} type="button"
+                onClick={() => toggle('availableDays', opt)}
+                className={`px-3 py-2.5 rounded-xl border-2 text-[13px] font-semibold transition-all ${
+                  active
+                    ? 'border-brand-400 bg-brand-50 text-brand-700'
+                    : 'border-slate-200 text-slate-600 hover:border-slate-300 bg-white'
+                }`}>
+                {opt}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Availability — time of day */}
+      <div>
+        <label className="block text-[13px] font-bold text-slate-700 mb-2">What time of day?</label>
+        <div className="grid grid-cols-3 gap-2">
+          {TIME_OPTIONS.map((opt) => {
+            const active = has('availableTimes', opt);
+            return (
+              <button key={opt} type="button"
+                onClick={() => toggle('availableTimes', opt)}
+                className={`px-3 py-2.5 rounded-xl border-2 text-[13px] font-semibold transition-all ${
+                  active
+                    ? 'border-brand-400 bg-brand-50 text-brand-700'
+                    : 'border-slate-200 text-slate-600 hover:border-slate-300 bg-white'
+                }`}>
+                {opt}
+              </button>
+            );
+          })}
         </div>
       </div>
 
