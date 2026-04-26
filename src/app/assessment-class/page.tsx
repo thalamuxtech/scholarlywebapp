@@ -2,11 +2,11 @@
 
 import { useRef } from 'react';
 import Link from 'next/link';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
   Sparkles, ArrowRight, CheckCircle2, Clock, Users, Brain,
   Trophy, GraduationCap, Briefcase, Star, Shield, Zap,
-  Calendar, MessageCircle, Award, Target, Gift, Rocket, Heart
+  Calendar, MessageCircle, Award, Target, Gift, Rocket
 } from 'lucide-react';
 import SectionWrapper from '@/components/ui/SectionWrapper';
 import FreeTrialForm from '@/components/FreeTrialForm';
@@ -32,22 +32,6 @@ const audience = [
   { icon: Briefcase, title: 'Career-focused families', age: 'Ages 16+', desc: 'Looking for serious outcomes — internships, portfolio reviews, and career mentorship.', gradient: 'from-pink-500 to-rose-500' },
 ];
 
-const faqs = [
-  { q: 'Is this really 100% free?', a: 'Yes. The assessment class is completely free, takes about 30 minutes on Zoom, and there is zero obligation to enroll afterward. No credit card required.' },
-  { q: 'How is this different from a free demo?', a: "A demo shows you a class. Our assessment evaluates your child's skills, learning style and goals — then produces a personalized written pathway you keep, even if you never enroll." },
-  { q: 'Who runs the assessment?', a: 'A vetted ScholarlyEcho mentor — typically a working software engineer, AI practitioner, or experienced educator. All mentors are background-checked and trained for child safety.' },
-  { q: 'How soon can I get a slot?', a: 'Most families are scheduled within 2–5 days. If you select "Immediately" on the form, we prioritize next-available slots and reach out within hours.' },
-  { q: 'What if my child is shy or nervous?', a: "Totally normal. Our mentors are experienced with first-timers and adapt the session to your child's comfort level. Parents are welcome to sit in." },
-  { q: 'Do you offer assessments for siblings?', a: "Yes — book one form per child, or mention it in your first session and we'll arrange the others. Sibling discounts apply if you later enroll multiple children." },
-];
-
-const testimonials = [
-  { name: 'Amina D.', role: 'Parent · Senegal', flag: '🇸🇳', quote: 'The free class blew us away. Our mentor was kind, professional, and genuinely cared about our son\'s journey.' },
-  { name: 'Rachel T.', role: 'Parent · USA', flag: '🇺🇸', quote: 'Best 30 minutes we\'ve spent in months. We left with a clear plan and zero pressure to enroll.' },
-  { name: 'Kwame A.', role: 'Parent · Ghana', flag: '🇬🇭', quote: 'They assessed Joy where she actually was — not where her age said she should be. Game changer.' },
-  { name: 'Fatima G.', role: 'Parent · Kenya', flag: '🇰🇪', quote: 'A real mentor, a real challenge, real feedback. This is what other "free trials" wish they were.' },
-];
-
 function FloatingChip({ children, className, delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
   return (
     <motion.div
@@ -62,15 +46,12 @@ function FloatingChip({ children, className, delay = 0 }: { children: React.Reac
 
 export default function AssessmentClassPage() {
   const heroRef = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] });
-  const heroY = useTransform(scrollYProgress, [0, 1], ['0%', '25%']);
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
 
   return (
     <div className="overflow-hidden">
 
       {/* ═══ HERO ═══ */}
-      <section ref={heroRef} className="relative min-h-[92vh] flex items-center pt-28 pb-16 noise-overlay overflow-hidden"
+      <section ref={heroRef} className="relative pt-28 pb-24 sm:pb-28 md:pb-32 noise-overlay overflow-hidden"
         style={{ background: 'linear-gradient(165deg, #070c1b 0%, #0d1333 25%, #13103a 50%, #0c1a2e 75%, #070c1b 100%)' }}>
 
         {/* Ambient orbs */}
@@ -113,7 +94,7 @@ export default function AssessmentClassPage() {
             style={{ background: 'linear-gradient(90deg, transparent 0%, rgba(110,66,255,0.4) 30%, rgba(168,85,247,0.5) 50%, rgba(236,72,153,0.4) 70%, transparent 100%)' }} />
         </div>
 
-        <motion.div style={{ y: heroY, opacity: heroOpacity }} className="relative z-10 w-full">
+        <div className="relative z-10 w-full">
           <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-10">
             <div className="grid lg:grid-cols-2 gap-10 lg:gap-14 items-start">
 
@@ -216,18 +197,6 @@ export default function AssessmentClassPage() {
                 id="book"
                 className="relative">
 
-                <FloatingChip className="-top-3 -left-3 px-3.5 py-2.5 text-white z-20 hidden md:block" delay={0.9}>
-                  <div className="flex items-center gap-2 text-[12px]">
-                    <div className="w-7 h-7 rounded-lg bg-emerald-500/15 flex items-center justify-center">
-                      <Gift className="w-3.5 h-3.5 text-emerald-400" />
-                    </div>
-                    <div>
-                      <div className="font-bold text-emerald-300 text-[11px]">Free, no card</div>
-                      <div className="text-white/50 text-[10px]">Truly $0 to try</div>
-                    </div>
-                  </div>
-                </FloatingChip>
-
                 <FloatingChip className="-bottom-3 -right-3 px-3.5 py-2.5 text-white z-20 hidden md:block" delay={1.1}>
                   <div className="flex items-center gap-2 text-[12px]">
                     <div className="w-7 h-7 rounded-lg bg-amber-500/15 flex items-center justify-center">
@@ -248,7 +217,7 @@ export default function AssessmentClassPage() {
               </motion.div>
             </div>
           </div>
-        </motion.div>
+        </div>
       </section>
 
       {/* ═══ WHAT YOU GET ═══ */}
@@ -380,50 +349,6 @@ export default function AssessmentClassPage() {
         </div>
       </section>
 
-      {/* ═══ TESTIMONIAL MARQUEE ═══ */}
-      <section className="py-16 sm:py-20 md:py-24 relative overflow-hidden noise-overlay"
-        style={{ background: 'linear-gradient(165deg, #070c1b 0%, #0d1333 50%, #0c1a2e 100%)' }}>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] rounded-full opacity-[0.08]"
-          style={{ background: 'radial-gradient(circle, #6e42ff 0%, transparent 70%)' }} />
-        <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-10 relative z-10 mb-10">
-          <SectionWrapper className="text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.06] border border-white/[0.08] text-white/60 text-[13px] font-medium mb-5">
-              <Heart className="w-3.5 h-3.5 text-rose-400" /> Loved by parents worldwide
-            </div>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white mb-4 leading-tight tracking-[-0.02em]"
-              style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
-              Real reviews from <span className="gradient-text-animated">real families</span>
-            </h2>
-          </SectionWrapper>
-        </div>
-
-        <div className="relative">
-          <div className="absolute left-0 top-0 bottom-0 w-20 sm:w-32 z-10 pointer-events-none"
-            style={{ background: 'linear-gradient(to right, #0a1027 0%, transparent 100%)' }} />
-          <div className="absolute right-0 top-0 bottom-0 w-20 sm:w-32 z-10 pointer-events-none"
-            style={{ background: 'linear-gradient(to left, #0a1027 0%, transparent 100%)' }} />
-
-          <div className="flex animate-marquee gap-5 whitespace-normal">
-            {[...testimonials, ...testimonials].map((t, i) => (
-              <div key={i}
-                className="flex-shrink-0 w-[320px] sm:w-[360px] glass rounded-2xl p-5 border border-white/8">
-                <div className="flex gap-0.5 mb-3">
-                  {[...Array(5)].map((_, j) => <Star key={j} className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />)}
-                </div>
-                <p className="text-white/75 text-[13px] leading-relaxed mb-4">&ldquo;{t.quote}&rdquo;</p>
-                <div className="flex items-center gap-2.5 pt-3 border-t border-white/8">
-                  <div className="text-xl">{t.flag}</div>
-                  <div>
-                    <div className="text-white font-bold text-[12px]">{t.name}</div>
-                    <div className="text-white/40 text-[10px]">{t.role}</div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ═══ TRUST RIBBON ═══ */}
       <section className="py-12 sm:py-14 bg-white border-y border-slate-100">
         <div className="max-w-6xl mx-auto px-5 sm:px-8 lg:px-10">
@@ -445,34 +370,6 @@ export default function AssessmentClassPage() {
                 </div>
                 <span className="text-[13px] font-semibold">{label}</span>
               </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ═══ FAQs ═══ */}
-      <section className="py-16 sm:py-20 md:py-28 bg-slate-50">
-        <div className="max-w-3xl mx-auto px-5 sm:px-8">
-          <SectionWrapper className="text-center mb-12">
-            <div className="section-tag mx-auto mb-5">
-              <MessageCircle className="w-3.5 h-3.5" /> Common Questions
-            </div>
-            <h2 className="section-heading mb-4">Quick <span className="gradient-text">Answers</span></h2>
-          </SectionWrapper>
-          <div className="space-y-3">
-            {faqs.map(({ q, a }, i) => (
-              <motion.details key={i}
-                initial={{ opacity: 0, y: 14 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.06 }}
-                className="premium-card group cursor-pointer open:ring-2 open:ring-brand-200">
-                <summary className="flex items-center justify-between font-semibold text-slate-800 cursor-pointer list-none select-none text-[15px]">
-                  {q}
-                  <ArrowRight className="w-4 h-4 text-slate-400 group-open:rotate-90 transition-transform duration-200 flex-shrink-0 ml-4" />
-                </summary>
-                <p className="mt-3 text-slate-500 text-[13px] leading-relaxed border-t border-slate-100 pt-3">{a}</p>
-              </motion.details>
             ))}
           </div>
         </div>
