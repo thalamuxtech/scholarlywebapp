@@ -460,7 +460,7 @@ export default function LearningHubPage() {
               },
               {
                 icon: GraduationCap, title: 'Scholarship-Ready Portfolios',
-                stat: '$380K+ earned', desc: 'Portfolios packed with shipped projects, competition results and mentor recommendations — exactly what admissions officers and scholarship committees want to see.',
+                stat: 'Application-ready', desc: 'Portfolios packed with shipped projects, competition results and mentor recommendations — exactly what admissions officers and scholarship committees want to see.',
                 gradient: 'from-emerald-500 to-teal-600',
               },
               {

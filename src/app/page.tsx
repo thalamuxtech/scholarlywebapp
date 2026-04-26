@@ -908,7 +908,7 @@ export default function HomePage() {
               {
                 icon: GraduationCap, title: 'Scholarship-Ready Portfolio',
                 desc: 'Real projects, verified skills, and track records that admissions committees love — from local grants to Ivy League STEM awards.',
-                stat: '$380K+', statLabel: 'Scholarships earned',
+                stat: 'Built', statLabel: 'For scholarship apps',
                 gradient: 'from-emerald-400 to-teal-600', bg: 'bg-emerald-50', color: 'text-emerald-600',
               },
               {

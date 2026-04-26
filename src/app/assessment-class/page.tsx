@@ -32,18 +32,6 @@ const audience = [
   { icon: Briefcase, title: 'Career-focused families', age: 'Ages 16+', desc: 'Looking for serious outcomes — internships, portfolio reviews, and career mentorship.', gradient: 'from-pink-500 to-rose-500' },
 ];
 
-function FloatingChip({ children, className, delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.75, y: 20 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      transition={{ delay, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-      className={`absolute glass rounded-2xl shadow-2xl border border-white/12 ${className}`}>
-      {children}
-    </motion.div>
-  );
-}
-
 export default function AssessmentClassPage() {
   const heroRef = useRef<HTMLElement>(null);
 
@@ -196,18 +184,6 @@ export default function AssessmentClassPage() {
                 transition={{ duration: 0.7, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
                 id="book"
                 className="relative">
-
-                <FloatingChip className="-bottom-3 -right-3 px-3.5 py-2.5 text-white z-20 hidden md:block" delay={1.1}>
-                  <div className="flex items-center gap-2 text-[12px]">
-                    <div className="w-7 h-7 rounded-lg bg-amber-500/15 flex items-center justify-center">
-                      <Trophy className="w-3.5 h-3.5 text-amber-400" />
-                    </div>
-                    <div>
-                      <div className="font-bold text-amber-300 text-[11px]">Scholarship-ready</div>
-                      <div className="text-white/50 text-[10px]">$380K+ earned by alumni</div>
-                    </div>
-                  </div>
-                </FloatingChip>
 
                 <motion.div
                   animate={{ y: [0, -6, 0] }}
