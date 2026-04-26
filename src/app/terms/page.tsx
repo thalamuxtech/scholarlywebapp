@@ -147,8 +147,8 @@ export default function TermsPage() {
                 <h3 className="font-bold text-slate-900 mb-2">Questions About These Terms?</h3>
                 <p className="text-slate-500 text-[13px] leading-relaxed mb-4">
                   Reach our legal team at{' '}
-                  <a href="mailto:legal@scholarlyecho.com" className="text-brand-600 font-semibold hover:underline">
-                    legal@scholarlyecho.com
+                  <a href="mailto:scholarlyechos@gmail.com" className="text-brand-600 font-semibold hover:underline">
+                    scholarlyechos@gmail.com
                   </a>{' '}
                   or write to us at: ScholarlyEcho Inc., Maryland, United States.
                 </p>

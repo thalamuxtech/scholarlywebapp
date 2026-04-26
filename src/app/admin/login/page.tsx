@@ -96,7 +96,7 @@ export default function AdminLoginPage() {
               <div className="relative">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
                 <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@scholarlyecho.com" required
+                  placeholder="scholarlyechos@gmail.com" required
                   className="w-full pl-11 pr-4 py-3.5 rounded-xl bg-white/[0.06] border border-white/[0.06] text-white placeholder-white/20 text-sm focus:outline-none focus:border-brand-500/50 focus:bg-white/[0.08] transition-all duration-200" />
               </div>
             </div>

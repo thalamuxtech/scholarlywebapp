@@ -140,8 +140,8 @@ export default function PrivacyPage() {
                 <h3 className="font-bold text-slate-900 mb-2">Questions or Concerns?</h3>
                 <p className="text-slate-500 text-[13px] leading-relaxed mb-4">
                   Contact our Data Privacy Officer at{' '}
-                  <a href="mailto:privacy@scholarlyecho.com" className="text-brand-600 font-semibold hover:underline">
-                    privacy@scholarlyecho.com
+                  <a href="mailto:scholarlyechos@gmail.com" className="text-brand-600 font-semibold hover:underline">
+                    scholarlyechos@gmail.com
                   </a>{' '}
                   or write to us at: ScholarlyEcho Inc., Maryland, United States.
                 </p>
