@@ -48,8 +48,6 @@ const socials = [
   { icon: Facebook, href: '#', label: 'Facebook' },
 ];
 
-const regions = ['Africa', 'North America', 'Europe', 'Asia Pacific'];
-
 export default function Footer() {
   return (
     <footer className="text-slate-300 pt-20 pb-8 relative overflow-hidden"
@@ -119,15 +117,6 @@ export default function Footer() {
             <p className="text-slate-400 text-sm leading-relaxed mb-5 max-w-full sm:max-w-[280px]">
               A knowledge-first global youth empowerment ecosystem. Disrupting education globally — one learner at a time.
             </p>
-
-            {/* Global reach */}
-            <div className="flex flex-wrap gap-2 mb-5">
-              {regions.map((r) => (
-                <span key={r} className="px-2.5 py-1 rounded-md bg-slate-800 text-slate-400 text-[11px] font-medium">
-                  {r}
-                </span>
-              ))}
-            </div>
 
             <div className="space-y-2.5 text-sm">
               <div className="flex items-center gap-2.5 text-slate-400">
