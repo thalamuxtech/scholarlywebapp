@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   User, Mail, Phone, MapPin, Loader2,
   CheckCircle2, ArrowRight, Sparkles, X, Calendar, HelpCircle,
-  Clock, MessageCircle
+  Clock, MessageCircle, BookOpen
 } from 'lucide-react';
 import { submitForm } from '@/lib/formSubmit';
 import { useToast } from '@/components/Toast';
@@ -21,6 +21,12 @@ const URGENCY_OPTIONS = [
 
 const DAY_OPTIONS = ['Weekdays', 'Weekends', 'Any day'];
 const TIME_OPTIONS = ['Morning', 'Afternoon', 'Evening'];
+
+const PROGRAM_OPTIONS = [
+  'Weekend Coding',
+  'Summer Program',
+  'Help me choose',
+];
 
 const HEAR_OPTIONS = [
   'Google search',
@@ -217,6 +223,20 @@ export default function FreeTrialForm({ variant = 'card', onClose, compact = fal
             placeholder="Enter your state" className={inputBase} />
         </div>
       )}
+
+      {/* Program of Intent */}
+      <div>
+        <label className="block text-[13px] font-bold text-slate-700 mb-1.5">Program of Intent</label>
+        <div className="relative">
+          <BookOpen className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 pointer-events-none" />
+          <select required value={data.programIntent || ''}
+            onChange={(e) => setData({ ...data, programIntent: e.target.value })}
+            className="w-full pl-11 pr-4 py-3.5 rounded-xl border-2 border-slate-200 focus:outline-none focus:border-brand-400 transition-colors text-slate-700 text-sm bg-white appearance-none">
+            <option value="">Select a program...</option>
+            {PROGRAM_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
+          </select>
+        </div>
+      </div>
 
       {/* How did you find us */}
       <div>

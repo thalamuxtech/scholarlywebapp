@@ -72,7 +72,7 @@ const fieldConfig: Record<string, { label: string; type: string; placeholder: st
   motivation: { label: 'Why Code Prodigy?', type: 'textarea', placeholder: 'Why do you want to join the elite program? What are you building?', icon: Sparkles, rows: 4 },
 };
 
-const planOptions = ['Starter — $75/mo (1 session/week)', 'Standard — $200/mo (2 sessions/week)', 'Premium 1-on-1 — $350/mo', 'Code Prodigy — $450/mo (Elite)', 'Not sure — help me choose'];
+const planOptions = ['Starter — $110/mo (1 session/week)', 'Standard — $200/mo (2 sessions/week)', 'Premium 1-on-1 — $350/mo', 'Code Prodigy — $450/mo (Elite)', 'Not sure — help me choose'];
 const priorExpOptions = ['No prior experience', 'Scratch / block-based coding', 'Basic Python or JavaScript', 'HTML/CSS websites', 'Built apps or projects before', 'Comfortable with multiple languages'];
 const siblingOptions = ['Just me (no siblings)', '1 sibling (10% off 2nd child)', '2 siblings (10% + 15% off)', '3+ siblings (contact us)'];
 

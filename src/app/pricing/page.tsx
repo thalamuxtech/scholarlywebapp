@@ -13,15 +13,15 @@ const packages = [
   {
     name: 'Starter',
     subtitle: '1 session/week · 5–20 students',
-    price: '$75',
+    price: '$110',
     period: '/month',
-    annualNote: '40% discount applied (was $125)',
+    annualNote: '40% discount applied (was $183)',
     color: 'from-teal-400 to-emerald-500',
     popular: false,
     features: [
       '1 group session per week (4/month)',
       '5–20 students per class',
-      'Explorer & Builder levels (ages 5–12)',
+      'Explorer & Builder levels (ages 5+)',
       'Starter project portfolio',
       'Community access',
       'Digital completion certificate',
@@ -44,7 +44,6 @@ const packages = [
       'Advanced project portfolio',
       'Monthly parent progress report',
       'Priority support (24hr response)',
-      'LinkedIn-ready certificate & badge',
       'Peer learning community access',
     ],
     cta: 'Enroll Now',
@@ -64,7 +63,6 @@ const packages = [
       'Dedicated tutor + weekly mentor calls',
       'Real-world collaboration projects',
       'Career/scholarship coaching',
-      'Full family dashboard',
       'Priority support',
     ],
     cta: 'Apply Now',
@@ -107,7 +105,6 @@ const comparisons = [
   { feature: 'GPT API credits', starter: false, standard: false, ai: true, premium: false },
   { feature: 'Monthly mentor check-in', starter: false, standard: true, ai: true, premium: true },
   { feature: 'Parent dashboard', starter: false, standard: true, ai: true, premium: true },
-  { feature: 'LinkedIn certificate', starter: false, standard: true, ai: true, premium: true },
   { feature: 'Code Prodigy access', starter: false, standard: false, ai: false, premium: true },
 ];
 
