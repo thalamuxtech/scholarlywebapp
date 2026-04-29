@@ -1,6 +1,6 @@
 # ScholarlyEcho Web Platform
 
-[![Deploy to Firebase](https://github.com/thalamuxtech/scholarlywebapp/actions/workflows/firebase-deploy.yml/badge.svg)](https://github.com/thalamuxtech/scholarlywebapp/actions/workflows/firebase-deploy.yml)
+[![Deploy to Firebase](https://github.com/thalamuxtech/scholarlywebapp/actions/workflows/firebase-hosting-merge.yml/badge.svg)](https://github.com/thalamuxtech/scholarlywebapp/actions/workflows/firebase-hosting-merge.yml)
 [![Next.js](https://img.shields.io/badge/Next.js-14-black?logo=next.js)](https://nextjs.org)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-38bdf8?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 [![Firebase](https://img.shields.io/badge/Firebase-Hosting-FFCA28?logo=firebase&logoColor=white)](https://scholarly-echo.web.app)
