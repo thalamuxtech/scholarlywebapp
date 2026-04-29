@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { collection, query, orderBy, onSnapshot, doc, addDoc, updateDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useToast } from '@/components/Toast';
+import { useConfirm } from '@/components/ConfirmDialog';
 import {
   Tag, Plus, X, Trash2, Copy, CheckCircle2, AlertCircle,
   Percent, DollarSign, Calendar, Power, PowerOff, Sparkles, Loader2, Pencil
@@ -32,6 +33,7 @@ export default function CouponsPage() {
   const [creating, setCreating] = useState(false);
   const [copied, setCopied] = useState<string | null>(null);
   const { showToast } = useToast();
+  const { confirm } = useConfirm();
 
   const [form, setForm] = useState({
     code: '',
@@ -114,7 +116,14 @@ export default function CouponsPage() {
   };
 
   const remove = async (c: Coupon) => {
-    if (!confirm(`Delete coupon ${c.code}? This cannot be undone.`)) return;
+    const ok = await confirm({
+      tone: 'danger',
+      title: 'Delete coupon?',
+      itemName: c.code,
+      description: `${c.uses || 0} use${c.uses === 1 ? '' : 's'} so far. This permanently removes the code and cannot be undone.`,
+      confirmLabel: 'Delete coupon',
+    });
+    if (!ok) return;
     await deleteDoc(doc(db, 'coupons', c.id));
     showToast('success', 'Coupon deleted.');
   };

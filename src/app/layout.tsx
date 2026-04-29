@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import LayoutShell from '@/components/LayoutShell';
 import { ToastProvider } from '@/components/Toast';
+import { ConfirmProvider } from '@/components/ConfirmDialog';
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -45,7 +46,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="min-h-screen flex flex-col antialiased">
         <ToastProvider>
-          <LayoutShell>{children}</LayoutShell>
+          <ConfirmProvider>
+            <LayoutShell>{children}</LayoutShell>
+          </ConfirmProvider>
         </ToastProvider>
       </body>
     </html>

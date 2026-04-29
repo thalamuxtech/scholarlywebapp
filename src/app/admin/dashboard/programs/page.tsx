@@ -11,6 +11,7 @@ import {
   Clock, Copy, ExternalLink, ChevronDown, ChevronUp, AlertCircle
 } from 'lucide-react';
 import { useToast } from '@/components/Toast';
+import { useConfirm } from '@/components/ConfirmDialog';
 
 type Program = { id: string; name: string; description: string; startDate: string; status: string; createdAt: any };
 type Submission = { id: string; formType: string; email?: string; name?: string; program?: string; assignedProgram?: string; officeHourSlot?: string; createdAt: any; read: boolean; [key: string]: any };
@@ -43,6 +44,7 @@ export default function ProgramsPage() {
   const [creating, setCreating] = useState(false);
   const { isAdmin } = useRole();
   const { showToast } = useToast();
+  const { confirm } = useConfirm();
   const [assigningTo, setAssigningTo] = useState<string | null>(null);
   const [viewingStudents, setViewingStudents] = useState<string | null>(null);
   const [selectedSubs, setSelectedSubs] = useState<Set<string>>(new Set());
@@ -57,6 +59,14 @@ export default function ProgramsPage() {
     const n = new Set(expandedBookings); n.has(ohId) ? n.delete(ohId) : n.add(ohId); setExpandedBookings(n);
   };
   const deleteBooking = async (ohId: string, booking: any) => {
+    const ok = await confirm({
+      tone: 'danger',
+      title: 'Remove booking?',
+      itemName: `${booking?.name || 'Student'} · ${booking?.slot || ''}`,
+      description: 'The student will lose this slot. They can re-book if it stays open.',
+      confirmLabel: 'Remove booking',
+    });
+    if (!ok) return;
     await updateDoc(doc(db, 'office_hours', ohId), { bookings: arrayRemove(booking) });
     showToast('success', 'Booking removed.');
   };
@@ -79,6 +89,18 @@ export default function ProgramsPage() {
   const startEdit = (p: Program) => { setEditingProg(p); setNewProg({ name: p.name, description: p.description || '', startDate: p.startDate || '', status: p.status || 'upcoming' }); setShowCreate(true); };
   const deleteProgram = async (id: string) => {
     const p = programs.find((x) => x.id === id);
+    const enrolled = p ? submissions.filter((x) => x.assignedProgram === p.name).length : 0;
+    const ok = await confirm({
+      tone: 'danger',
+      title: 'Delete program?',
+      itemName: p?.name || 'Program',
+      description: enrolled > 0
+        ? `${enrolled} enrolled student${enrolled === 1 ? '' : 's'} will be unassigned. Type the program name to confirm.`
+        : 'This program will be permanently deleted.',
+      requireTyping: enrolled > 0 ? p?.name : undefined,
+      confirmLabel: 'Delete program',
+    });
+    if (!ok) return;
     if (p) for (const s of submissions.filter((x) => x.assignedProgram === p.name)) await updateDoc(doc(db, 'submissions', s.id), { assignedProgram: '' });
     await deleteDoc(doc(db, 'programs', id));
     showToast('success', 'Program deleted. Students unassigned.');
@@ -112,7 +134,22 @@ export default function ProgramsPage() {
     setNewOH({ title: oh.title, days, startTime: oh.startTime, endTime: oh.endTime, slotMinutes: String(oh.slotMinutes || 30), dateFrom: oh.dateFrom || '', dateTo: oh.dateTo || '' });
     setShowOH(true);
   };
-  const deleteOH = async (id: string) => { await deleteDoc(doc(db, 'office_hours', id)); showToast('success', 'Office hour deleted.'); };
+  const deleteOH = async (id: string) => {
+    const oh = officeHours.find((x) => x.id === id);
+    const bookingCount = oh?.bookings?.length || 0;
+    const ok = await confirm({
+      tone: 'danger',
+      title: 'Delete office hour?',
+      itemName: oh?.title || 'Office hour',
+      description: bookingCount > 0
+        ? `${bookingCount} active booking${bookingCount === 1 ? '' : 's'} will be lost. Students will need to re-book.`
+        : 'This office-hour block and all its slots will be removed.',
+      confirmLabel: 'Delete office hour',
+    });
+    if (!ok) return;
+    await deleteDoc(doc(db, 'office_hours', id));
+    showToast('success', 'Office hour deleted.');
+  };
   const copyLink = (id: string) => { navigator.clipboard.writeText(`${window.location.origin}/book?id=${id}`); showToast('success', 'Booking link copied.'); };
 
   // Orphans

@@ -7,6 +7,7 @@ import { collection, doc, setDoc, onSnapshot, deleteDoc, query, orderBy } from '
 import { auth, db } from '@/lib/firebase';
 import { useRole } from '@/lib/useRole';
 import { useToast } from '@/components/Toast';
+import { useConfirm } from '@/components/ConfirmDialog';
 import {
   Shield, Mail, Lock, Globe, Save, Loader2, ExternalLink, Database,
   Users, Plus, Trash2, X, UserCheck, Eye, EyeOff, Crown
@@ -20,6 +21,7 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState<string | null>(null);
   const { showToast } = useToast();
   const { isAdmin } = useRole();
+  const { confirm } = useConfirm();
 
   const user = auth.currentUser;
 
@@ -99,6 +101,14 @@ export default function SettingsPage() {
   };
 
   const handleRemoveUser = async (member: TeamMember) => {
+    const ok = await confirm({
+      tone: 'danger',
+      title: 'Remove team member?',
+      itemName: member.email,
+      description: `${member.email} will lose access to the admin dashboard. Their Firebase Auth account remains — re-add them here to restore access.`,
+      confirmLabel: 'Remove member',
+    });
+    if (!ok) return;
     await deleteDoc(doc(db, 'admin_users', member.id));
     showToast('success', `Removed ${member.email} from team.`);
   };

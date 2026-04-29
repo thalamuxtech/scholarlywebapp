@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { collection, query, orderBy, onSnapshot, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useRole } from '@/lib/useRole';
+import { useConfirm } from '@/components/ConfirmDialog';
 import {
   Mail, MessageSquare, Users, Gamepad2, Trash2, CheckCircle2, Search,
   Inbox, Clock, X, ExternalLink, Eye, Download
@@ -27,6 +28,7 @@ export default function SubmissionsPage() {
   const [selected, setSelected] = useState<Submission | null>(null);
   const [checked, setChecked] = useState<Set<string>>(new Set());
   const { isAdmin } = useRole();
+  const { confirm } = useConfirm();
 
   const toggleCheck = (id: string) => {
     const next = new Set(checked);
@@ -69,7 +71,20 @@ export default function SubmissionsPage() {
   }, []);
 
   const markRead = async (id: string) => { await updateDoc(doc(db, 'submissions', id), { read: true }); };
-  const remove = async (id: string) => { await deleteDoc(doc(db, 'submissions', id)); if (selected?.id === id) setSelected(null); };
+  const remove = async (id: string) => {
+    const sub = submissions.find((s) => s.id === id);
+    const who = sub?.name || sub?.email || formMeta[sub?.formType || '']?.label || 'this submission';
+    const ok = await confirm({
+      tone: 'danger',
+      title: 'Delete submission?',
+      itemName: who,
+      description: 'The submission will be permanently removed and cannot be recovered.',
+      confirmLabel: 'Delete',
+    });
+    if (!ok) return;
+    await deleteDoc(doc(db, 'submissions', id));
+    if (selected?.id === id) setSelected(null);
+  };
 
   const filtered = submissions.filter((s) => {
     if (filter !== 'all' && s.formType !== filter) return false;
