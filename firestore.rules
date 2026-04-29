@@ -19,6 +19,11 @@ service cloud.firestore {
       allow update: if true;
       allow create, delete: if request.auth != null;
     }
+    match /coupons/{docId} {
+      allow read: if true;
+      allow update: if true;
+      allow create, delete: if request.auth != null;
+    }
     match /{document=**} {
       allow read, write: if false;
     }

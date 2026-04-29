@@ -5,11 +5,13 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   BookOpen, Mic2, Brain, Trophy, ArrowRight, CheckCircle2,
-  User, Mail, Phone, MapPin, GraduationCap, Loader2, Sparkles
+  User, Mail, Phone, MapPin, GraduationCap, Loader2, Sparkles,
+  Tag, X as XIcon, Percent, ShieldCheck
 } from 'lucide-react';
 import { submitForm } from '@/lib/formSubmit';
 import { useToast } from '@/components/Toast';
 import { COUNTRIES, US_STATES, US_COUNTRY, OTHER_OPTION } from '@/lib/locations';
+import { computeFee, lookupCoupon, incrementCouponUse, type Coupon } from '@/lib/coupons';
 
 const programs = [
   {
@@ -92,7 +94,32 @@ export default function EnrollPage() {
   const [active, setActive] = useState<string | null>(null);
   const [formData, setFormData] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<'idle' | 'loading' | 'success'>('idle');
+  const [couponInput, setCouponInput] = useState('');
+  const [coupon, setCoupon] = useState<Coupon | null>(null);
+  const [couponState, setCouponState] = useState<'idle' | 'checking' | 'error'>('idle');
+  const [couponError, setCouponError] = useState('');
+  const [submittedFee, setSubmittedFee] = useState<{ total: number; per: string | null; plan: string | null; coupon: string | null } | null>(null);
   const { showToast } = useToast();
+
+  const fee = computeFee(formData.plan || '', formData.siblings || '', coupon);
+
+  // If plan/program changes after coupon applied, re-validate.
+  const clearCoupon = () => { setCoupon(null); setCouponInput(''); setCouponError(''); setCouponState('idle'); };
+
+  const applyCoupon = async () => {
+    if (!active) return;
+    setCouponState('checking'); setCouponError('');
+    const result = await lookupCoupon(couponInput, active, formData.plan || '');
+    if (result.ok) {
+      setCoupon(result.coupon);
+      setCouponState('idle');
+      showToast('success', `Coupon "${result.coupon.code}" applied!`);
+    } else {
+      setCoupon(null);
+      setCouponState('error');
+      setCouponError(result.error);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -100,10 +127,33 @@ export default function EnrollPage() {
     setStatus('loading');
     const { countrySelect, stateSelect, countryOther, stateOther, ...clean } = formData;
     void countrySelect; void stateSelect; void countryOther; void stateOther;
+    // Drop sibling sub-form fields beyond the count actually selected.
+    const sibV = clean.siblings || '';
+    let sibCount = 0;
+    if (sibV.startsWith('1 sibling')) sibCount = 1;
+    else if (sibV.startsWith('2 siblings')) sibCount = 2;
+    else if (sibV.startsWith('3+')) sibCount = 3;
+    Object.keys(clean).forEach((k) => {
+      const m = k.match(/^sibling(\d+)_/);
+      if (m && parseInt(m[1], 10) > sibCount) delete clean[k];
+    });
     const data: Record<string, string> = { program: active, ...clean };
     if (data.dob) { data.age = String(calculateAge(data.dob)); }
+    if (sibCount > 0) data.siblingCount = String(sibCount);
+    if (fee.basePrice > 0) {
+      data.basePrice = String(fee.basePrice);
+      data.siblingDiscountPct = String(fee.siblingPercent);
+      data.siblingDiscountAmount = String(fee.siblingAmount);
+      data.couponCode = coupon?.code || '';
+      data.couponDiscountAmount = String(fee.couponAmount);
+      data.totalFee = String(fee.total);
+      data.feeCadence = fee.per || '';
+      data.feeSummary = `$${fee.total}${fee.per === 'mo' ? '/mo' : ''}${coupon ? ` (with coupon ${coupon.code})` : ''}`;
+    }
     const result = await submitForm('enrollment', data);
     if (result.success) {
+      if (coupon) await incrementCouponUse(coupon.id);
+      setSubmittedFee(fee.basePrice > 0 ? { total: fee.total, per: fee.per, plan: fee.planLabel, coupon: fee.couponLabel } : null);
       setStatus('success');
       showToast('success', 'Application submitted! We\'ll be in touch within 48 hours.');
     } else {
@@ -116,6 +166,8 @@ export default function EnrollPage() {
     setActive(null);
     setFormData({});
     setStatus('idle');
+    clearCoupon();
+    setSubmittedFee(null);
   };
 
   const program = programs.find((p) => p.id === active);
@@ -167,9 +219,22 @@ export default function EnrollPage() {
                   Application Submitted!
                 </motion.h2>
                 <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
-                  className="text-slate-500 mb-8 max-w-md mx-auto">
+                  className="text-slate-500 mb-6 max-w-md mx-auto">
                   Thank you for your interest in {program?.title}. Our team will review your application and reach out within 48 hours.
                 </motion.p>
+                {submittedFee && (
+                  <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }}
+                    className="max-w-md mx-auto mb-8 rounded-2xl border border-emerald-100 bg-gradient-to-br from-emerald-50 to-white p-5 text-left shadow-sm">
+                    <div className="flex items-center gap-2 text-emerald-700 text-[12px] font-bold uppercase tracking-[0.1em] mb-2">
+                      <ShieldCheck className="w-4 h-4" /> Tuition Confirmed
+                    </div>
+                    <div className="text-slate-500 text-sm">{submittedFee.plan}</div>
+                    <div className="text-3xl font-extrabold text-slate-900 mt-1" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+                      ${submittedFee.total}{submittedFee.per === 'mo' && <span className="text-base text-slate-400 font-bold">/mo</span>}
+                    </div>
+                    {submittedFee.coupon && <div className="text-xs text-emerald-600 mt-1 font-semibold">Coupon applied: {submittedFee.coupon}</div>}
+                  </motion.div>
+                )}
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
                   className="flex flex-col sm:flex-row gap-3 justify-center">
                   <button onClick={reset} className="btn-primary">
@@ -353,9 +418,192 @@ export default function EnrollPage() {
                                     className="w-full pl-11 pr-4 py-3.5 rounded-xl border-2 border-slate-200 focus:outline-none focus:border-brand-400 transition-colors text-slate-800 placeholder:text-slate-300 text-sm" />
                                 </div>
                               )}
+
+                              {/* ── Sibling sub-forms ── */}
+                              {key === 'siblings' && (() => {
+                                const v = formData.siblings || '';
+                                let count = 0;
+                                if (v.startsWith('1 sibling')) count = 1;
+                                else if (v.startsWith('2 siblings')) count = 2;
+                                else if (v.startsWith('3+')) count = 3;
+                                if (!count) return null;
+                                return (
+                                  <motion.div
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: 'auto' }}
+                                    exit={{ opacity: 0, height: 0 }}
+                                    transition={{ duration: 0.35 }}
+                                    className="mt-4 space-y-3 overflow-hidden">
+                                    <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.1em] text-brand-600">
+                                      <Sparkles className="w-3 h-3" /> Sibling Details
+                                    </div>
+                                    {Array.from({ length: count }).map((_, idx) => {
+                                      const n = idx + 1;
+                                      const nameKey = `sibling${n}_name`;
+                                      const ageKey = `sibling${n}_age`;
+                                      const levelKey = `sibling${n}_level`;
+                                      return (
+                                        <motion.div key={n}
+                                          initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+                                          transition={{ delay: idx * 0.06 }}
+                                          className="rounded-xl border-2 border-slate-100 bg-slate-50/50 p-4">
+                                          <div className="flex items-center justify-between mb-3">
+                                            <span className="text-[12px] font-extrabold text-slate-700">Sibling {n}</span>
+                                            <span className="text-[10px] font-bold text-brand-500 bg-brand-50 px-2 py-0.5 rounded-full">Student #{n + 1}</span>
+                                          </div>
+                                          <div className="space-y-2.5">
+                                            <div className="relative">
+                                              <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-300" />
+                                              <input type="text" required value={formData[nameKey] || ''}
+                                                onChange={(e) => setFormData({ ...formData, [nameKey]: e.target.value })}
+                                                placeholder={`Sibling ${n} full name`}
+                                                className="w-full pl-9 pr-3 py-2.5 rounded-lg border-2 border-slate-200 bg-white focus:outline-none focus:border-brand-400 text-slate-800 placeholder:text-slate-300 text-[13px]" />
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-2.5">
+                                              <div className="relative">
+                                                <GraduationCap className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-300" />
+                                                <input type="number" min="3" max="25" required value={formData[ageKey] || ''}
+                                                  onChange={(e) => setFormData({ ...formData, [ageKey]: e.target.value })}
+                                                  placeholder="Age"
+                                                  className="w-full pl-9 pr-3 py-2.5 rounded-lg border-2 border-slate-200 bg-white focus:outline-none focus:border-brand-400 text-slate-800 placeholder:text-slate-300 text-[13px]" />
+                                              </div>
+                                              <select value={formData[levelKey] || ''} required
+                                                onChange={(e) => setFormData({ ...formData, [levelKey]: e.target.value })}
+                                                className="w-full px-3 py-2.5 rounded-lg border-2 border-slate-200 bg-white focus:outline-none focus:border-brand-400 text-slate-700 text-[13px]">
+                                                <option value="">Preferred level...</option>
+                                                {levelOptions.map((opt) => (<option key={opt} value={opt}>{opt}</option>))}
+                                              </select>
+                                            </div>
+                                          </div>
+                                        </motion.div>
+                                      );
+                                    })}
+                                    {count >= 3 && (
+                                      <p className="text-[11px] text-slate-400 italic px-1">For 4+ siblings, add the first three here and we&apos;ll follow up to capture the rest.</p>
+                                    )}
+                                  </motion.div>
+                                );
+                              })()}
                             </motion.div>
                           );
                         })}
+
+                        {/* ── Fee Summary + Coupon (Learning Hub only) ── */}
+                        {program.fields.includes('plan') && (
+                          <AnimatePresence>
+                            {fee.basePrice > 0 && (
+                              <motion.div
+                                key="fee-panel"
+                                initial={{ opacity: 0, y: 16, scale: 0.97 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                exit={{ opacity: 0, y: -8, scale: 0.97 }}
+                                transition={{ type: 'spring', stiffness: 220, damping: 22 }}
+                                className="relative overflow-hidden rounded-2xl p-[1.5px]"
+                                style={{ background: 'linear-gradient(135deg, rgba(110,66,255,0.7), rgba(168,85,247,0.7), rgba(236,72,153,0.7))' }}>
+                                <div className="relative bg-white rounded-[14px] p-5">
+                                  {/* Animated shine */}
+                                  <motion.div
+                                    aria-hidden
+                                    initial={{ x: '-120%' }}
+                                    animate={{ x: '120%' }}
+                                    transition={{ repeat: Infinity, repeatDelay: 4, duration: 2.4, ease: 'easeInOut' }}
+                                    className="pointer-events-none absolute inset-y-0 w-1/2"
+                                    style={{ background: 'linear-gradient(90deg, transparent, rgba(110,66,255,0.08), transparent)' }} />
+
+                                  <div className="flex items-center justify-between mb-4 relative z-10">
+                                    <div className="flex items-center gap-2">
+                                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-500 to-purple-600 flex items-center justify-center shadow-sm">
+                                        <Sparkles className="w-4 h-4 text-white" />
+                                      </div>
+                                      <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500">Your Tuition</span>
+                                    </div>
+                                    <motion.div
+                                      key={fee.total}
+                                      initial={{ scale: 0.9, opacity: 0 }}
+                                      animate={{ scale: 1, opacity: 1 }}
+                                      transition={{ type: 'spring', stiffness: 280, damping: 18 }}
+                                      className="text-right">
+                                      <div className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Total</div>
+                                      <div className="text-2xl font-extrabold bg-gradient-to-r from-brand-600 to-purple-600 bg-clip-text text-transparent" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+                                        ${fee.total}
+                                        {fee.per === 'mo' && <span className="text-sm text-slate-400 font-bold">/mo</span>}
+                                      </div>
+                                    </motion.div>
+                                  </div>
+
+                                  <div className="space-y-1.5 text-[13px] relative z-10">
+                                    <div className="flex justify-between text-slate-600">
+                                      <span>Base tuition</span>
+                                      <span className="font-semibold text-slate-700">${fee.basePrice}{fee.per === 'mo' && '/mo'}</span>
+                                    </div>
+                                    {fee.siblingAmount > 0 && (
+                                      <motion.div initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }}
+                                        className="flex justify-between text-emerald-600">
+                                        <span className="flex items-center gap-1.5"><Percent className="w-3 h-3" /> Sibling discount ({fee.siblingPercent}%)</span>
+                                        <span className="font-semibold">−${fee.siblingAmount}</span>
+                                      </motion.div>
+                                    )}
+                                    {fee.couponAmount > 0 && (
+                                      <motion.div initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }}
+                                        className="flex justify-between text-emerald-600">
+                                        <span className="flex items-center gap-1.5"><Tag className="w-3 h-3" /> Coupon {coupon?.code}</span>
+                                        <span className="font-semibold">−${fee.couponAmount}</span>
+                                      </motion.div>
+                                    )}
+                                  </div>
+
+                                  {/* Coupon input */}
+                                  <div className="mt-4 pt-4 border-t border-slate-100 relative z-10">
+                                    {coupon ? (
+                                      <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+                                        className="flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl bg-emerald-50 border border-emerald-100">
+                                        <div className="flex items-center gap-2 min-w-0">
+                                          <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                                          <div className="min-w-0">
+                                            <div className="text-[12px] font-bold text-emerald-700 truncate">{coupon.code}</div>
+                                            {coupon.description && <div className="text-[11px] text-emerald-600/80 truncate">{coupon.description}</div>}
+                                          </div>
+                                        </div>
+                                        <button type="button" onClick={clearCoupon}
+                                          className="text-emerald-700/60 hover:text-emerald-700 p-1 rounded-md hover:bg-emerald-100 transition-colors flex-shrink-0">
+                                          <XIcon className="w-4 h-4" />
+                                        </button>
+                                      </motion.div>
+                                    ) : (
+                                      <div>
+                                        <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Have a coupon code?</label>
+                                        <div className="flex gap-2">
+                                          <div className="relative flex-1">
+                                            <Tag className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-300" />
+                                            <input type="text" value={couponInput}
+                                              onChange={(e) => { setCouponInput(e.target.value.toUpperCase()); setCouponError(''); setCouponState('idle'); }}
+                                              onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); applyCoupon(); } }}
+                                              placeholder="ENTER CODE"
+                                              className="w-full pl-9 pr-3 py-2.5 rounded-lg border-2 border-slate-200 focus:outline-none focus:border-brand-400 transition-colors text-slate-800 placeholder:text-slate-300 text-[13px] font-mono tracking-wider uppercase" />
+                                          </div>
+                                          <motion.button type="button" onClick={applyCoupon}
+                                            disabled={!couponInput.trim() || couponState === 'checking'}
+                                            whileTap={{ scale: 0.96 }}
+                                            className="px-4 py-2.5 rounded-lg bg-gradient-to-r from-brand-500 to-purple-600 text-white text-[12px] font-bold shadow-sm hover:shadow-md disabled:opacity-50 transition-all flex items-center gap-1.5">
+                                            {couponState === 'checking' ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Apply'}
+                                          </motion.button>
+                                        </div>
+                                        <AnimatePresence>
+                                          {couponError && (
+                                            <motion.p initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                                              className="text-[11px] text-rose-500 font-medium mt-1.5 ml-1">
+                                              {couponError}
+                                            </motion.p>
+                                          )}
+                                        </AnimatePresence>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        )}
 
                         <motion.button type="submit" disabled={status === 'loading'}
                           initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}

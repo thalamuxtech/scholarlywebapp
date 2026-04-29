@@ -9,13 +9,14 @@ import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import {
   LayoutDashboard, Inbox, FolderKanban, BarChart3, Settings,
-  LogOut, Bell, ChevronLeft, Menu, X, ExternalLink
+  LogOut, Bell, ChevronLeft, Menu, X, ExternalLink, Tag
 } from 'lucide-react';
 
 const sidebarLinks = [
   { label: 'Overview', href: '/admin/dashboard', icon: LayoutDashboard },
   { label: 'Submissions', href: '/admin/dashboard/submissions', icon: Inbox },
   { label: 'Programs', href: '/admin/dashboard/programs', icon: FolderKanban },
+  { label: 'Coupons', href: '/admin/dashboard/coupons', icon: Tag },
   { label: 'Analytics', href: '/admin/dashboard/analytics', icon: BarChart3 },
   { label: 'Settings', href: '/admin/dashboard/settings', icon: Settings },
 ];
