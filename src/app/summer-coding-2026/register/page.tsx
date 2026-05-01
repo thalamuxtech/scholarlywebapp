@@ -317,7 +317,7 @@ function RegisterContent() {
                             <div className="min-w-0">
                               <div className="font-bold text-slate-900 text-[14px]">{t.name}</div>
                               <div className="text-[11px] font-bold text-amber-600">{t.age}</div>
-                              <div className="text-[11px] text-slate-500 mt-0.5">$245 · 7 weeks · 2× per week</div>
+                              <div className="text-[11px] text-slate-500 mt-0.5">$245 · 6 weeks · 2× per week</div>
                             </div>
                             {active && <CheckCircle2 className="w-4 h-4 text-emerald-500 absolute top-3 right-3" />}
                           </div>
@@ -452,7 +452,7 @@ function RegisterContent() {
                     onChange={(e) => setData({ ...data, priorExperience: e.target.value })}
                     className="w-full px-4 py-3.5 rounded-xl border-2 border-slate-200 focus:outline-none focus:border-amber-400 transition-colors text-slate-700 text-sm bg-white">
                     <option value="">Select...</option>
-                    {['No prior experience', 'Some Scratch / block coding', 'A bit of Python or JavaScript', 'Built websites or small projects', 'Comfortable building real apps'].map((o) => (
+                    {['No prior experience', 'Tried Scratch a few times', 'Comfortable with Scratch', 'Tried MIT App Inventor', 'Comfortable with App Inventor'].map((o) => (
                       <option key={o} value={o}>{o}</option>
                     ))}
                   </select>

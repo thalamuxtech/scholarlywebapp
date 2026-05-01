@@ -15,29 +15,29 @@ const TRACKS = [
     name: 'Logic Builders',
     age: 'Ages 5+',
     tag: 'Beginner-Friendly',
-    desc: 'Visual + block-based coding using Scratch & Code.org. Learners build their first interactive games, animations and stories — no reading-heavy syntax required.',
+    desc: 'Visual block-based coding with Scratch and MIT App Inventor. Young learners build their first interactive games, animations, stories, and simple mobile apps — no syntax required.',
     icon: Lightbulb,
     color: 'from-amber-400 via-orange-500 to-rose-500',
-    chips: ['Scratch', 'Code.org', 'Logic puzzles', 'Animation'],
+    chips: ['Scratch', 'MIT App Inventor', 'Games', 'Mobile apps'],
     outcomes: [
-      'A working capstone game (published & playable)',
+      'A working capstone game or mobile app they built themselves',
       'Strong computational-thinking foundation',
-      'Confidence with sequencing, loops, and events',
+      'Confidence with sequencing, loops, events, and decisions',
     ],
   },
   {
     id: 'code-masters',
     name: 'Code Masters',
     age: 'Ages 9+',
-    tag: 'Real Code, Real Projects',
-    desc: 'Real text-based coding with Python, web (HTML/CSS/JS), and a touch of AI. Learners ship a portfolio-ready capstone they can show on scholarship and competition applications.',
+    tag: 'Advanced Builders',
+    desc: 'Advanced Scratch and advanced MIT App Inventor projects. Learners take their skills further — building richer games, multi-screen mobile apps, and original interactive projects with real logic.',
     icon: Cpu,
     color: 'from-brand-500 via-purple-600 to-pink-600',
-    chips: ['Python', 'Web Dev', 'AI Basics', 'GitHub'],
+    chips: ['Advanced Scratch', 'Advanced App Inventor', 'Games', 'Mobile apps'],
     outcomes: [
-      'A deployed capstone (web app or AI project)',
-      'GitHub portfolio link to share with judges',
-      'Foundations for olympiads & coding contests',
+      'A capstone app or game they designed and built end-to-end',
+      'Comfortable working with variables, lists, and procedures',
+      'Confidence to keep building independently after the program',
     ],
   },
 ];
@@ -45,28 +45,27 @@ const TRACKS = [
 const BENEFITS = [
   { icon: Brain, title: 'Coding is the 4th literacy', desc: 'Reading, writing, math — and now code. Every modern career touches software, automation, or AI. Children who code early read the world differently.', color: 'from-brand-500 to-purple-600' },
   { icon: Zap, title: 'Sharper thinking, faster', desc: 'Coding teaches kids to break big problems into small ones, debug calmly, and persist. These are transferable life skills, not just tech skills.', color: 'from-amber-500 to-orange-500' },
-  { icon: Trophy, title: 'Scholarship & competition edge', desc: 'A real coding portfolio is a tiebreaker for scholarships, magnet schools, and STEM contests. We build it with them — not for them.', color: 'from-emerald-500 to-teal-600' },
+  { icon: Trophy, title: 'A real project to show off', desc: 'Every learner walks away with their own app or game — built by them, on their device — to share with family, classmates, and teachers.', color: 'from-emerald-500 to-teal-600' },
   { icon: Globe, title: 'AI-ready future', desc: 'In an AI-shaped economy, the kids who can prompt, build, and ship will lead. Our curriculum bakes in AI literacy from week one — at age-appropriate depth.', color: 'from-pink-500 to-rose-500' },
   { icon: Users, title: 'Small cohorts, real mentors', desc: 'Tiny groups with vetted instructors — graduates of Google, Microsoft, Stripe and top universities. Every child is seen, every project is reviewed.', color: 'from-violet-500 to-indigo-600' },
   { icon: Medal, title: 'Awards & certificates', desc: 'Every learner earns a certificate. The top capstones win prizes — and a permanent spot in our 2026 Hall of Builders.', color: 'from-fuchsia-500 to-pink-600' },
 ];
 
 const SCHEDULE = [
-  { week: 'Wk 1', label: 'Foundations', desc: 'Core tools, tour of code, first builds' },
+  { week: 'Wk 1', label: 'Foundations', desc: 'Get set up, tour the tools, first builds' },
   { week: 'Wk 2', label: 'Loops & Logic', desc: 'Conditionals, decisions, animations' },
-  { week: 'Wk 3', label: 'Functions & Data', desc: 'Reusable code & working with inputs' },
-  { week: 'Wk 4', label: 'Mini Projects', desc: 'Personal mini-builds + peer review' },
-  { week: 'Wk 5', label: 'Capstone Sprint', desc: 'Choose a real-world idea, scope it' },
-  { week: 'Wk 6', label: 'Build & Ship', desc: 'Build, test, polish your capstone' },
-  { week: 'Wk 7', label: 'Showcase', desc: 'Demo Day · awards · prizes · certificate' },
+  { week: 'Wk 3', label: 'Variables & Events', desc: 'Working with data, inputs, and interactions' },
+  { week: 'Wk 4', label: 'Mini Projects', desc: 'Guided builds + peer feedback' },
+  { week: 'Wk 5', label: 'Capstone Build', desc: 'Plan, design, and build your own app or game' },
+  { week: 'Wk 6', label: 'Polish & Showcase', desc: 'Finishing touches · Demo Day · awards · certificate' },
 ];
 
 const FAQ = [
   { q: 'When does the program start?', a: 'Monday, June 29, 2026. Sessions run twice a week throughout summer break — exact days will be confirmed at registration based on your time zone and cohort availability.' },
   { q: 'How is the price calculated for siblings?', a: '$245 per child after the standard 30% discount is already applied. When you register additional siblings, an extra 10% sibling discount stacks on the 2nd child, 15% on the 3rd, and you can apply a coupon code for further savings.' },
   { q: 'Will my child receive a certificate?', a: 'Yes — every learner who completes the capstone receives an official ScholarlyEcho Summer 2026 Certificate of Completion. Top capstones win prizes and a Hall of Builders feature.' },
-  { q: 'Is this 100% online?', a: 'Yes. Live, instructor-led sessions on Zoom, twice a week. Recordings provided so no session is missed. Project portfolios are hosted on GitHub & a public showcase page.' },
-  { q: 'Will my child be ready for coding competitions afterward?', a: 'Code Masters graduates regularly progress into our competition prep track — STEM Olympiads, Hour of Code challenges, and Africa Code Week. Logic Builders gain the foundation to step into Code Masters next term.' },
+  { q: 'Is this 100% online?', a: 'Yes. Live, instructor-led sessions on Zoom, twice a week. Recordings provided so no session is missed.' },
+  { q: 'What does my child walk away with?', a: 'A real app or game they built themselves, a certificate of completion, and a stronger foundation in coding. Logic Builders graduates are ready to step up to Code Masters; Code Masters graduates are ready for our term-time programs to keep building.' },
 ];
 
 export default function SummerCoding2026Page() {
@@ -127,7 +126,7 @@ export default function SummerCoding2026Page() {
 
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
             className="text-white/55 text-base sm:text-lg md:text-xl leading-relaxed max-w-2xl mx-auto mb-9">
-            Two age-tailored tracks. A capstone project worth showing off. A certificate that opens doors to scholarships, competitions and the AI-shaped future. <span className="text-white/80 font-semibold">Coding is the 4th literacy — give your child the head start.</span>
+            Two age-tailored tracks. A capstone project — a real app or game your child builds themselves. A certificate to celebrate the work. <span className="text-white/80 font-semibold">Coding is the 4th literacy — give your child the head start.</span>
           </motion.p>
 
           {/* Pricing pill */}
@@ -160,7 +159,7 @@ export default function SummerCoding2026Page() {
             className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-5 max-w-3xl mx-auto mt-14">
             {[
               { v: 'June 29', l: 'Starts 2026' },
-              { v: '7 wks', l: '2× per week' },
+              { v: '6 wks', l: '2× per week' },
               { v: '$245', l: 'After 30% off' },
               { v: '🏆 Prizes', l: 'For top capstones' },
             ].map((s, i) => (
@@ -258,7 +257,7 @@ export default function SummerCoding2026Page() {
               Reading. Writing. Math. <span className="bg-gradient-to-r from-brand-600 to-pink-600 bg-clip-text text-transparent">Now Code.</span>
             </h2>
             <p className="text-slate-500 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
-              In an AI-shaped world, code is no longer optional — it&apos;s how children translate ideas into reality, stand out for scholarships, and stay relevant for the careers of 2035.
+              In an AI-shaped world, code is no longer optional — it&apos;s how children translate ideas into reality and stay relevant for the careers of 2035.
             </p>
           </motion.div>
 
@@ -304,8 +303,8 @@ export default function SummerCoding2026Page() {
               { icon: Medal, t: 'Prizes for top builds', d: 'Cash, gear, and Hall-of-Builders feature' },
               { icon: Users, t: 'Small cohorts', d: 'Personal attention, real mentor feedback' },
               { icon: ShieldCheck, t: 'Safe & monitored', d: 'Background-checked instructors, parent updates' },
-              { icon: Star, t: 'Scholarship-ready portfolio', d: 'GitHub link + project showcase page' },
-              { icon: Flame, t: 'Olympiad prep onramp', d: 'Bridge into competition track for grads' },
+              { icon: Star, t: 'A project to show off', d: 'A real app or game your child built themselves' },
+              { icon: Flame, t: 'Onramp to next steps', d: 'Logic Builders → Code Masters → term programs' },
             ].map(({ icon: Icon, t, d }, i) => (
               <motion.div key={t}
                 initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
@@ -326,7 +325,7 @@ export default function SummerCoding2026Page() {
           <motion.div initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
             className="text-center mb-12">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-50 text-purple-700 text-[11px] font-bold mb-4 border border-purple-100">
-              <Calendar className="w-3 h-3" /> 7-Week Roadmap
+              <Calendar className="w-3 h-3" /> 6-Week Roadmap
             </div>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-900 tracking-[-0.03em] mb-3"
               style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
