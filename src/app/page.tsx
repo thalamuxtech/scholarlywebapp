@@ -13,7 +13,7 @@ import {
 import AnimatedCounter from '@/components/ui/AnimatedCounter';
 import SectionWrapper from '@/components/ui/SectionWrapper';
 import FreeTrialForm, { FreeTrialModal } from '@/components/FreeTrialForm';
-import TechLogos from '@/components/TechLogos';
+import { CourseStack } from '@/components/TechLogos';
 
 /* ─────────────────── Sub-components ─────────────────── */
 
@@ -370,10 +370,28 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ═══ TOOLS / TECH LOGOS ═══ */}
-      <section className="py-10 sm:py-14 bg-white border-b border-slate-100/60">
-        <div className="max-w-5xl mx-auto px-5 sm:px-8">
-          <TechLogos theme="light" eyebrow="The tools we teach with" />
+      {/* ═══ TOOLS / TECH LOGOS — CURRICULUM ═══ */}
+      <section className="py-14 sm:py-20 bg-white border-b border-slate-100/60">
+        <div className="max-w-6xl mx-auto px-5 sm:px-8 lg:px-10">
+          <SectionWrapper className="text-center mb-10">
+            <div className="section-tag mx-auto mb-4">
+              <Layers className="w-3.5 h-3.5" /> Our Full Curriculum
+            </div>
+            <h2 className="section-heading mb-3">From Block Coding to <span className="gradient-text">AI Engineering</span></h2>
+            <p className="section-subheading mx-auto">
+              Web · Mobile · Desktop · AI. Real tools, taught well — for every age and every level.
+            </p>
+          </SectionWrapper>
+
+          <CourseStack theme="light" />
+
+          <div className="mt-8 sm:mt-10 text-center">
+            <Link href="/contact"
+              className="inline-flex items-center gap-1.5 text-[13px] font-bold text-brand-600 hover:gap-2.5 transition-all">
+              <Sparkles className="w-3.5 h-3.5" />
+              Don&apos;t see your stack? We accept specialized requests <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
         </div>
       </section>
 

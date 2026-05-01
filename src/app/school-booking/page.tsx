@@ -11,7 +11,7 @@ import {
 import SectionWrapper from '@/components/ui/SectionWrapper';
 import { submitForm } from '@/lib/formSubmit';
 import { useToast } from '@/components/Toast';
-import TechLogos from '@/components/TechLogos';
+import { CourseStack } from '@/components/TechLogos';
 
 const programs = [
   {
@@ -161,10 +161,23 @@ export default function SchoolBookingPage() {
         </div>
       </section>
 
-      {/* Tools / Tech Logos */}
-      <section className="py-10 sm:py-14 bg-white border-t border-slate-100">
-        <div className="max-w-5xl mx-auto px-5 sm:px-8">
-          <TechLogos theme="light" eyebrow="The tools we teach with" />
+      {/* Tools / Tech Logos — full curriculum */}
+      <section className="py-14 sm:py-18 bg-white border-t border-slate-100">
+        <div className="max-w-6xl mx-auto px-5 sm:px-8 lg:px-10">
+          <SectionWrapper className="text-center mb-8 sm:mb-10">
+            <h3 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 tracking-[-0.02em] mb-2"
+              style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+              The full stack we bring to your school
+            </h3>
+            <p className="text-slate-500 text-[13.5px] sm:text-[14.5px] max-w-xl mx-auto">
+              From block coding for the youngest students to AI, mobile app development, and desktop builds for older cohorts.
+            </p>
+          </SectionWrapper>
+          <CourseStack theme="light" />
+          <div className="mt-8 text-center text-[13px] text-slate-500">
+            <Sparkles className="w-3.5 h-3.5 inline -mt-0.5 mr-1 text-amber-500" />
+            We also accept <span className="font-bold text-slate-700">specialized curriculum requests</span> tailored to your school&apos;s needs.
+          </div>
         </div>
       </section>
 

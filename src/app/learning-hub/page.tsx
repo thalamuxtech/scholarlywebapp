@@ -12,7 +12,7 @@ import {
 import SectionWrapper from '@/components/ui/SectionWrapper';
 import AnimatedCounter from '@/components/ui/AnimatedCounter';
 import FreeTrialForm, { FreeTrialModal } from '@/components/FreeTrialForm';
-import TechLogos from '@/components/TechLogos';
+import { CourseStack } from '@/components/TechLogos';
 
 const levels = [
   {
@@ -199,10 +199,40 @@ export default function LearningHubPage() {
         <div className="absolute bottom-0 left-0 right-0 h-px" style={{ background: 'linear-gradient(90deg, transparent 0%, rgba(110,66,255,0.3) 30%, rgba(168,85,247,0.4) 50%, rgba(236,72,153,0.3) 70%, transparent 100%)' }} />
       </section>
 
-      {/* ── Tools / Tech Logos ── */}
-      <section className="py-10 sm:py-14 bg-white border-b border-slate-100">
-        <div className="max-w-5xl mx-auto px-5 sm:px-8">
-          <TechLogos theme="light" eyebrow="The tools we teach with" />
+      {/* ── What We Teach (full curriculum) ── */}
+      <section className="py-16 sm:py-20 md:py-24 bg-white border-b border-slate-100">
+        <div className="max-w-6xl mx-auto px-5 sm:px-8 lg:px-10">
+          <SectionWrapper className="text-center mb-10 sm:mb-14">
+            <div className="section-tag mx-auto mb-5">
+              <Layers className="w-3.5 h-3.5" /> What We Teach
+            </div>
+            <h2 className="section-heading mb-4">From <span className="gradient-text">First Click</span> to <span className="gradient-text">Production Code</span></h2>
+            <p className="section-subheading mx-auto">
+              Block coding for the youngest learners — and a real curriculum stack for everything beyond:
+              web, mobile, desktop, and AI.
+            </p>
+          </SectionWrapper>
+
+          <CourseStack theme="light" />
+
+          {/* Specialized-request callout */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+            className="mt-10 sm:mt-12 rounded-2xl border-2 border-dashed border-brand-200 bg-gradient-to-br from-brand-50/60 via-white to-purple-50/40 p-5 sm:p-6 text-center">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white text-brand-700 text-[11px] font-bold mb-3 border border-brand-100">
+              <Sparkles className="w-3 h-3" /> Don&apos;t see what you need?
+            </div>
+            <h3 className="text-lg sm:text-xl font-extrabold text-slate-900 mb-2" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+              We accept specialized requests
+            </h3>
+            <p className="text-slate-500 text-[13.5px] max-w-xl mx-auto leading-relaxed mb-4">
+              From robotics curriculum design to a custom AI track for a research lab — if your learner has a specific tool, language or outcome in mind, we&apos;ll build the path with you.
+            </p>
+            <Link href="/contact"
+              className="inline-flex items-center gap-1.5 text-brand-600 font-bold text-sm hover:gap-2.5 transition-all">
+              Tell us what you need <ArrowRight className="w-4 h-4" />
+            </Link>
+          </motion.div>
         </div>
       </section>
 

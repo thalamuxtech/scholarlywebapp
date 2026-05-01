@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import SectionWrapper from '@/components/ui/SectionWrapper';
 import AnimatedCounter from '@/components/ui/AnimatedCounter';
+import { CourseStack } from '@/components/TechLogos';
 
 const values = [
   { icon: Lightbulb, title: 'Knowledge-First', desc: 'Every program begins with a clear answer to "what will this learner know or be able to do differently?" before a single session is designed.', color: 'bg-brand-100 text-brand-600' },
@@ -200,6 +201,26 @@ export default function AboutPage() {
               </motion.div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* ── What We Teach ── */}
+      <section className="py-14 sm:py-20 bg-white border-t border-slate-100">
+        <div className="max-w-6xl mx-auto px-5 sm:px-8 lg:px-10">
+          <SectionWrapper className="text-center mb-10">
+            <div className="section-tag mx-auto mb-4">
+              <Sparkles className="w-3.5 h-3.5" /> Our Curriculum at a Glance
+            </div>
+            <h2 className="section-heading mb-3">A Real Stack. <span className="gradient-text">Real Outcomes.</span></h2>
+            <p className="section-subheading mx-auto">
+              We teach what industry actually uses — across web, mobile, desktop, and AI.
+            </p>
+          </SectionWrapper>
+          <CourseStack theme="light" />
+          <p className="text-center text-[13px] text-slate-500 mt-8">
+            <Sparkles className="w-3.5 h-3.5 inline -mt-0.5 mr-1 text-amber-500" />
+            We also accept <span className="font-bold text-slate-700">specialized requests</span> — custom curriculum, advanced tracks, partner programs.
+          </p>
         </div>
       </section>
 
