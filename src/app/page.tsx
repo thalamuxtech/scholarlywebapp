@@ -125,8 +125,9 @@ export default function HomePage() {
   const heroOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
 
   // Partners list — kept for the (currently hidden) "Trusted by & in partnership with" marquee.
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line no-unused-vars
   const partners = ['Google.org', 'UNESCO', 'Microsoft', 'AWS Educate', 'She Code Africa', 'Andela', 'TechStars', 'ALX Africa', 'UNICEF', 'Meta for Developers', 'GitHub Education', 'African Union'];
+  void partners;
   const globalNumbers = [
     { v: 20, s: '+', l: 'Countries Served' },
     { v: 1200, s: '+', l: 'Youth Trained' },
