@@ -6,7 +6,7 @@ import {
   Sun, Code2, Sparkles, Trophy, Award, Calendar, Clock, Users,
   Rocket, Brain, GraduationCap, Star, CheckCircle2, ArrowRight,
   Globe, Zap, Target, Cpu, Lightbulb, BookOpen, Medal, Gift,
-  Flame, ShieldCheck, Layers
+  Flame, ShieldCheck, Layers, Heart, HandHeart
 } from 'lucide-react';
 import TechLogos from '@/components/TechLogos';
 
@@ -389,6 +389,52 @@ export default function SummerCoding2026Page() {
               </motion.details>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* ═══ SCHOLARSHIPS ═══ */}
+      <section className="py-16 sm:py-20 md:py-24 bg-gradient-to-b from-white via-rose-50/30 to-white">
+        <div className="max-w-4xl mx-auto px-5 sm:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+            className="relative rounded-3xl p-[1.5px] overflow-hidden"
+            style={{ background: 'linear-gradient(135deg, rgba(236,72,153,0.55), rgba(245,158,11,0.55), rgba(110,66,255,0.55))' }}>
+            <div className="relative bg-white rounded-[22px] p-7 sm:p-10 overflow-hidden">
+              <motion.div aria-hidden
+                initial={{ x: '-120%' }} animate={{ x: '120%' }}
+                transition={{ repeat: Infinity, repeatDelay: 6, duration: 2.6, ease: 'easeInOut' }}
+                className="pointer-events-none absolute inset-y-0 w-1/3"
+                style={{ background: 'linear-gradient(90deg, transparent, rgba(236,72,153,0.08), transparent)' }} />
+
+              <div className="grid sm:grid-cols-[auto_1fr] gap-5 sm:gap-7 items-start relative z-10">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-pink-500 via-rose-500 to-amber-500 flex items-center justify-center shadow-lg flex-shrink-0">
+                  <HandHeart className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
+                </div>
+                <div>
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-50 text-rose-700 text-[11px] font-bold mb-3 border border-rose-100">
+                    <Heart className="w-3 h-3" /> Need-Based Scholarships
+                  </div>
+                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 tracking-[-0.02em] mb-3"
+                    style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+                    Up to <span className="bg-gradient-to-r from-pink-600 to-amber-500 bg-clip-text text-transparent">5 Scholarships</span> Available This Year
+                  </h2>
+                  <p className="text-slate-600 leading-relaxed mb-5 text-[14px] sm:text-[15px]">
+                    Cost should never be the reason a child misses out. <span className="font-semibold text-slate-800">This year, we have up to 5 need-based scholarships and discounts available upon approval.</span> If your family could benefit, simply check the box on the registration form and tell us your story — we&apos;ll review every request personally and reply within a few days.
+                  </p>
+                  <div className="flex flex-wrap gap-2 mb-5">
+                    {['Single-parent households', 'Multi-child families', 'Refugee / displaced learners', 'Underserved communities'].map((t) => (
+                      <span key={t} className="px-2.5 py-1 rounded-md bg-rose-50 text-rose-700 text-[11px] font-bold border border-rose-100">{t}</span>
+                    ))}
+                  </div>
+                  <Link href="/summer-coding-2026/register"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-white text-sm font-bold shadow-md hover:-translate-y-0.5 transition-all"
+                    style={{ background: 'linear-gradient(135deg, #ec4899, #f59e0b)' }}>
+                    Apply with Scholarship Request <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </section>
 

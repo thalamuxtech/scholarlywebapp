@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   User, Mail, Phone, MapPin, GraduationCap, Loader2, Sparkles,
   Tag, X as XIcon, Percent, ShieldCheck, CheckCircle2, ArrowRight,
-  Sun, Cpu, Lightbulb, Calendar, Trophy, Award, Gift, Rocket, ArrowLeft
+  Sun, Cpu, Lightbulb, Calendar, Trophy, Award, Gift, Rocket, ArrowLeft, HandHeart, Heart
 } from 'lucide-react';
 import { submitForm } from '@/lib/formSubmit';
 import { useToast } from '@/components/Toast';
@@ -110,7 +110,7 @@ function RegisterContent() {
   const [coupon, setCoupon] = useState<Coupon | null>(null);
   const [couponState, setCouponState] = useState<'idle' | 'checking' | 'error'>('idle');
   const [couponError, setCouponError] = useState('');
-  const [submittedFee, setSubmittedFee] = useState<{ total: number; coupon: string | null } | null>(null);
+  const [submittedFee, setSubmittedFee] = useState<{ total: number; coupon: string | null; scholarship: boolean } | null>(null);
   const { showToast } = useToast();
 
   const sibCount = (() => {
@@ -193,7 +193,7 @@ function RegisterContent() {
     const result = await submitForm('summer-coding', payload);
     if (result.success) {
       if (coupon) await incrementCouponUse(coupon.id);
-      setSubmittedFee({ total: fee.total, coupon: fee.couponLabel });
+      setSubmittedFee({ total: fee.total, coupon: fee.couponLabel, scholarship: data.scholarshipRequest === 'yes' });
       setStatus('success');
       showToast('success', "You're registered! We'll email cohort details within 48 hours.");
     } else {
@@ -267,6 +267,22 @@ function RegisterContent() {
                 <p className="text-slate-500 mb-6 max-w-md mx-auto">
                   Welcome to ScholarlyEcho Summer 2026. Our team will email cohort schedule, payment instructions, and onboarding links within 48 hours.
                 </p>
+                {submittedFee?.scholarship && (
+                  <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}
+                    className="max-w-md mx-auto mb-6 rounded-2xl border border-rose-100 bg-gradient-to-br from-rose-50 to-amber-50 p-4 text-left">
+                    <div className="flex items-start gap-3">
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-pink-500 to-amber-500 flex items-center justify-center flex-shrink-0">
+                        <HandHeart className="w-4 h-4 text-white" />
+                      </div>
+                      <div>
+                        <div className="font-bold text-rose-700 text-[13px] mb-0.5">Scholarship request received</div>
+                        <p className="text-[12px] text-slate-600 leading-relaxed">
+                          Our admissions team will personally review your request and reply within <strong>3–5 business days</strong>. Please keep an eye on your inbox.
+                        </p>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
                 {submittedFee && (
                   <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
                     className="max-w-md mx-auto mb-8 rounded-2xl border border-emerald-100 bg-gradient-to-br from-emerald-50 to-white p-5 text-left shadow-sm">
@@ -541,6 +557,60 @@ function RegisterContent() {
                     onChange={(e) => setData({ ...data, notes: e.target.value })}
                     placeholder="Time-zone preferences, learning needs, questions..."
                     className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:outline-none focus:border-amber-400 transition-colors text-slate-800 placeholder:text-slate-300 text-sm resize-none" />
+                </div>
+
+                {/* ─── Scholarship Request ─── */}
+                <div className="rounded-2xl border-2 border-rose-100 bg-gradient-to-br from-rose-50/60 via-white to-amber-50/40 p-4 sm:p-5">
+                  <label className="flex items-start gap-3 cursor-pointer select-none">
+                    <input type="checkbox"
+                      checked={data.scholarshipRequest === 'yes'}
+                      onChange={(e) => setData({
+                        ...data,
+                        scholarshipRequest: e.target.checked ? 'yes' : '',
+                        ...(e.target.checked ? {} : { scholarshipReason: '' }),
+                      })}
+                      className="sr-only" />
+                    <span className={`mt-0.5 w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition-all ${data.scholarshipRequest === 'yes' ? 'bg-gradient-to-br from-pink-500 to-amber-500 border-transparent' : 'border-slate-300 bg-white'}`}>
+                      {data.scholarshipRequest === 'yes' && <CheckCircle2 className="w-3.5 h-3.5 text-white" strokeWidth={3} />}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
+                        <HandHeart className="w-4 h-4 text-rose-500" />
+                        <span className="font-bold text-slate-800 text-[13.5px]">Apply for a need-based scholarship or discount</span>
+                        <span className="px-2 py-0.5 rounded-md bg-rose-100 text-rose-700 text-[10px] font-extrabold uppercase tracking-wider">Up to 5 available</span>
+                      </div>
+                      <p className="text-[12px] text-slate-500 leading-relaxed">
+                        Cost should never be the reason a child misses out. Tell us your story below — we&apos;ll review every request personally and reply within a few days.
+                      </p>
+                    </div>
+                  </label>
+
+                  <AnimatePresence>
+                    {data.scholarshipRequest === 'yes' && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                        animate={{ opacity: 1, height: 'auto', marginTop: 16 }}
+                        exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="overflow-hidden">
+                        <label className="block text-[12px] font-bold text-slate-700 mb-1.5">
+                          <Heart className="w-3 h-3 inline mr-1 text-rose-500" />
+                          Why are you applying for a scholarship or discount? *
+                        </label>
+                        <textarea
+                          required={data.scholarshipRequest === 'yes'}
+                          rows={4}
+                          value={data.scholarshipReason || ''}
+                          onChange={(e) => setData({ ...data, scholarshipReason: e.target.value })}
+                          placeholder="Share your situation honestly — household circumstances, why this program matters for your child, anything that helps us evaluate fairly. Everything you write stays confidential."
+                          className="w-full px-4 py-3 rounded-xl border-2 border-rose-200 bg-white focus:outline-none focus:border-rose-400 transition-colors text-slate-800 placeholder:text-slate-300 text-sm resize-none" />
+                        <div className="mt-2 flex items-center gap-1.5 text-[11px] text-slate-500">
+                          <ShieldCheck className="w-3 h-3 text-emerald-500" />
+                          <span>Confidential · reviewed by our admissions team only · response within 3–5 days</span>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
 
                 {/* ─── Fee Summary + Coupon ─── */}
