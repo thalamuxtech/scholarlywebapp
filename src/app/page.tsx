@@ -124,6 +124,8 @@ export default function HomePage() {
   const heroY = useTransform(scrollYProgress, [0, 1], ['0%', '30%']);
   const heroOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
 
+  // Partners list — kept for the (currently hidden) "Trusted by & in partnership with" marquee.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const partners = ['Google.org', 'UNESCO', 'Microsoft', 'AWS Educate', 'She Code Africa', 'Andela', 'TechStars', 'ALX Africa', 'UNICEF', 'Meta for Developers', 'GitHub Education', 'African Union'];
   const globalNumbers = [
     { v: 20, s: '+', l: 'Countries Served' },
@@ -881,18 +883,17 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ═══ PARTNERS LOOP SLIDER ═══ */}
+      {/* ═══ PARTNERS LOOP SLIDER (hidden — re-enable when partners are confirmed) ═══ */}
+      {/*
       <section className="py-14 bg-white border-t border-slate-100/60 overflow-hidden">
         <p className="text-center text-slate-300 text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.18em] mb-8">
           Trusted by & in partnership with
         </p>
         <div className="relative">
-          {/* Fade edges */}
           <div className="absolute left-0 top-0 bottom-0 w-20 sm:w-32 z-10 pointer-events-none"
             style={{ background: 'linear-gradient(to right, #fff 0%, transparent 100%)' }} />
           <div className="absolute right-0 top-0 bottom-0 w-20 sm:w-32 z-10 pointer-events-none"
             style={{ background: 'linear-gradient(to left, #fff 0%, transparent 100%)' }} />
-
           <div className="flex animate-marquee whitespace-nowrap">
             {[...partners, ...partners].map((p, i) => (
               <span key={i}
@@ -905,6 +906,7 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+      */}
 
       {/* ═══ POWER HIGHLIGHTS ═══ */}
       <section className="py-16 sm:py-20 md:py-28 bg-white relative overflow-hidden">

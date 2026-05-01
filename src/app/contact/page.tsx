@@ -4,13 +4,14 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
-  Mail, MapPin, MessageSquare, School, Mic2,
+  Mail, MessageSquare, School, Mic2,
   Handshake, Send, CheckCircle2, ArrowRight, Sparkles,
   Globe, Brain, Clock, Users, Building2, FlaskConical
 } from 'lucide-react';
 import SectionWrapper from '@/components/ui/SectionWrapper';
 import { submitForm } from '@/lib/formSubmit';
 import { useToast } from '@/components/Toast';
+import { COUNTRIES, US_STATES, US_COUNTRY, OTHER_OPTION } from '@/lib/locations';
 
 const inquiryTypes = [
   { id: 'enrollment', label: 'Program Enrollment', icon: CheckCircle2, desc: 'Enroll a learner or get a free assessment' },
@@ -21,26 +22,29 @@ const inquiryTypes = [
   { id: 'general', label: 'General Inquiry', icon: MessageSquare, desc: 'Any other question or feedback' },
 ];
 
-const offices = [
-  { city: 'Maryland, USA', flag: '🇺🇸', role: 'Global HQ', email: 'scholarlyechos@gmail.com', type: 'Headquarters' },
-  { city: 'Abuja, Nigeria', flag: '🇳🇬', role: 'Africa Operations Hub', email: 'scholarlyechos@gmail.com', type: 'Regional Office' },
-];
-
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
   const [selectedType, setSelectedType] = useState('enrollment');
-  const [formData, setFormData] = useState({ name: '', email: '', country: '', role: 'Parent / Guardian', message: '' });
+  const [formData, setFormData] = useState<Record<string, string>>({ role: 'Parent / Guardian' });
   const [sending, setSending] = useState(false);
   const { showToast } = useToast();
+
+  const countrySel = formData.countrySelect || '';
+  const isCountryOther = countrySel === OTHER_OPTION;
+  const isUS = countrySel === US_COUNTRY;
+  const stateSel = formData.stateSelect || '';
+  const isStateOther = stateSel === OTHER_OPTION;
 
   const handleContactSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSending(true);
-    const result = await submitForm('contact', { ...formData, subject: selectedType });
+    const { countrySelect, stateSelect, countryOther, stateOther, ...clean } = formData;
+    void countrySelect; void stateSelect; void countryOther; void stateOther;
+    const result = await submitForm('contact', { ...clean, subject: selectedType });
     setSending(false);
     if (result.success) {
       setSubmitted(true);
-      setFormData({ name: '', email: '', country: '', role: 'Parent / Guardian', message: '' });
+      setFormData({ role: 'Parent / Guardian' });
       showToast('success', 'Message sent! Our team will respond within 24–48 hours.');
     } else {
       showToast('error', result.error || 'Failed to send. Please try again.');
@@ -71,30 +75,6 @@ export default function ContactPage() {
         <div className="absolute bottom-0 left-0 right-0 h-px" style={{ background: 'linear-gradient(90deg, transparent 0%, rgba(110,66,255,0.3) 30%, rgba(168,85,247,0.4) 50%, rgba(236,72,153,0.3) 70%, transparent 100%)' }} />
       </section>
 
-      {/* ── Office Locations ── */}
-      <section className="py-14 bg-white border-b border-slate-100">
-        <div className="max-w-5xl mx-auto px-5 sm:px-8 lg:px-10">
-          <div className="grid sm:grid-cols-2 gap-5 max-w-2xl">
-            {offices.map(({ city, flag, role, email, type }, i) => (
-              <motion.div key={city}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="flex items-start gap-4 p-5 rounded-2xl bg-slate-50 border border-slate-100 hover:border-brand-200 transition-colors group">
-                <div className="text-3xl flex-shrink-0">{flag}</div>
-                <div>
-                  <div className="text-[10px] font-bold uppercase tracking-[0.1em] text-slate-400 mb-0.5">{type}</div>
-                  <div className="font-bold text-slate-900 text-[15px] mb-0.5">{city}</div>
-                  <div className="text-slate-500 text-[12px] mb-2">{role}</div>
-                  <a href={`mailto:${email}`} className="text-brand-600 text-[12px] font-semibold hover:underline">{email}</a>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ── Contact Grid ── */}
       <section className="py-14 sm:py-18 md:py-24 bg-white">
         <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-10">
@@ -110,7 +90,6 @@ export default function ContactPage() {
                 <div className="space-y-4">
                   {[
                     { icon: Mail, label: 'General', value: 'scholarlyechos@gmail.com', href: 'mailto:scholarlyechos@gmail.com', color: 'bg-brand-100 text-brand-600' },
-                    { icon: MapPin, label: 'Headquarters', value: 'Maryland, United States', href: '#', color: 'bg-amber-100 text-amber-600' },
                     { icon: Globe, label: 'Operations', value: 'Online-first · Global reach', href: '#', color: 'bg-emerald-100 text-emerald-600' },
                   ].map(({ icon: Icon, label, value, href, color }) => (
                     <a key={label} href={href}
@@ -220,29 +199,30 @@ export default function ContactPage() {
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-[13px] font-bold text-slate-700 mb-1.5">Full Name *</label>
-                      <input required type="text" placeholder="Your full name" value={formData.name}
+                      <input required type="text" placeholder="Your full name" value={formData.name || ''}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                         className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:outline-none focus:border-brand-400 transition-colors text-slate-800 placeholder:text-slate-300 text-[14px]" />
                     </div>
                     <div>
                       <label className="block text-[13px] font-bold text-slate-700 mb-1.5">Email *</label>
-                      <input required type="email" placeholder="your@email.com" value={formData.email}
+                      <input required type="email" placeholder="your@email.com" value={formData.email || ''}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:outline-none focus:border-brand-400 transition-colors text-slate-800 placeholder:text-slate-300 text-[14px]" />
                     </div>
                   </div>
 
-                  {/* Country + Role */}
+                  {/* Phone + Role */}
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-[13px] font-bold text-slate-700 mb-1.5">Country</label>
-                      <input type="text" placeholder="e.g. United States, Nigeria, Kenya" value={formData.country}
-                        onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                      <label className="block text-[13px] font-bold text-slate-700 mb-1.5">Phone (WhatsApp ok)</label>
+                      <input type="tel" placeholder="+1 234 567 8900" value={formData.phone || ''}
+                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                         className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:outline-none focus:border-brand-400 transition-colors text-slate-800 placeholder:text-slate-300 text-[14px]" />
                     </div>
                     <div>
                       <label className="block text-[13px] font-bold text-slate-700 mb-1.5">You are a...</label>
-                      <select value={formData.role} onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                      <select value={formData.role || 'Parent / Guardian'}
+                        onChange={(e) => setFormData({ ...formData, role: e.target.value })}
                         className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:outline-none focus:border-brand-400 transition-colors text-slate-700 text-[14px] bg-white appearance-none cursor-pointer">
                         <option>Parent / Guardian</option>
                         <option>Student (self-enrolling)</option>
@@ -255,11 +235,66 @@ export default function ContactPage() {
                     </div>
                   </div>
 
+                  {/* Country + State */}
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-[13px] font-bold text-slate-700 mb-1.5">Country *</label>
+                      <select required value={countrySel}
+                        onChange={(e) => {
+                          const v = e.target.value;
+                          setFormData({
+                            ...formData,
+                            countrySelect: v,
+                            country: v === OTHER_OPTION ? (formData.countryOther || '') : v,
+                            stateSelect: '', state: '', stateOther: '',
+                          });
+                        }}
+                        className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:outline-none focus:border-brand-400 transition-colors text-slate-700 text-[14px] bg-white appearance-none cursor-pointer">
+                        <option value="">Select country...</option>
+                        {COUNTRIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                        <option value={OTHER_OPTION}>Other</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-[13px] font-bold text-slate-700 mb-1.5">State / Region</label>
+                      {isUS ? (
+                        <select value={stateSel}
+                          onChange={(e) => {
+                            const v = e.target.value;
+                            setFormData({ ...formData, stateSelect: v, state: v === OTHER_OPTION ? (formData.stateOther || '') : v });
+                          }}
+                          className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:outline-none focus:border-brand-400 transition-colors text-slate-700 text-[14px] bg-white appearance-none cursor-pointer">
+                          <option value="">Select state...</option>
+                          {US_STATES.map((s) => <option key={s} value={s}>{s}</option>)}
+                          <option value={OTHER_OPTION}>Other</option>
+                        </select>
+                      ) : (
+                        <input type="text" placeholder="e.g. Lagos, London" value={formData.state || ''}
+                          onChange={(e) => setFormData({ ...formData, state: e.target.value, stateOther: e.target.value })}
+                          className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:outline-none focus:border-brand-400 transition-colors text-slate-800 placeholder:text-slate-300 text-[14px]" />
+                      )}
+                    </div>
+                  </div>
+                  {isCountryOther && (
+                    <div>
+                      <input type="text" required placeholder="Enter your country" value={formData.countryOther || ''}
+                        onChange={(e) => setFormData({ ...formData, countryOther: e.target.value, country: e.target.value })}
+                        className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:outline-none focus:border-brand-400 transition-colors text-slate-800 placeholder:text-slate-300 text-[14px]" />
+                    </div>
+                  )}
+                  {isUS && isStateOther && (
+                    <div>
+                      <input type="text" required placeholder="Enter your state" value={formData.stateOther || ''}
+                        onChange={(e) => setFormData({ ...formData, stateOther: e.target.value, state: e.target.value })}
+                        className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:outline-none focus:border-brand-400 transition-colors text-slate-800 placeholder:text-slate-300 text-[14px]" />
+                    </div>
+                  )}
+
                   {/* Message */}
                   <div>
                     <label className="block text-[13px] font-bold text-slate-700 mb-1.5">Message *</label>
                     <textarea required rows={5} placeholder="Tell us what you need, and we'll find the best path forward..."
-                      value={formData.message} onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                      value={formData.message || ''} onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                       className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:outline-none focus:border-brand-400 transition-colors text-slate-800 placeholder:text-slate-300 resize-none text-[14px]" />
                   </div>
 
