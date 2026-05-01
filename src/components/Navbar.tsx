@@ -8,13 +8,15 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, ArrowRight, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-const navLinks = [
+type NavLink = { label: string; href: string; highlight?: boolean };
+const navLinks: NavLink[] = [
   { label: 'Learn', href: '/learning-hub' },
   { label: 'Inspire', href: '/spotlight-media' },
   { label: 'Engage', href: '/edutainment' },
   { label: 'Impact', href: '/impact' },
   { label: 'About', href: '/about' },
   { label: 'Events', href: '/events' },
+  { label: 'Summer 2026', href: '/summer-coding-2026', highlight: true },
 ];
 
 export default function Navbar() {
@@ -95,12 +97,22 @@ export default function Navbar() {
                   key={link.label}
                   href={link.href}
                   className={cn(
-                    'relative px-3.5 py-2 text-[13.5px] font-medium tracking-[-0.01em] transition-all duration-200 rounded-lg',
-                    scrolled
+                    'relative px-3.5 py-2 text-[13.5px] font-medium tracking-[-0.01em] transition-all duration-200 rounded-lg inline-flex items-center gap-1.5',
+                    link.highlight && !active && (scrolled
+                      ? 'text-amber-700 bg-gradient-to-r from-amber-50 to-rose-50 border border-amber-100 hover:from-amber-100 hover:to-rose-100'
+                      : 'text-amber-200 bg-gradient-to-r from-amber-500/15 to-rose-500/15 border border-amber-300/20 hover:from-amber-500/25 hover:to-rose-500/25'),
+                    !link.highlight && (scrolled
                       ? active ? 'text-brand-600 bg-brand-50' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
-                      : active ? 'text-white bg-white/10' : 'text-white/70 hover:text-white hover:bg-white/[0.06]'
+                      : active ? 'text-white bg-white/10' : 'text-white/70 hover:text-white hover:bg-white/[0.06]'),
+                    link.highlight && active && (scrolled ? 'text-brand-600 bg-brand-50' : 'text-white bg-white/10')
                   )}
                 >
+                  {link.highlight && (
+                    <span className="relative flex h-1.5 w-1.5">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
+                      <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-amber-500" />
+                    </span>
+                  )}
                   {link.label}
                 </Link>
               );

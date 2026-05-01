@@ -1,7 +1,7 @@
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from './firebase';
 
-export type FormType = 'newsletter' | 'contact' | 'waitlist' | 'enrollment' | 'free-trial';
+export type FormType = 'newsletter' | 'contact' | 'waitlist' | 'enrollment' | 'free-trial' | 'summer-coding';
 
 export async function submitForm(formType: FormType, data: Record<string, string>): Promise<{ success: boolean; id?: string; error?: string }> {
   try {
