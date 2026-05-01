@@ -11,6 +11,7 @@ import {
 import SectionWrapper from '@/components/ui/SectionWrapper';
 import { submitForm } from '@/lib/formSubmit';
 import { useToast } from '@/components/Toast';
+import TechLogos from '@/components/TechLogos';
 
 const programs = [
   {
@@ -157,6 +158,13 @@ export default function SchoolBookingPage() {
               );
             })}
           </div>
+        </div>
+      </section>
+
+      {/* Tools / Tech Logos */}
+      <section className="py-10 sm:py-14 bg-white border-t border-slate-100">
+        <div className="max-w-5xl mx-auto px-5 sm:px-8">
+          <TechLogos theme="light" eyebrow="The tools we teach with" />
         </div>
       </section>
 

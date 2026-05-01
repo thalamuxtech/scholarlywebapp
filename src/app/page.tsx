@@ -13,6 +13,7 @@ import {
 import AnimatedCounter from '@/components/ui/AnimatedCounter';
 import SectionWrapper from '@/components/ui/SectionWrapper';
 import FreeTrialForm, { FreeTrialModal } from '@/components/FreeTrialForm';
+import TechLogos from '@/components/TechLogos';
 
 /* ─────────────────── Sub-components ─────────────────── */
 
@@ -366,6 +367,13 @@ export default function HomePage() {
                 delay={i * 0.1} />
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* ═══ TOOLS / TECH LOGOS ═══ */}
+      <section className="py-10 sm:py-14 bg-white border-b border-slate-100/60">
+        <div className="max-w-5xl mx-auto px-5 sm:px-8">
+          <TechLogos theme="light" eyebrow="The tools we teach with" />
         </div>
       </section>
 

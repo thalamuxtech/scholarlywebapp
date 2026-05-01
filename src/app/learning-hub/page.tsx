@@ -7,11 +7,12 @@ import {
   BookOpen, Code2, Users, Clock, Award, CheckCircle2,
   ArrowRight, Star, Sparkles, ChevronRight, Brain,
   Monitor, UserCheck, CalendarDays, Zap, Cpu, Layers,
-  Rocket, Globe, Trophy, Target, Play, Palette, Wand2, GraduationCap, Briefcase
+  Rocket, Trophy, Target, Play, Palette, Wand2, GraduationCap, Briefcase
 } from 'lucide-react';
 import SectionWrapper from '@/components/ui/SectionWrapper';
 import AnimatedCounter from '@/components/ui/AnimatedCounter';
 import FreeTrialForm, { FreeTrialModal } from '@/components/FreeTrialForm';
+import TechLogos from '@/components/TechLogos';
 
 const levels = [
   {
@@ -196,6 +197,13 @@ export default function LearningHubPage() {
           </div>
         </div>
         <div className="absolute bottom-0 left-0 right-0 h-px" style={{ background: 'linear-gradient(90deg, transparent 0%, rgba(110,66,255,0.3) 30%, rgba(168,85,247,0.4) 50%, rgba(236,72,153,0.3) 70%, transparent 100%)' }} />
+      </section>
+
+      {/* ── Tools / Tech Logos ── */}
+      <section className="py-10 sm:py-14 bg-white border-b border-slate-100">
+        <div className="max-w-5xl mx-auto px-5 sm:px-8">
+          <TechLogos theme="light" eyebrow="The tools we teach with" />
+        </div>
       </section>
 
       {/* ── Coders Ladder (visual) ── */}
@@ -570,21 +578,22 @@ export default function LearningHubPage() {
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             <SectionWrapper>
               <div className="section-tag mb-5" style={{ background: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.8)', borderColor: 'rgba(255,255,255,0.15)' }}>
-                <Globe className="w-3.5 h-3.5" /> Global Tutor Network
+                <Users className="w-3.5 h-3.5" /> Teachers Who Actually Teach
               </div>
               <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white mb-5" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
-                Mentored by Practitioners, Not Just Teachers
+                Patient. Experienced. <span className="gradient-text-animated">Genuinely Invested.</span>
               </h2>
               <p className="text-white/60 leading-relaxed mb-7">
-                Every tutor at ScholarlyEcho is a working professional — software engineers at top companies,
-                AI researchers, startup founders, and educational technologists from across the world.
+                Our instructors have spent years in classrooms — not just behind a screen. They know how
+                to break down hard ideas, manage a live cohort, and meet a child where they are. The
+                approach is simple: <span className="text-white/85 font-semibold">&ldquo;let&apos;s work on it together&rdquo;</span> — every week, every project.
               </p>
               <div className="grid grid-cols-2 gap-4">
                 {[
-                  { stat: '50+', label: 'Expert tutors globally' },
-                  { stat: '15+', label: 'Countries represented' },
-                  { stat: '4.9/5', label: 'Average tutor rating' },
-                  { stat: '100%', label: 'Industry-vetted' },
+                  { stat: 'Years', label: 'Of coding instruction experience' },
+                  { stat: 'Live', label: 'Real classroom management' },
+                  { stat: '1:1', label: 'Time when learners need it' },
+                  { stat: 'Patient', label: 'Encouraging, never rushed' },
                 ].map(({ stat, label }) => (
                   <div key={label} className="glass rounded-2xl p-4 border border-white/8">
                     <div className="text-white font-extrabold text-xl mb-0.5" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>{stat}</div>
@@ -595,26 +604,24 @@ export default function LearningHubPage() {
             </SectionWrapper>
 
             <SectionWrapper delay={0.2}>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 gap-3">
                 {[
-                  { init: 'AK', role: 'AI Engineer', company: 'Google DeepMind', color: 'from-brand-500 to-purple-600' },
-                  { init: 'RT', role: 'Full-Stack Dev', company: 'Stripe', color: 'from-amber-400 to-orange-500' },
-                  { init: 'FM', role: 'ML Engineer', company: 'Microsoft', color: 'from-emerald-400 to-teal-600' },
-                  { init: 'NO', role: 'Startup Founder', company: 'YC Alum', color: 'from-pink-500 to-rose-600' },
-                  { init: 'JA', role: 'Product Designer', company: 'Figma', color: 'from-cyan-400 to-blue-500' },
-                  { init: 'SA', role: 'Data Scientist', company: 'Meta', color: 'from-violet-500 to-purple-700' },
-                ].map(({ init, role, company, color }, i) => (
-                  <motion.div key={init}
-                    initial={{ opacity: 0, scale: 0.8 }}
+                  { icon: Award, title: 'Years in the classroom', desc: 'Multi-year track record teaching coding to children — not weekend hobbyists.', color: 'from-brand-500 to-purple-600' },
+                  { icon: Users, title: 'Live cohort management', desc: 'Real practice running engaged, well-paced sessions with mixed-skill groups.', color: 'from-amber-400 to-orange-500' },
+                  { icon: UserCheck, title: '&ldquo;Let&apos;s work on it together&rdquo;', desc: 'Side-by-side problem-solving — never lecturing past a stuck learner.', color: 'from-emerald-400 to-teal-600' },
+                  { icon: Sparkles, title: 'Teachers who inspire', desc: 'Instructors who make children excited to come back to the next session.', color: 'from-pink-500 to-rose-600' },
+                ].map(({ icon: Icon, title, desc, color }, i) => (
+                  <motion.div key={title}
+                    initial={{ opacity: 0, scale: 0.9 }}
                     whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }}
-                    transition={{ delay: i * 0.1 }}
-                    className="glass rounded-2xl p-4 text-center border border-white/8 hover:border-white/20 transition-colors">
-                    <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${color} flex items-center justify-center text-white font-bold text-sm mx-auto mb-2`}>
-                      {init}
+                    transition={{ delay: i * 0.08 }}
+                    className="glass rounded-2xl p-4 border border-white/8 hover:border-white/20 transition-colors">
+                    <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${color} flex items-center justify-center mb-3 shadow-md`}>
+                      <Icon className="w-5 h-5 text-white" />
                     </div>
-                    <div className="text-white font-semibold text-[11px]">{role}</div>
-                    <div className="text-white/40 text-[10px]">{company}</div>
+                    <div className="text-white font-bold text-[13px] mb-1" dangerouslySetInnerHTML={{ __html: title }} />
+                    <div className="text-white/50 text-[11px] leading-relaxed">{desc}</div>
                   </motion.div>
                 ))}
               </div>

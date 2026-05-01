@@ -8,6 +8,7 @@ import {
   Globe, Zap, Target, Cpu, Lightbulb, BookOpen, Medal, Gift,
   Flame, ShieldCheck, Layers
 } from 'lucide-react';
+import TechLogos from '@/components/TechLogos';
 
 const TRACKS = [
   {
@@ -241,6 +242,13 @@ export default function SummerCoding2026Page() {
               );
             })}
           </div>
+        </div>
+      </section>
+
+      {/* ═══ TOOLS / TECH LOGOS ═══ */}
+      <section className="py-10 sm:py-14 bg-white border-t border-slate-100">
+        <div className="max-w-5xl mx-auto px-5 sm:px-8">
+          <TechLogos theme="light" eyebrow="Built with industry-grade learning tools" />
         </div>
       </section>
 
