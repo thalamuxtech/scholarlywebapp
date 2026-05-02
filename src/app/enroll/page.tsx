@@ -206,7 +206,7 @@ export default function EnrollPage() {
           </motion.h1>
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
             className="text-white/40 text-base sm:text-lg leading-relaxed max-w-xl mx-auto">
-            Select a program below to get started. Each form takes less than 2 minutes.
+            Select a program below to get started. Each form takes less than 2 minutes. Homeschooling families welcome — flexible schedules and sibling discounts available.
           </motion.p>
         </div>
         <div className="absolute bottom-0 left-0 right-0 h-px"

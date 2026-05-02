@@ -84,7 +84,7 @@ export default function Footer() {
           <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
             <div className="max-w-md">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 text-white/80 text-xs font-semibold mb-3">
-                <Globe className="w-3 h-3" /> Serving 20+ countries globally
+                <Globe className="w-3 h-3" /> Serving homeschoolers & schools in 5+ countries
               </div>
               <h3 className="text-2xl md:text-3xl font-bold text-white mb-2"
                 style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>

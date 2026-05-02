@@ -21,8 +21,8 @@ export const metadata: Metadata = {
     apple: '/logo-black.png',
   },
   description:
-    'ScholarlyEcho equips young learners with practical skills, inspires through authentic stories, and engages through educational entertainment. Learn · Inspire · Engage.',
-  keywords: ['youth education', 'coding for kids', 'Nigeria', 'edutainment', 'scholarships', 'learning hub'],
+    'ScholarlyEcho equips young learners with practical skills, inspires through authentic stories, and engages through educational entertainment. Trusted by homeschooling families worldwide for cognitive development and 21st-century skills. Learn · Inspire · Engage.',
+  keywords: ['youth education', 'coding for kids', 'homeschooling', 'homeschool curriculum', 'homeschool families', 'brain development', 'cognitive development', 'Nigeria', 'edutainment', 'scholarships', 'learning hub'],
   openGraph: {
     title: 'ScholarlyEcho — Youth Empowerment Ecosystem',
     description: 'Empowering youths with tools, exposure, and opportunities to move from confusion to clarity — and personal success to community development.',

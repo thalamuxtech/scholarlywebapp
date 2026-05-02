@@ -127,7 +127,7 @@ export default function SummerCoding2026Page() {
 
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
             className="text-white/55 text-base sm:text-lg md:text-xl leading-relaxed max-w-2xl mx-auto mb-9">
-            Two age-tailored tracks. A capstone project — a real app or game your child builds themselves. A certificate to celebrate the work. <span className="text-white/80 font-semibold">Coding is the 4th literacy — give your child the head start.</span>
+            Two age-tailored tracks. A capstone project — a real app or game your child builds themselves. A certificate to celebrate the work. <span className="text-white/80 font-semibold">Coding is the 4th literacy — give your child the head start.</span> <span className="text-white/70">A perfect summer for homeschooling families who want structured, brain-building skill development.</span>
           </motion.p>
 
           {/* Pricing pill */}

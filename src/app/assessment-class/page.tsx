@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import {
   Sparkles, ArrowRight, CheckCircle2, Clock, Users, Brain,
   Trophy, GraduationCap, Briefcase, Star, Shield, Zap,
-  Calendar, MessageCircle, Award, Target, Gift, Rocket
+  Calendar, MessageCircle, Award, Target, Gift, Rocket, Home
 } from 'lucide-react';
 import SectionWrapper from '@/components/ui/SectionWrapper';
 import FreeTrialForm from '@/components/FreeTrialForm';
@@ -26,6 +26,7 @@ const what = [
 ];
 
 const audience = [
+  { icon: Home, title: 'Homeschooling families ⭐', age: 'All ages', desc: 'Our #1 community. Flexible scheduling, self-paced progression, parent dashboards, sibling discounts, and a curriculum designed to fuel cognitive and brain development.', gradient: 'from-amber-400 to-orange-500' },
   { icon: GraduationCap, title: 'Curious beginners', age: 'Ages 5+', desc: 'No experience needed. We start with visual coding (Scratch, Blockly) and storytelling.', gradient: 'from-teal-400 to-emerald-500' },
   { icon: Brain, title: 'Aspiring builders', age: 'Ages 11+', desc: 'Ready for Python, web dev, mobile apps, and the no-code creator pathway.', gradient: 'from-brand-400 to-blue-500' },
   { icon: Trophy, title: 'Ambitious teens', age: 'Ages 15+', desc: 'AI Developer, Product Builder, competition prep and scholarship-ready portfolios.', gradient: 'from-violet-500 to-purple-600' },
@@ -111,7 +112,7 @@ export default function AssessmentClassPage() {
                   className="text-white/55 text-[1rem] sm:text-[1.05rem] leading-[1.8] mb-8 max-w-[520px]">
                   A free, no-obligation 30-minute assessment with a certified ScholarlyEcho mentor.
                   We&apos;ll evaluate your child&apos;s skills, recommend the perfect Coders Ladder pathway,
-                  and answer every question — before you commit to anything.
+                  and answer every question — before you commit to anything. Ideal for homeschooling families seeking brain-building, screen-time-optimal learning.
                 </motion.p>
 
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
@@ -327,7 +328,7 @@ export default function AssessmentClassPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 items-center">
             {[
               { icon: Shield, label: 'Background-checked mentors', color: 'text-brand-500' },
-              { icon: Star, label: '4.9/5 from 1,200+ families', color: 'text-amber-500' },
+              { icon: Star, label: '4.9/5 from 200+ families', color: 'text-amber-500' },
               { icon: Zap, label: '30-min focused session', color: 'text-purple-500' },
               { icon: Calendar, label: 'Schedule that fits you', color: 'text-emerald-500' },
             ].map(({ icon: Icon, label, color }, i) => (

@@ -411,7 +411,7 @@ export default function FreeTrialForm({ variant = 'card', onClose, compact = fal
         Schedule Your FREE <span className="gradient-text">No-Obligation</span> Assessment Class
       </h3>
       <p className="text-slate-500 text-[13px] leading-relaxed">
-        Meet a certified mentor, get a personalized skill pathway, and see why learners from 20+ countries love ScholarlyEcho — at zero cost.
+        Meet a certified mentor, get a personalized skill pathway, and see why homeschooling families and learners from 5+ countries love ScholarlyEcho — at zero cost.
       </p>
     </div>
   );

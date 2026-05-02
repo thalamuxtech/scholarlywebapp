@@ -52,7 +52,7 @@ const benefits = [
   { icon: Trophy, title: 'Project-Based Learning', desc: 'Every program ends with students presenting real projects they built — apps, websites, AI tools, and games.' },
   { icon: GraduationCap, title: 'Final Challenge', desc: 'Each program culminates in a challenge or hackathon where students compete, collaborate, and showcase their work.' },
   { icon: Users, title: 'Small Groups', desc: 'Classes of 5–20 students ensure personalized attention. Every student gets hands-on support from certified instructors.' },
-  { icon: Globe, title: 'Global Curriculum', desc: 'Our 5-level Coders Ladder is used in 20+ countries. Project-based, age-appropriate, and constantly updated.' },
+  { icon: Globe, title: 'Global Curriculum', desc: 'Our 5-level Coders Ladder is trusted by schools and homeschooling families across 5+ countries. Project-based, age-appropriate, and constantly updated.' },
   { icon: Sparkles, title: 'Certified Instructors', desc: 'Google CS-First certified instructors with 12+ years of coding education experience and advanced CS/AI degrees.' },
   { icon: Calendar, title: 'Flexible Scheduling', desc: 'Programs designed around school calendars — summer, term-time, holidays, or custom schedules.' },
 ];

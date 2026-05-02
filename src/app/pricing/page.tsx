@@ -129,7 +129,7 @@ export default function PricingPage() {
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
             className="text-white/45 text-base sm:text-lg mb-8 max-w-xl mx-auto leading-relaxed">
             World-class youth education at accessible prices. Pay monthly, annually, or by term.
-            No hidden fees. Cancel anytime.
+            No hidden fees. Cancel anytime. <span className="text-white/70">Homeschooling families welcome — sibling discounts stack across multiple children.</span>
           </motion.p>
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}
             className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500/15 border border-emerald-400/25 text-emerald-300 text-[13px] font-semibold">
@@ -341,6 +341,7 @@ export default function PricingPage() {
               { q: 'Is there a free trial?', a: 'Every new learner gets a free assessment session and a free introductory class before committing to any plan.' },
               { q: 'Do you support currencies other than USD?', a: 'All plans are priced in USD for global consistency. We support international card payments and regional payment methods via Paystack and Flutterwave for African learners.' },
               { q: 'Are group sessions live or recorded?', a: 'All sessions are live with real-time tutor interaction. Sessions are also recorded and available in your dashboard for 30 days.' },
+              { q: 'Do you support homeschooling families?', a: 'Yes — homeschoolers are one of our fastest-growing communities. We offer flexible weekday/weekend scheduling, self-paced progression, parent-visible dashboards, and stacking sibling discounts so multi-child homeschool families can enrol affordably. Our curriculum is intentionally designed for cognitive and brain development — strengthening logic, focus, creativity, and problem-solving.' },
             ].map(({ q, a }, i) => (
               <motion.details key={i}
                 initial={{ opacity: 0, y: 12 }}

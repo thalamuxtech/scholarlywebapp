@@ -8,7 +8,8 @@ import {
   ArrowRight, BookOpen, Mic2, Gamepad2, Star, Users, Award,
   TrendingUp, CheckCircle2, Play, ChevronRight, Sparkles,
   Code2, Globe, Trophy, Lightbulb, Brain, Zap,
-  Layers, Target, BarChart3, Rocket, Heart, GraduationCap, Briefcase
+  Layers, Target, BarChart3, Rocket, Heart, GraduationCap, Briefcase,
+  Home, Calendar, Eye, Shield
 } from 'lucide-react';
 import AnimatedCounter from '@/components/ui/AnimatedCounter';
 import SectionWrapper from '@/components/ui/SectionWrapper';
@@ -129,8 +130,8 @@ export default function HomePage() {
   const partners = ['Google.org', 'UNESCO', 'Microsoft', 'AWS Educate', 'She Code Africa', 'Andela', 'TechStars', 'ALX Africa', 'UNICEF', 'Meta for Developers', 'GitHub Education', 'African Union'];
   void partners;
   const globalNumbers = [
-    { v: 20, s: '+', l: 'Countries Served' },
-    { v: 1200, s: '+', l: 'Youth Trained' },
+    { v: 5, s: '+', l: 'Countries Served' },
+    { v: 200, s: '+', l: 'Youth Trained' },
     { v: 98, s: '%', l: 'Satisfaction Rate' },
     { v: 300, s: '+', l: 'Projects Built' },
   ];
@@ -201,7 +202,7 @@ export default function HomePage() {
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
                   </span>
-                  Serving 20+ countries across Africa & globally
+                  The #1 coding & AI program for homeschooling families · 5+ countries
                 </motion.div>
 
                 <motion.h1 initial={{ opacity: 0, y: 32 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.1 }}
@@ -215,10 +216,17 @@ export default function HomePage() {
                 </motion.h1>
 
                 <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: 0.25 }}
-                  className="text-[1rem] sm:text-[1.05rem] text-white/50 leading-[1.8] mb-10 max-w-[480px]">
+                  className="text-[1rem] sm:text-[1.05rem] text-white/50 leading-[1.8] mb-6 max-w-[480px]">
                   Coding is the 4th literacy. ScholarlyEcho teaches young people to think critically,
                   solve real-world problems, and build with technology — developing life skills that go far beyond the screen.
+                  <span className="block mt-3 text-white/65"><span className="text-white font-semibold">Loved by homeschooling families</span> — flexible pacing, parent-friendly progress tracking, and rich cognitive development for growing minds.</span>
                 </motion.p>
+
+                <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }}
+                  className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full border border-emerald-400/25 bg-emerald-500/10 text-emerald-300 text-[12px] font-semibold mb-8">
+                  <Brain className="w-3.5 h-3.5" />
+                  Homeschool-friendly · Built for brain development
+                </motion.div>
 
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.35 }}
                   className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4">
@@ -248,7 +256,7 @@ export default function HomePage() {
                     ))}
                   </div>
                   <div className="text-white/50 text-[13px]">
-                    <span className="text-white font-bold">1,200+</span> learners worldwide
+                    <span className="text-white font-bold">200+</span> learners worldwide
                   </div>
                   <div className="h-4 w-px bg-white/10" />
                   <div className="flex items-center gap-1">
@@ -325,7 +333,7 @@ export default function HomePage() {
                       <Globe className="w-4 h-4 text-amber-400" />
                     </div>
                     <div>
-                      <div className="text-[11px] font-bold text-amber-300">20+ Countries</div>
+                      <div className="text-[11px] font-bold text-amber-300">5+ Countries</div>
                       <div className="text-[10px] text-white/40">Global learner community</div>
                     </div>
                   </div>
@@ -338,10 +346,17 @@ export default function HomePage() {
                   </div>
                 </FloatingChip>
 
+                <FloatingChip className="top-1/2 -right-2 px-3.5 py-2.5 text-white" delay={1.3}>
+                  <div className="flex items-center gap-2 text-[12px]">
+                    <GraduationCap className="w-4 h-4 text-emerald-400" />
+                    <span className="text-white/70">Homeschool-friendly</span>
+                  </div>
+                </FloatingChip>
+
                 <FloatingChip className="top-24 -right-4 px-3.5 py-2.5 text-white" delay={1.0}>
                   <div className="flex items-center gap-2 text-[12px]">
                     <Users className="w-4 h-4 text-purple-400" />
-                    <span className="text-white/70"><span className="font-bold text-white">1,200+</span> enrolled</span>
+                    <span className="text-white/70"><span className="font-bold text-white">200+</span> enrolled</span>
                   </div>
                 </FloatingChip>
               </div>
@@ -369,6 +384,58 @@ export default function HomePage() {
                 color={['gradient-text', 'gradient-text-gold', 'gradient-text-green', 'gradient-text'][i]}
                 delay={i * 0.1} />
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ HOMESCHOOL FAMILIES — FLAGSHIP AUDIENCE ═══ */}
+      <section className="py-16 sm:py-20 md:py-24 relative overflow-hidden"
+        style={{ background: 'linear-gradient(165deg, #fff7ed 0%, #fef3c7 50%, #fff7ed 100%)' }}>
+        <div className="absolute top-0 left-0 right-0 h-px"
+          style={{ background: 'linear-gradient(90deg, transparent 0%, rgba(245,158,11,0.4) 50%, transparent 100%)' }} />
+        <div className="max-w-6xl mx-auto px-5 sm:px-8 lg:px-10 relative">
+          <SectionWrapper className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/15 border border-amber-500/25 text-amber-700 text-[13px] font-semibold mb-5">
+              <Home className="w-3.5 h-3.5" /> Built for Homeschooling Families
+            </div>
+            <h2 className="section-heading mb-4">
+              The <span className="gradient-text">#1 Coding & AI Program</span> for Homeschoolers
+            </h2>
+            <p className="section-subheading mx-auto max-w-2xl">
+              Homeschooling families are at the heart of what we do. Flexible, parent-led, and engineered for serious brain development — our curriculum slots into any homeschool rhythm.
+            </p>
+          </SectionWrapper>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 mb-10">
+            {[
+              { icon: Calendar, title: 'Truly Flexible Scheduling', desc: 'Weekday, weekend, morning or evening slots. Self-paced progression so your homeschool calendar always wins.' },
+              { icon: Brain, title: 'Brain Development First', desc: 'Coding strengthens logic, working memory, focus, and creative problem-solving — the foundations of a sharp young mind.' },
+              { icon: Users, title: 'Sibling Discounts That Stack', desc: 'Built for multi-child homeschool families. Add siblings affordably — the more children, the bigger the savings.' },
+              { icon: Eye, title: 'Parent-Visible Progress', desc: 'Real-time dashboards so parents stay fully in the loop — see milestones, projects, and skill growth at a glance.' },
+              { icon: Shield, title: 'Safe, Screen-Time-Optimal', desc: 'Live mentors, vetted instructors, and a child-safety-first environment. Quality screen time you can feel good about.' },
+              { icon: Trophy, title: 'Real Projects, Real Portfolios', desc: 'From Scratch animations to AI apps. Homeschool learners graduate with portfolios that open scholarship & competition doors.' },
+            ].map(({ icon: Icon, title, desc }, i) => (
+              <motion.div key={title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.07 }}
+                className="rounded-2xl bg-white p-6 border border-amber-100 hover:border-amber-300 hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-md">
+                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center mb-4 shadow-md">
+                  <Icon className="w-5 h-5 text-white" />
+                </div>
+                <div className="font-bold text-slate-900 mb-2 text-[15px]">{title}</div>
+                <div className="text-slate-600 text-[13px] leading-relaxed">{desc}</div>
+              </motion.div>
+            ))}
+          </div>
+
+          <div className="text-center">
+            <Link href="/assessment-class"
+              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold text-[15px] shadow-lg shadow-orange-500/30 hover:-translate-y-0.5 transition-all">
+              Book a FREE Homeschool Assessment <ArrowRight className="w-5 h-5" />
+            </Link>
+            <div className="mt-3 text-slate-500 text-[12px]">No card needed · 30-minute Zoom · Custom plan you keep</div>
           </div>
         </div>
       </section>
@@ -746,10 +813,10 @@ export default function HomePage() {
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-5 mb-14">
             {[
-              { region: 'Sub-Saharan Africa', countries: '12 countries', flag: '🌍', learners: '800+ learners' },
-              { region: 'North America', countries: 'USA & Canada', flag: '🌎', learners: '150+ learners' },
-              { region: 'Europe', countries: 'UK, Germany, France', flag: '🌍', learners: '120+ learners' },
-              { region: 'Asia Pacific', countries: 'India, Australia', flag: '🌏', learners: '80+ learners' },
+              { region: 'Sub-Saharan Africa', countries: 'Nigeria, Ghana, Kenya', flag: '🌍', learners: '120+ learners' },
+              { region: 'North America', countries: 'USA & Canada', flag: '🌎', learners: '40+ learners' },
+              { region: 'Europe', countries: 'United Kingdom', flag: '🌍', learners: '25+ learners' },
+              { region: 'Asia Pacific', countries: 'Growing reach', flag: '🌏', learners: '15+ learners' },
             ].map(({ region, countries, flag, learners }, i) => (
               <motion.div key={region}
                 initial={{ opacity: 0, y: 20 }}
@@ -1077,7 +1144,7 @@ export default function HomePage() {
               <br />Be one.
             </h2>
             <p className="text-white/40 text-base sm:text-lg mb-10 max-w-2xl mx-auto leading-relaxed">
-              Join 1,200+ young people already building skills, making impact, and writing their own story — with ScholarlyEcho.
+              Join 200+ young people already building skills, making impact, and writing their own story — with ScholarlyEcho.
             </p>
             <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 justify-center items-center">
               <button onClick={() => setTrialOpen(true)}

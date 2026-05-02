@@ -11,7 +11,7 @@ import SectionWrapper from '@/components/ui/SectionWrapper';
 import AnimatedCounter from '@/components/ui/AnimatedCounter';
 
 const metrics = [
-  { value: 1200, suffix: '+', label: 'Youth Trained Globally', icon: Users, color: 'from-brand-500 to-purple-600', desc: 'Across 20+ countries' },
+  { value: 200, suffix: '+', label: 'Youth Trained Globally', icon: Users, color: 'from-brand-500 to-purple-600', desc: 'Across 5+ countries' },
   { value: 300, suffix: '+', label: 'Projects Completed', icon: BookOpen, color: 'from-amber-400 to-orange-500', desc: 'Live apps, AI tools, SaaS MVPs' },
   { value: 50, suffix: '+', label: 'Partner Schools & Orgs', icon: Globe, color: 'from-emerald-400 to-teal-600', desc: 'Africa, Americas, Europe' },
   { value: 40, suffix: '+', label: 'Thesis Spotlights', icon: Award, color: 'from-purple-500 to-indigo-600', desc: 'Research translated to impact' },
@@ -59,10 +59,10 @@ const stories = [
 ];
 
 const globalReach = [
-  { region: 'Sub-Saharan Africa', learners: '800+', countries: 'Nigeria, Ghana, Kenya, South Africa, Senegal +7', flag: '🌍' },
-  { region: 'North America', learners: '150+', countries: 'USA, Canada', flag: '🌎' },
-  { region: 'Europe', learners: '120+', countries: 'UK, Germany, France, Netherlands', flag: '🌍' },
-  { region: 'Asia Pacific', learners: '80+', countries: 'India, Australia, Malaysia', flag: '🌏' },
+  { region: 'Sub-Saharan Africa', learners: '120+', countries: 'Nigeria, Ghana, Kenya', flag: '🌍' },
+  { region: 'North America', learners: '40+', countries: 'USA, Canada', flag: '🌎' },
+  { region: 'Europe', learners: '25+', countries: 'United Kingdom', flag: '🌍' },
+  { region: 'Asia Pacific', learners: '15+', countries: 'Growing reach', flag: '🌏' },
 ];
 
 export default function ImpactPage() {

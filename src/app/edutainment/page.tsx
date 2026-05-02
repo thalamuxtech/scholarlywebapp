@@ -315,7 +315,7 @@ export default function EdutainmentPage() {
             <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
               className="text-white/45 text-base sm:text-lg leading-[1.75] mb-10">
               Game shows, digital tournaments, and global challenges that turn any classroom into an arena.
-              When learning feels like winning, students absorb 3× more — and come back for more.
+              When learning feels like winning, students absorb 3× more — and come back for more. A perfect enrichment fit for homeschooling families and co-ops looking to fuel curiosity and brain development.
             </motion.p>
 
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}

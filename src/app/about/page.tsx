@@ -29,12 +29,12 @@ const team = [
 ];
 
 const milestones = [
-  { year: '2014', event: 'Google CS-First Coding Instructor — began teaching coding to youth', color: 'bg-teal-500' },
-  { year: '2016–18', event: 'African Code Week Instructor — 3 consecutive years of coding workshops', color: 'bg-blue-500' },
-  { year: '2019', event: 'WAAW Foundation Coding Facilitator Award — recognized for impact', color: 'bg-amber-500' },
-  { year: '2022', event: 'ScholarlyEcho founded — 12+ years of coding instruction experience', color: 'bg-brand-500' },
-  { year: '2025', event: 'Summer of Code 2025 · AI Track launched · Spotlight series launched', color: 'bg-purple-500' },
-  { year: '2026', event: 'Build for Ramadan · Summer of Code 2026 · 20+ countries · Instructors with PhD & MSc in CS & AI', color: 'bg-emerald-500' },
+  { year: '2015', event: 'Code2Schools & Google CS-First Coding Instructor — began teaching coding to youth', color: 'bg-teal-500' },
+  { year: '2016–18', event: 'African Code Week Instructor & EduTeens Science Foundation Instructor', color: 'bg-blue-500' },
+  { year: '2020', event: 'Private Instructor — bespoke coding mentorship for families and small cohorts', color: 'bg-amber-500' },
+  { year: '2024', event: 'BitsyBuilders Lead Instructor — leading curriculum delivery and student outcomes', color: 'bg-brand-500' },
+  { year: '2025', event: 'ScholarlyEcho founded · Spotlight series launched · Summer of Code 2025', color: 'bg-purple-500' },
+  { year: '2026', event: 'Internal restructure · Specialized Coding, AI & Robotics curriculum design', color: 'bg-emerald-500' },
 ];
 
 export default function AboutPage() {
@@ -86,8 +86,8 @@ export default function AboutPage() {
               </p>
               <div className="grid grid-cols-3 gap-4 mb-8">
                 {[
-                  { n: 20, s: '+', l: 'Countries', color: 'gradient-text' },
-                  { n: 1200, s: '+', l: 'Youth Trained', color: 'gradient-text-gold' },
+                  { n: 5, s: '+', l: 'Countries', color: 'gradient-text' },
+                  { n: 200, s: '+', l: 'Youth Trained', color: 'gradient-text-gold' },
                   { n: 50, s: '+', l: 'Partners', color: 'gradient-text-green' },
                 ].map(({ n, s, l, color }) => (
                   <div key={l} className="text-center p-4 rounded-2xl bg-slate-50 border border-slate-100">

@@ -80,7 +80,8 @@ const formats = [
 const faqs = [
   { q: 'What age can my child start?', a: 'We welcome learners from age 5. However, our levels are competency-based, not age-based — a talented 10-year-old can be in the Creator level if they demonstrate the skills. Every learner is assessed first to determine the best starting level — this is always free.' },
   { q: 'Do you offer payment plans?', a: 'Yes! We offer monthly subscriptions, term-based packages, and installment plans in USD. Scholarship and need-based discounts are available for qualifying learners globally.' },
-  { q: 'Are classes online or physical?', a: 'Both! We offer fully online sessions via Zoom, and in-person classes at partner locations. We are online-first with a global reach — students from 20+ countries are enrolled.' },
+  { q: 'Are classes online or physical?', a: 'Both! We offer fully online sessions via Zoom, and in-person classes at partner locations. We are online-first with a global reach — students from 5+ countries are enrolled.' },
+  { q: 'Is this suitable for homeschooling families?', a: 'Absolutely — we are a favourite among homeschooling families worldwide. Our online-first delivery, competency-based pacing, weekday/weekend slot options, and parent-visible progress tracking fit naturally into any homeschool rhythm. The curriculum strengthens computational thinking, logical reasoning, focus, and creative problem-solving — proven drivers of healthy brain development in children and teens. Sibling discounts make multi-child homeschool families especially welcome.' },
   { q: 'What do students actually build?', a: 'Real projects — websites, apps, AI tools, and SaaS products. Every level ends with portfolio-ready work. AI Builder students have deployed AI apps; Product Builder students have launched live products.' },
   { q: 'What makes your AI tracks different?', a: 'We don\'t just teach theory — learners build actual AI-powered products. From chatbots to computer vision apps to GPT-integrated tools. Our curriculum is updated quarterly to match industry reality.' },
   { q: 'How qualified are the tutors?', a: 'All tutors are vetted professionals — software engineers, AI practitioners, or career educators with deep domain expertise. Many work in top tech companies and teach part-time with genuine passion for youth development.' },
@@ -125,7 +126,7 @@ export default function LearningHubPage() {
 
               <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
                 className="text-white/45 text-[1.05rem] leading-[1.75] mb-8 max-w-[480px]">
-                Coding and AI are the 4th literacy — and the ultimate life skill. Our competency-based levels build critical thinking, problem-solving, and creativity through real projects. Students advance by demonstrated skill, not age, and are prepared for international coding competitions.
+                Coding and AI are the 4th literacy — and the ultimate life skill. Our competency-based levels build critical thinking, problem-solving, and creativity through real projects. Students advance by demonstrated skill, not age, and are prepared for international coding competitions. <span className="text-white/70">A perfect fit for homeschooling families: flexible scheduling, parent dashboards, and rich brain-development activities for growing minds.</span>
               </motion.p>
 
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}
@@ -141,9 +142,9 @@ export default function LearningHubPage() {
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.42 }}
                 className="grid grid-cols-3 gap-4">
                 {[
-                  { n: 500, s: '+', l: 'Enrolled' },
+                  { n: 200, s: '+', l: 'Enrolled' },
                   { n: 98, s: '%', l: 'Completion' },
-                  { n: 20, s: '+', l: 'Countries' },
+                  { n: 5, s: '+', l: 'Countries' },
                 ].map(({ n, s, l }) => (
                   <div key={l} className="glass rounded-2xl p-4 text-center border border-white/8">
                     <div className="text-2xl font-extrabold text-white" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
@@ -736,7 +737,7 @@ export default function LearningHubPage() {
               Your path starts here.
             </h2>
             <p className="text-white/55 text-base sm:text-lg mb-10 leading-relaxed">
-              Free assessment. Clear pathway. Real mentors. Real outcomes. Join learners from 20+ countries.
+              Free assessment. Clear pathway. Real mentors. Real outcomes. Join learners from 5+ countries.
             </p>
             <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 justify-center items-center sm:items-start">
               <button onClick={() => setTrialOpen(true)} className="btn-primary text-[15px] px-8 py-4">
