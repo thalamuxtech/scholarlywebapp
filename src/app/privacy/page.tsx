@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
@@ -12,7 +12,7 @@ const sections = [
     content: [
       { heading: 'Account Information', text: 'When you enroll or register, we collect your name, email address, date of birth (for age-appropriate placement), country of residence, and a password. For minors, we also collect a parent or guardian\'s contact information.' },
       { heading: 'Learning Data', text: 'We track progress through our curriculum levels, session attendance, project submissions, quiz scores, and time spent on each module. This data is used solely to personalise and improve your learning experience.' },
-      { heading: 'Payment Information', text: 'Payments are processed through Stripe, a PCI-DSS compliant provider. We do not store your full card number, CVV, or billing details — these are handled entirely by Stripe.' },
+      { heading: 'Payment Information', text: 'Payments are processed through Stripe, a PCI-DSS compliant provider. We do not store your full card number, CVV, or billing details: these are handled entirely by Stripe.' },
       { heading: 'Usage & Analytics', text: 'We collect anonymised data on how users navigate the platform, which features they use, and general performance metrics via privacy-respecting analytics. We do not sell or share this data with advertisers.' },
     ],
   },
@@ -23,7 +23,7 @@ const sections = [
     content: [
       { heading: 'Delivering Education', text: 'Your data powers personalised learning paths, tutor matching, progress tracking, and curriculum recommendations.' },
       { heading: 'Communication', text: 'We use your email to send session reminders, program updates, newsletters (if subscribed), and critical account notifications. You can unsubscribe from marketing emails at any time.' },
-      { heading: 'Safety & Security', text: 'We use account data to verify identities, prevent unauthorised access, and maintain a safe environment for all learners — especially minors.' },
+      { heading: 'Safety & Security', text: 'We use account data to verify identities, prevent unauthorised access, and maintain a safe environment for all learners: especially minors.' },
       { heading: 'Improvement', text: 'Aggregated, anonymised data helps us improve curriculum quality, tutor performance, and platform features.' },
     ],
   },
@@ -32,7 +32,7 @@ const sections = [
     title: 'Data Sharing & Third Parties',
     color: 'bg-amber-50 text-amber-600',
     content: [
-      { heading: 'We Never Sell Your Data', text: 'ScholarlyEcho does not sell, rent, or trade personal information to any third party for marketing purposes — ever.' },
+      { heading: 'We Never Sell Your Data', text: 'ScholarlyEcho does not sell, rent, or trade personal information to any third party for marketing purposes: ever.' },
       { heading: 'Service Providers', text: 'We share minimal necessary data with trusted service providers (Stripe for payments, Zoom for live sessions, AWS for hosting) bound by strict data processing agreements.' },
       { heading: 'Legal Requirements', text: 'We may disclose information when required by law, court order, or to protect the rights and safety of our community.' },
     ],
@@ -42,7 +42,7 @@ const sections = [
     title: 'Data Security',
     color: 'bg-purple-50 text-purple-600',
     content: [
-      { heading: 'Encryption', text: 'All data is encrypted in transit (TLS 1.3) and at rest (AES-256). Passwords are hashed using bcrypt — we cannot read your password.' },
+      { heading: 'Encryption', text: 'All data is encrypted in transit (TLS 1.3) and at rest (AES-256). Passwords are hashed using bcrypt: we cannot read your password.' },
       { heading: 'Access Controls', text: 'Only authorised personnel with a need-to-know basis have access to personal data. All staff access is logged and audited.' },
       { heading: 'Incident Response', text: 'In the event of a data breach, we will notify affected users within 72 hours and take immediate corrective action.' },
     ],
@@ -80,7 +80,7 @@ export default function PrivacyPage() {
           </motion.h1>
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
             className="text-white/45 text-[14px] sm:text-[15px] leading-relaxed">
-            We take your privacy seriously — especially for our youngest learners. Last updated <strong className="text-white/80">March 1, 2026</strong>.
+            We take your privacy seriously: especially for our youngest learners. Last updated <strong className="text-white/80">March 1, 2026</strong>.
           </motion.p>
         </div>
       </section>

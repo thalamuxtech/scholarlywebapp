@@ -1,4 +1,4 @@
-import type { Metadata, Viewport } from 'next';
+﻿import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import LayoutShell from '@/components/LayoutShell';
 import { ToastProvider } from '@/components/Toast';
@@ -13,7 +13,7 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: 'ScholarlyEcho — Youth Empowerment Ecosystem',
+    default: 'ScholarlyEcho: Youth Empowerment Ecosystem',
     template: '%s | ScholarlyEcho',
   },
   icons: {
@@ -24,8 +24,8 @@ export const metadata: Metadata = {
     'ScholarlyEcho equips young learners with practical skills, inspires through authentic stories, and engages through educational entertainment. Trusted by homeschooling families worldwide for cognitive development and 21st-century skills. Learn · Inspire · Engage.',
   keywords: ['youth education', 'coding for kids', 'homeschooling', 'homeschool curriculum', 'homeschool families', 'brain development', 'cognitive development', 'Nigeria', 'edutainment', 'scholarships', 'learning hub'],
   openGraph: {
-    title: 'ScholarlyEcho — Youth Empowerment Ecosystem',
-    description: 'Empowering youths with tools, exposure, and opportunities to move from confusion to clarity — and personal success to community development.',
+    title: 'ScholarlyEcho: Youth Empowerment Ecosystem',
+    description: 'Empowering youths with tools, exposure, and opportunities to move from confusion to clarity, and from personal success to community development.',
     type: 'website',
     locale: 'en_US',
     siteName: 'ScholarlyEcho',

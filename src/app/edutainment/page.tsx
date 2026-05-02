@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -22,10 +22,10 @@ const products = [
     name: 'Millionaire Game Show',
     tag: 'Available Now',
     tagColor: 'bg-emerald-100 text-emerald-700',
-    desc: 'An electrifying educational quiz show format inspired by "Who Wants to Be a Millionaire" — adapted for schools, communities, and global events. Students compete with knowledge as their currency, creating moments of genuine excitement and learning.',
+    desc: 'An electrifying educational quiz show format inspired by "Who Wants to Be a Millionaire": adapted for schools, communities, and global events. Students compete with knowledge as their currency, creating moments of genuine excitement and learning.',
     features: [
       'Curriculum-aligned question sets (Math, Science, History, Tech)',
-      'Team or individual formats — 10 to 1,000 participants',
+      'Team or individual formats: 10 to 1,000 participants',
       'Live scoring + real-time global leaderboard',
       'School booking confirmed within 48hrs',
       'Custom branding & sponsor integration available',
@@ -52,7 +52,7 @@ const products = [
     name: 'Sezwor Mode',
     tag: 'Coming Soon · 2026',
     tagColor: 'bg-brand-100 text-brand-700',
-    desc: 'An interactive group quiz and learning platform that makes education thrilling. Sezwor Mode brings classrooms alive with real-time multiplayer quizzes, subject-based leagues, and global leaderboards — turning every lesson into a game students actually want to play.',
+    desc: 'An interactive group quiz and learning platform that makes education thrilling. Sezwor Mode brings classrooms alive with real-time multiplayer quizzes, subject-based leagues, and global leaderboards: turning every lesson into a game students actually want to play.',
     features: [
       'Real-time multiplayer group quizzes (up to 500 players)',
       'Teacher-hosted live sessions for classrooms & events',
@@ -81,7 +81,7 @@ const products = [
     name: 'World National Flag Challenge',
     tag: 'Live · Continental Finals 2026',
     tagColor: 'bg-amber-100 text-amber-700',
-    desc: 'A global knowledge challenge that turns world geography and cultural awareness into a thrilling competitive event. From classroom rounds to continental finals — building global citizens one flag at a time, one country at a time.',
+    desc: 'A global knowledge challenge that turns world geography and cultural awareness into a thrilling competitive event. From classroom rounds to continental finals: building global citizens one flag at a time, one country at a time.',
     features: [
       'All 196 countries + territories covered',
       'Individual and school team categories',
@@ -117,14 +117,14 @@ const impactStats = [
 
 const testimonials = [
   {
-    quote: "The Millionaire Game Show was the highlight of our school term. Students were reviewing notes at home the night before — without being asked. That never happens.",
+    quote: "The Millionaire Game Show was the highlight of our school term. Students were reviewing notes at home the night before: without being asked. That never happens.",
     name: "Mrs. Adaeze Eze",
     role: "Vice Principal, Anchor International School",
     country: "🇳🇬 Lagos, Nigeria",
     color: 'from-emerald-400 to-teal-500',
   },
   {
-    quote: "We booked the Flag Challenge for our International Day event. Every student — even the quietest ones — was fully engaged. The energy was incredible.",
+    quote: "We booked the Flag Challenge for our International Day event. Every student: even the quietest ones: was fully engaged. The energy was incredible.",
     name: "Mr. David Clarke",
     role: "Head of Year 9, Thornton Academy",
     country: "🇬🇧 Birmingham, UK",
@@ -140,8 +140,8 @@ const testimonials = [
 ];
 
 const upcomingEvents = [
-  { title: 'Millionaire Game Show — Continental Tour', date: 'April 26, 2026', cities: 'Lagos · Accra · Nairobi · London', badge: 'Multi-city', color: 'bg-emerald-50 text-emerald-700 border-emerald-100' },
-  { title: 'World Flag Challenge — African Continental Finals', date: 'June 14, 2026', cities: 'Abuja, Nigeria + Livestream', badge: 'Continental', color: 'bg-amber-50 text-amber-700 border-amber-100' },
+  { title: 'Millionaire Game Show: Continental Tour', date: 'April 26, 2026', cities: 'Lagos · Accra · Nairobi · London', badge: 'Multi-city', color: 'bg-emerald-50 text-emerald-700 border-emerald-100' },
+  { title: 'World Flag Challenge: African Continental Finals', date: 'June 14, 2026', cities: 'Abuja, Nigeria + Livestream', badge: 'Continental', color: 'bg-amber-50 text-amber-700 border-amber-100' },
   { title: 'Sezwor Mode Beta Launch + Tournament', date: 'August 2026', cities: 'Online · Global', badge: 'Coming Soon', color: 'bg-brand-50 text-brand-700 border-brand-100' },
 ];
 
@@ -299,7 +299,7 @@ export default function EdutainmentPage() {
           <div className="text-center max-w-3xl mx-auto">
             <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
               className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/15 text-white/60 text-[13px] mb-6">
-              <Gamepad2 className="w-3.5 h-3.5 text-emerald-400" /> Edutainment — Where Learning Becomes Winning
+              <Gamepad2 className="w-3.5 h-3.5 text-emerald-400" /> Edutainment: Where Learning Becomes Winning
             </motion.div>
 
             <motion.h1 initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
@@ -315,7 +315,7 @@ export default function EdutainmentPage() {
             <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
               className="text-white/45 text-base sm:text-lg leading-[1.75] mb-10">
               Game shows, digital tournaments, and global challenges that turn any classroom into an arena.
-              When learning feels like winning, students absorb 3× more — and come back for more. A perfect enrichment fit for homeschooling families and co-ops looking to fuel curiosity and brain development.
+              When learning feels like winning, students absorb 3× more: and come back for more. A perfect enrichment fit for homeschooling families and co-ops looking to fuel curiosity and brain development.
             </motion.p>
 
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
@@ -531,7 +531,7 @@ export default function EdutainmentPage() {
         <div className="max-w-2xl mx-auto px-5 sm:px-8 text-center relative z-10">
           <SectionWrapper>
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.06] border border-white/[0.08] text-white/60 text-[13px] mb-6">
-              <Gamepad2 className="w-3.5 h-3.5 text-brand-300" /> Sezwor Mode — Launching 2026
+              <Gamepad2 className="w-3.5 h-3.5 text-brand-300" /> Sezwor Mode: Launching 2026
             </div>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white mb-5 tracking-[-0.02em]"
               style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
@@ -562,7 +562,7 @@ export default function EdutainmentPage() {
                 </h2>
                 <p className="text-white/75 text-[14px] leading-relaxed max-w-xl">
                   Book our game shows and challenges for science fairs, graduation events, end-of-term celebrations,
-                  and community programs. We handle everything — you get the wow. Available for schools across
+                  and community programs. We handle everything: you get the wow. Available for schools across
                   Africa, North America, Europe, and beyond.
                 </p>
               </div>

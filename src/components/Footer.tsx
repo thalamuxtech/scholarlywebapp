@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import Link from 'next/link';
 import Image from 'next/image';
@@ -91,7 +91,7 @@ export default function Footer() {
                 Stay ahead of the curve
               </h3>
               <p className="text-white/75 text-sm leading-relaxed">
-                Programs, scholarships, research spotlights, and opportunities — delivered to your inbox weekly.
+                Programs, scholarships, research spotlights, and opportunities: delivered to your inbox weekly.
               </p>
             </div>
             <div className="w-full md:w-auto">
@@ -115,7 +115,7 @@ export default function Footer() {
             </Link>
 
             <p className="text-slate-400 text-sm leading-relaxed mb-5 max-w-full sm:max-w-[280px]">
-              A knowledge-first global youth empowerment ecosystem. Disrupting education globally — one learner at a time.
+              A knowledge-first global youth empowerment ecosystem. Disrupting education globally: one learner at a time.
             </p>
 
             <div className="space-y-2.5 text-sm">

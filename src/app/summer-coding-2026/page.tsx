@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -16,7 +16,7 @@ const TRACKS = [
     name: 'Logic Builders',
     age: 'Ages 5+',
     tag: 'Beginner-Friendly',
-    desc: 'Visual block-based coding with Scratch and MIT App Inventor. Young learners build their first interactive games, animations, stories, and simple mobile apps — no syntax required.',
+    desc: 'Visual block-based coding with Scratch and MIT App Inventor. Young learners build their first interactive games, animations, stories, and simple mobile apps: no syntax required.',
     icon: Lightbulb,
     color: 'from-amber-400 via-orange-500 to-rose-500',
     chips: ['Scratch', 'MIT App Inventor', 'Games', 'Mobile apps'],
@@ -31,7 +31,7 @@ const TRACKS = [
     name: 'Code Masters',
     age: 'Ages 9+',
     tag: 'Advanced Builders',
-    desc: 'Advanced Scratch and advanced MIT App Inventor projects. Learners take their skills further — building richer games, multi-screen mobile apps, and original interactive projects with real logic.',
+    desc: 'Advanced Scratch and advanced MIT App Inventor projects. Learners take their skills further: building richer games, multi-screen mobile apps, and original interactive projects with real logic.',
     icon: Cpu,
     color: 'from-brand-500 via-purple-600 to-pink-600',
     chips: ['Advanced Scratch', 'Advanced App Inventor', 'Games', 'Mobile apps'],
@@ -44,12 +44,12 @@ const TRACKS = [
 ];
 
 const BENEFITS = [
-  { icon: Brain, title: 'Coding is the 4th literacy', desc: 'Reading, writing, math — and now code. Every modern career touches software, automation, or AI. Children who code early read the world differently.', color: 'from-brand-500 to-purple-600' },
+  { icon: Brain, title: 'Coding is the 4th literacy', desc: 'Reading, writing, math: and now code. Every modern career touches software, automation, or AI. Children who code early read the world differently.', color: 'from-brand-500 to-purple-600' },
   { icon: Zap, title: 'Sharper thinking, faster', desc: 'Coding teaches kids to break big problems into small ones, debug calmly, and persist. These are transferable life skills, not just tech skills.', color: 'from-amber-500 to-orange-500' },
-  { icon: Trophy, title: 'A real project to show off', desc: 'Every learner walks away with their own app or game — built by them, on their device — to share with family, classmates, and teachers.', color: 'from-emerald-500 to-teal-600' },
-  { icon: Globe, title: 'AI-ready future', desc: 'In an AI-shaped economy, the kids who can prompt, build, and ship will lead. Our curriculum bakes in AI literacy from week one — at age-appropriate depth.', color: 'from-pink-500 to-rose-500' },
-  { icon: Users, title: 'Small cohorts, real mentors', desc: 'Tiny groups with vetted instructors — graduates of Google, Microsoft, Stripe and top universities. Every child is seen, every project is reviewed.', color: 'from-violet-500 to-indigo-600' },
-  { icon: Medal, title: 'Awards & certificates', desc: 'Every learner earns a certificate. The top capstones win prizes — and a permanent spot in our 2026 Hall of Builders.', color: 'from-fuchsia-500 to-pink-600' },
+  { icon: Trophy, title: 'A real project to show off', desc: 'Every learner walks away with their own app or game: built by them, on their device: to share with family, classmates, and teachers.', color: 'from-emerald-500 to-teal-600' },
+  { icon: Globe, title: 'AI-ready future', desc: 'In an AI-shaped economy, the kids who can prompt, build, and ship will lead. Our curriculum bakes in AI literacy from week one: at age-appropriate depth.', color: 'from-pink-500 to-rose-500' },
+  { icon: Users, title: 'Small cohorts, real mentors', desc: 'Tiny groups with vetted instructors: graduates of Google, Microsoft, Stripe and top universities. Every child is seen, every project is reviewed.', color: 'from-violet-500 to-indigo-600' },
+  { icon: Medal, title: 'Awards & certificates', desc: 'Every learner earns a certificate. The top capstones win prizes: and a permanent spot in our 2026 Hall of Builders.', color: 'from-fuchsia-500 to-pink-600' },
 ];
 
 const SCHEDULE = [
@@ -62,9 +62,9 @@ const SCHEDULE = [
 ];
 
 const FAQ = [
-  { q: 'When does the program start?', a: 'Monday, June 29, 2026. Sessions run twice a week throughout summer break — exact days will be confirmed at registration based on your time zone and cohort availability.' },
+  { q: 'When does the program start?', a: 'Monday, June 29, 2026. Sessions run twice a week throughout summer break: exact days will be confirmed at registration based on your time zone and cohort availability.' },
   { q: 'How is the price calculated for siblings?', a: '$245 per child after the standard 30% discount is already applied. When you register additional siblings, an extra 10% sibling discount stacks on the 2nd child, 15% on the 3rd, and you can apply a coupon code for further savings.' },
-  { q: 'Will my child receive a certificate?', a: 'Yes — every learner who completes the capstone receives an official ScholarlyEcho Summer 2026 Certificate of Completion. Top capstones win prizes and a Hall of Builders feature.' },
+  { q: 'Will my child receive a certificate?', a: 'Yes: every learner who completes the capstone receives an official ScholarlyEcho Summer 2026 Certificate of Completion. Top capstones win prizes and a Hall of Builders feature.' },
   { q: 'Is this 100% online?', a: 'Yes. Live, instructor-led sessions on Zoom, twice a week. Recordings provided so no session is missed.' },
   { q: 'What does my child walk away with?', a: 'A real app or game they built themselves, a certificate of completion, and a stronger foundation in coding. Logic Builders graduates are ready to step up to Code Masters; Code Masters graduates are ready for our term-time programs to keep building.' },
 ];
@@ -127,7 +127,7 @@ export default function SummerCoding2026Page() {
 
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
             className="text-white/55 text-base sm:text-lg md:text-xl leading-relaxed max-w-2xl mx-auto mb-9">
-            Two age-tailored tracks. A capstone project — a real app or game your child builds themselves. A certificate to celebrate the work. <span className="text-white/80 font-semibold">Coding is the 4th literacy — give your child the head start.</span> <span className="text-white/70">A perfect summer for homeschooling families who want structured, brain-building skill development.</span>
+            Two age-tailored tracks. A capstone project: a real app or game your child builds themselves. A certificate to celebrate the work. <span className="text-white/80 font-semibold">Coding is the 4th literacy: give your child the head start.</span> <span className="text-white/70">A perfect summer for homeschooling families who want structured, brain-building skill development.</span>
           </motion.p>
 
           {/* Pricing pill */}
@@ -265,7 +265,7 @@ export default function SummerCoding2026Page() {
               Reading. Writing. Math. <span className="bg-gradient-to-r from-brand-600 to-pink-600 bg-clip-text text-transparent">Now Code.</span>
             </h2>
             <p className="text-slate-500 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
-              In an AI-shaped world, code is no longer optional — it&apos;s how children translate ideas into reality and stay relevant for the careers of 2035.
+              In an AI-shaped world, code is no longer optional: it&apos;s how children translate ideas into reality and stay relevant for the careers of 2035.
             </p>
           </motion.div>
 
@@ -419,7 +419,7 @@ export default function SummerCoding2026Page() {
                     Up to <span className="bg-gradient-to-r from-pink-600 to-amber-500 bg-clip-text text-transparent">5 Scholarships</span> Available This Year
                   </h2>
                   <p className="text-slate-600 leading-relaxed mb-5 text-[14px] sm:text-[15px]">
-                    Cost should never be the reason a child misses out. <span className="font-semibold text-slate-800">This year, we have up to 5 need-based scholarships and discounts available upon approval.</span> If your family could benefit, simply check the box on the registration form and tell us your story — we&apos;ll review every request personally and reply within a few days.
+                    Cost should never be the reason a child misses out. <span className="font-semibold text-slate-800">This year, we have up to 5 need-based scholarships and discounts available upon approval.</span> If your family could benefit, simply check the box on the registration form and tell us your story: we&apos;ll review every request personally and reply within a few days.
                   </p>
                   <div className="flex flex-wrap gap-2 mb-5">
                     {['Single-parent households', 'Multi-child families', 'Refugee / displaced learners', 'Underserved communities'].map((t) => (

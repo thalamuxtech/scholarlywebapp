@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useRef } from 'react';
 import Link from 'next/link';
@@ -12,17 +12,17 @@ import SectionWrapper from '@/components/ui/SectionWrapper';
 import FreeTrialForm from '@/components/FreeTrialForm';
 
 const benefits = [
-  { icon: Brain, title: 'Personal skill assessment', desc: 'A guided evaluation that maps your child to the perfect Coders Ladder level — not a generic age bracket.', gradient: 'from-brand-500 to-purple-600' },
+  { icon: Brain, title: 'Personal skill assessment', desc: 'A guided evaluation that maps your child to the perfect Coders Ladder level: not a generic age bracket.', gradient: 'from-brand-500 to-purple-600' },
   { icon: Users, title: 'Meet a real mentor', desc: 'A 1-on-1 session with a vetted engineer or AI practitioner from companies like Google, Microsoft, and Stripe.', gradient: 'from-pink-500 to-rose-500' },
-  { icon: Target, title: 'Custom pathway plan', desc: 'Walk away with a clear roadmap — coding, AI, no-code, scholarships and competitions tailored to your child.', gradient: 'from-emerald-500 to-teal-600' },
+  { icon: Target, title: 'Custom pathway plan', desc: 'Walk away with a clear roadmap: coding, AI, no-code, scholarships and competitions tailored to your child.', gradient: 'from-emerald-500 to-teal-600' },
   { icon: MessageCircle, title: 'Every question answered', desc: 'Pricing, schedule, format, age fit, sibling discounts. No pressure, no commitment, no hidden agenda.', gradient: 'from-amber-400 to-orange-500' },
 ];
 
 const what = [
-  { n: '01', icon: Gift, title: 'You book in 60 seconds', desc: 'Fill out the form — parent details, student DOB, country, plus your contact + availability preferences.' },
-  { n: '02', icon: MessageCircle, title: 'We confirm within 24 hours', desc: 'Our admissions team emails (or calls — your choice) to confirm your slot and pre-assess fit.' },
+  { n: '01', icon: Gift, title: 'You book in 60 seconds', desc: 'Fill out the form: parent details, student DOB, country, plus your contact + availability preferences.' },
+  { n: '02', icon: MessageCircle, title: 'We confirm within 24 hours', desc: 'Our admissions team emails (or calls: your choice) to confirm your slot and pre-assess fit.' },
   { n: '03', icon: Brain, title: 'Live 30-min assessment', desc: 'Your child meets a mentor on Zoom for a guided, age-appropriate skill check + an interactive challenge.' },
-  { n: '04', icon: Rocket, title: 'Get your custom plan', desc: 'You receive a written pathway with recommended level, format, schedule, and pricing — yours to keep.' },
+  { n: '04', icon: Rocket, title: 'Get your custom plan', desc: 'You receive a written pathway with recommended level, format, schedule, and pricing: yours to keep.' },
 ];
 
 const audience = [
@@ -30,7 +30,7 @@ const audience = [
   { icon: GraduationCap, title: 'Curious beginners', age: 'Ages 5+', desc: 'No experience needed. We start with visual coding (Scratch, Blockly) and storytelling.', gradient: 'from-teal-400 to-emerald-500' },
   { icon: Brain, title: 'Aspiring builders', age: 'Ages 11+', desc: 'Ready for Python, web dev, mobile apps, and the no-code creator pathway.', gradient: 'from-brand-400 to-blue-500' },
   { icon: Trophy, title: 'Ambitious teens', age: 'Ages 15+', desc: 'AI Developer, Product Builder, competition prep and scholarship-ready portfolios.', gradient: 'from-violet-500 to-purple-600' },
-  { icon: Briefcase, title: 'Career-focused families', age: 'Ages 16+', desc: 'Looking for serious outcomes — internships, portfolio reviews, and career mentorship.', gradient: 'from-pink-500 to-rose-500' },
+  { icon: Briefcase, title: 'Career-focused families', age: 'Ages 16+', desc: 'Looking for serious outcomes: internships, portfolio reviews, and career mentorship.', gradient: 'from-pink-500 to-rose-500' },
 ];
 
 export default function AssessmentClassPage() {
@@ -112,7 +112,7 @@ export default function AssessmentClassPage() {
                   className="text-white/55 text-[1rem] sm:text-[1.05rem] leading-[1.8] mb-8 max-w-[520px]">
                   A free, no-obligation 30-minute assessment with a certified ScholarlyEcho mentor.
                   We&apos;ll evaluate your child&apos;s skills, recommend the perfect Coders Ladder pathway,
-                  and answer every question — before you commit to anything. Ideal for homeschooling families seeking brain-building, screen-time-optimal learning.
+                  and answer every question: before you commit to anything. Ideal for homeschooling families seeking brain-building, screen-time-optimal learning.
                 </motion.p>
 
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
@@ -203,7 +203,7 @@ export default function AssessmentClassPage() {
               <Award className="w-3.5 h-3.5" /> What You Get
             </div>
             <h2 className="section-heading mb-5 max-w-3xl mx-auto">
-              More Than a Demo — A <span className="gradient-text-animated">Real Assessment</span>
+              More Than a Demo: A <span className="gradient-text-animated">Real Assessment</span>
             </h2>
             <p className="section-subheading mx-auto">
               Every free class is built around your child. You leave with insight, a custom plan, and zero pressure.
@@ -241,7 +241,7 @@ export default function AssessmentClassPage() {
               <Clock className="w-3.5 h-3.5" /> How It Works
             </div>
             <h2 className="section-heading mb-5">From Form to <span className="gradient-text">Class</span> in 4 Steps</h2>
-            <p className="section-subheading mx-auto">A simple, transparent process — designed around busy parents and excited learners.</p>
+            <p className="section-subheading mx-auto">A simple, transparent process: designed around busy parents and excited learners.</p>
           </SectionWrapper>
 
           <div className="relative">

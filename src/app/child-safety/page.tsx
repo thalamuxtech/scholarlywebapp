@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
@@ -21,7 +21,7 @@ const sections = [
     color: 'bg-brand-50 text-brand-600',
     content: [
       { heading: 'COPPA (USA)', text: 'We comply with the Children\'s Online Privacy Protection Act for all learners under 13 in the United States. We collect only the minimum necessary personal information and require verifiable parental consent before enrollment.' },
-      { heading: 'GDPR (EU/UK)', text: 'For learners in the European Union and United Kingdom, we comply with GDPR and the UK GDPR. Parents and guardians may exercise data rights — access, correction, deletion — on behalf of their child at any time.' },
+      { heading: 'GDPR (EU/UK)', text: 'For learners in the European Union and United Kingdom, we comply with GDPR and the UK GDPR. Parents and guardians may exercise data rights: access, correction, deletion: on behalf of their child at any time.' },
       { heading: 'Parental Consent', text: 'Before any learner under 13 can access the platform, a parent or guardian must complete our consent flow, which includes reviewing our Privacy Policy and Child Safety Policy and providing a verified contact email.' },
     ],
   },
@@ -42,7 +42,7 @@ const sections = [
     content: [
       { heading: 'Background Checks', text: 'All tutors and staff who interact with minors are required to pass DBS / criminal background checks before they can teach on the platform. Checks are renewed every two years.' },
       { heading: 'Safeguarding Training', text: 'Every tutor completes our safeguarding training programme before their first session. Training covers recognising abuse, appropriate communication boundaries, mandatory reporting obligations, and our escalation procedures.' },
-      { heading: 'Code of Conduct', text: 'Tutors must adhere to a strict Code of Conduct. Any breach — including inappropriate communication, sharing personal contact details with students, or meeting students outside sanctioned sessions — results in immediate suspension and investigation.' },
+      { heading: 'Code of Conduct', text: 'Tutors must adhere to a strict Code of Conduct. Any breach: including inappropriate communication, sharing personal contact details with students, or meeting students outside sanctioned sessions: results in immediate suspension and investigation.' },
     ],
   },
   {
@@ -60,9 +60,9 @@ const sections = [
     title: 'Reporting & Response',
     color: 'bg-orange-50 text-orange-600',
     content: [
-      { heading: 'How to Report a Concern', text: 'If you witness or suspect any safeguarding concern — whether involving a tutor, another learner, or platform content — report it immediately via the in-platform "Report" button or by emailing scholarlyechos@gmail.com.' },
+      { heading: 'How to Report a Concern', text: 'If you witness or suspect any safeguarding concern: whether involving a tutor, another learner, or platform content: report it immediately via the in-platform "Report" button or by emailing scholarlyechos@gmail.com.' },
       { heading: 'Our Response Process', text: 'All safeguarding reports are reviewed by our Designated Safeguarding Lead (DSL) within 4 hours during business hours. Where there is risk to a child, we escalate to relevant authorities in the child\'s jurisdiction immediately.' },
-      { heading: 'Mandatory Reporting', text: 'We are a mandatory reporter. Where we identify credible risk of harm to a child — whether on or off platform — we will notify the appropriate child protection authorities without delay, even if this means disclosing data.' },
+      { heading: 'Mandatory Reporting', text: 'We are a mandatory reporter. Where we identify credible risk of harm to a child: whether on or off platform: we will notify the appropriate child protection authorities without delay, even if this means disclosing data.' },
     ],
   },
 ];
@@ -101,7 +101,7 @@ export default function ChildSafetyPage() {
             className="rounded-2xl bg-rose-50 border border-rose-100 p-6 mb-12 flex gap-4">
             <Heart className="w-5 h-5 text-rose-600 flex-shrink-0 mt-0.5" />
             <p className="text-rose-800 text-[13px] sm:text-[14px] leading-relaxed">
-              ScholarlyEcho serves learners as young as 7. Every team member, tutor, and partner is bound by our Child Safety Standards. Zero tolerance for any behaviour that endangers or exploits a child — no exceptions.
+              ScholarlyEcho serves learners as young as 7. Every team member, tutor, and partner is bound by our Child Safety Standards. Zero tolerance for any behaviour that endangers or exploits a child: no exceptions.
             </p>
           </motion.div>
 
@@ -112,7 +112,7 @@ export default function ChildSafetyPage() {
               <Phone className="w-5 h-5 text-orange-600 flex-shrink-0" />
               <div>
                 <p className="font-bold text-orange-900 text-[13px]">Immediate Safeguarding Concern?</p>
-                <p className="text-orange-700 text-[12px] mt-0.5">Email <a href="mailto:scholarlyechos@gmail.com" className="font-semibold underline">scholarlyechos@gmail.com</a> — reviewed within 4 hours. For emergencies, contact your local child protection services immediately.</p>
+                <p className="text-orange-700 text-[12px] mt-0.5">Email <a href="mailto:scholarlyechos@gmail.com" className="font-semibold underline">scholarlyechos@gmail.com</a>: reviewed within 4 hours. For emergencies, contact your local child protection services immediately.</p>
               </div>
             </div>
           </motion.div>

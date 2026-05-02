@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useRef, useState } from 'react';
 import Link from 'next/link';
@@ -125,7 +125,7 @@ export default function HomePage() {
   const heroY = useTransform(scrollYProgress, [0, 1], ['0%', '30%']);
   const heroOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
 
-  // Partners list — kept for the (currently hidden) "Trusted by & in partnership with" marquee.
+  // Partners list: kept for the (currently hidden) "Trusted by & in partnership with" marquee.
   // eslint-disable-next-line no-unused-vars
   const partners = ['Google.org', 'UNESCO', 'Microsoft', 'AWS Educate', 'She Code Africa', 'Andela', 'TechStars', 'ALX Africa', 'UNICEF', 'Meta for Developers', 'GitHub Education', 'African Union'];
   void partners;
@@ -218,8 +218,8 @@ export default function HomePage() {
                 <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: 0.25 }}
                   className="text-[1rem] sm:text-[1.05rem] text-white/50 leading-[1.8] mb-6 max-w-[480px]">
                   Coding is the 4th literacy. ScholarlyEcho teaches young people to think critically,
-                  solve real-world problems, and build with technology — developing life skills that go far beyond the screen.
-                  <span className="block mt-3 text-white/65"><span className="text-white font-semibold">Loved by homeschooling families</span> — flexible pacing, parent-friendly progress tracking, and rich cognitive development for growing minds.</span>
+                  solve real-world problems, and build with technology: developing life skills that go far beyond the screen.
+                  <span className="block mt-3 text-white/65"><span className="text-white font-semibold">Loved by homeschooling families</span>: flexible pacing, parent-friendly progress tracking, and rich cognitive development for growing minds.</span>
                 </motion.p>
 
                 <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }}
@@ -280,7 +280,7 @@ export default function HomePage() {
                       </div>
                       <div className="flex-1">
                         <div className="text-white font-bold text-[15px]">AI Builder Track</div>
-                        <div className="text-white/40 text-xs">Module 4 — Building with GPT APIs</div>
+                        <div className="text-white/40 text-xs">Module 4: Building with GPT APIs</div>
                       </div>
                       <div className="text-right">
                         <div className="text-white font-extrabold text-lg">82%</div>
@@ -388,7 +388,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ═══ HOMESCHOOL FAMILIES — FLAGSHIP AUDIENCE ═══ */}
+      {/* ═══ HOMESCHOOL FAMILIES: FLAGSHIP AUDIENCE ═══ */}
       <section className="py-16 sm:py-20 md:py-24 relative overflow-hidden"
         style={{ background: 'linear-gradient(165deg, #fff7ed 0%, #fef3c7 50%, #fff7ed 100%)' }}>
         <div className="absolute top-0 left-0 right-0 h-px"
@@ -402,16 +402,16 @@ export default function HomePage() {
               The <span className="gradient-text">#1 Coding & AI Program</span> for Homeschoolers
             </h2>
             <p className="section-subheading mx-auto max-w-2xl">
-              Homeschooling families are at the heart of what we do. Flexible, parent-led, and engineered for serious brain development — our curriculum slots into any homeschool rhythm.
+              Homeschooling families are at the heart of what we do. Flexible, parent-led, and engineered for serious brain development: our curriculum slots into any homeschool rhythm.
             </p>
           </SectionWrapper>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 mb-10">
             {[
               { icon: Calendar, title: 'Truly Flexible Scheduling', desc: 'Weekday, weekend, morning or evening slots. Self-paced progression so your homeschool calendar always wins.' },
-              { icon: Brain, title: 'Brain Development First', desc: 'Coding strengthens logic, working memory, focus, and creative problem-solving — the foundations of a sharp young mind.' },
-              { icon: Users, title: 'Sibling Discounts That Stack', desc: 'Built for multi-child homeschool families. Add siblings affordably — the more children, the bigger the savings.' },
-              { icon: Eye, title: 'Parent-Visible Progress', desc: 'Real-time dashboards so parents stay fully in the loop — see milestones, projects, and skill growth at a glance.' },
+              { icon: Brain, title: 'Brain Development First', desc: 'Coding strengthens logic, working memory, focus, and creative problem-solving: the foundations of a sharp young mind.' },
+              { icon: Users, title: 'Sibling Discounts That Stack', desc: 'Built for multi-child homeschool families. Add siblings affordably: the more children, the bigger the savings.' },
+              { icon: Eye, title: 'Parent-Visible Progress', desc: 'Real-time dashboards so parents stay fully in the loop: see milestones, projects, and skill growth at a glance.' },
               { icon: Shield, title: 'Safe, Screen-Time-Optimal', desc: 'Live mentors, vetted instructors, and a child-safety-first environment. Quality screen time you can feel good about.' },
               { icon: Trophy, title: 'Real Projects, Real Portfolios', desc: 'From Scratch animations to AI apps. Homeschool learners graduate with portfolios that open scholarship & competition doors.' },
             ].map(({ icon: Icon, title, desc }, i) => (
@@ -440,7 +440,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ═══ TOOLS / TECH LOGOS — CURRICULUM ═══ */}
+      {/* ═══ TOOLS / TECH LOGOS: CURRICULUM ═══ */}
       <section className="py-14 sm:py-20 bg-white border-b border-slate-100/60">
         <div className="max-w-6xl mx-auto px-5 sm:px-8 lg:px-10">
           <SectionWrapper className="text-center mb-10">
@@ -449,7 +449,7 @@ export default function HomePage() {
             </div>
             <h2 className="section-heading mb-3">From Block Coding to <span className="gradient-text">AI Engineering</span></h2>
             <p className="section-subheading mx-auto">
-              Web · Mobile · Desktop · AI. Real tools, taught well — for every age and every level.
+              Web · Mobile · Desktop · AI. Real tools, taught well: for every age and every level.
             </p>
           </SectionWrapper>
 
@@ -478,7 +478,7 @@ export default function HomePage() {
               Coding &amp; AI: the <span className="gradient-text-animated">4th Literacy</span>
             </h2>
             <p className="section-subheading mx-auto">
-              Reading, writing, and arithmetic shaped the last century. Coding and AI are the foundational skills shaping this one — the language of technology, creativity, and solving problems that matter.
+              Reading, writing, and arithmetic shaped the last century. Coding and AI are the foundational skills shaping this one: the language of technology, creativity, and solving problems that matter.
             </p>
           </SectionWrapper>
 
@@ -486,8 +486,8 @@ export default function HomePage() {
             {[
               { n: '1st', title: 'Reading', desc: 'Understanding language to make sense of the world and absorb knowledge.', icon: BookOpen, color: 'from-blue-500 to-brand-500', active: false },
               { n: '2nd', title: 'Writing', desc: 'Creating and communicating ideas that shape thought and inspire action.', icon: Sparkles, color: 'from-emerald-500 to-teal-600', active: false },
-              { n: '3rd', title: 'Arithmetic', desc: 'Numbers, logic, and reasoning — the foundation of analytical thinking.', icon: BarChart3, color: 'from-amber-500 to-orange-500', active: false },
-              { n: '4th', title: 'Coding & AI', desc: 'The language for navigating and shaping the digital world — coding and AI foster creativity, logic, critical thinking, and real-world problem-solving.', icon: Code2, color: 'from-brand-500 to-purple-600', active: true },
+              { n: '3rd', title: 'Arithmetic', desc: 'Numbers, logic, and reasoning: the foundation of analytical thinking.', icon: BarChart3, color: 'from-amber-500 to-orange-500', active: false },
+              { n: '4th', title: 'Coding & AI', desc: 'The language for navigating and shaping the digital world: coding and AI foster creativity, logic, critical thinking, and real-world problem-solving.', icon: Code2, color: 'from-brand-500 to-purple-600', active: true },
             ].map(({ n, title, desc, icon: Icon, color, active }, i) => (
               <motion.div key={title}
                 initial={{ opacity: 0, y: 20 }}
@@ -536,7 +536,7 @@ export default function HomePage() {
               Everything the Next Generation Needs to <span className="gradient-text">Thrive</span>
             </h2>
             <p className="section-subheading mx-auto">
-              Three powerful branches — build future-ready skills, draw inspiration from real stories,
+              Three powerful branches: build future-ready skills, draw inspiration from real stories,
               and engage through world-class educational entertainment.
             </p>
           </SectionWrapper>
@@ -546,14 +546,14 @@ export default function HomePage() {
               icon={BookOpen}
               title="Learning Hub"
               subtitle="Learn"
-              description="Project-based coding that builds critical thinking, problem-solving, and creativity. Progress through our competency-based Coders Ladder — from visual coding to launching AI-powered products. Students are prepared for international coding competitions."
+              description="Project-based coding that builds critical thinking, problem-solving, and creativity. Progress through our competency-based Coders Ladder: from visual coding to launching AI-powered products. Students are prepared for international coding competitions."
               color="text-brand-600"
               gradient="from-brand-500 to-purple-600"
               href="/learning-hub"
               features={[
                 'Scratch, App Inventor & Python pathways',
-                'AI Developer track — GPT, ML, OpenCV',
-                'Product Builder — launch real SaaS',
+                'AI Developer track: GPT, ML, OpenCV',
+                'Product Builder: launch real SaaS',
                 '1-on-1, group & bootcamp formats',
                 'Certified global tutors & mentors',
               ]}
@@ -563,12 +563,12 @@ export default function HomePage() {
               icon={Mic2}
               title="Spotlight Media"
               subtitle="Inspire"
-              description="Global podcast series, success stories, and research-to-impact spotlights. Real people from real places sharing real journeys — from Lagos to London to Silicon Valley."
+              description="Global podcast series, success stories, and research-to-impact spotlights. Real people from real places sharing real journeys: from Lagos to London to Silicon Valley."
               color="text-amber-600"
               gradient="from-amber-400 to-orange-500"
               href="/spotlight-media"
               features={[
-                'Edu Spotlight Podcast — bi-weekly',
+                'Edu Spotlight Podcast: bi-weekly',
                 'Doctorate Thesis Spotlight series',
                 'Youth success story features worldwide',
                 'Research-to-community frameworks',
@@ -579,13 +579,13 @@ export default function HomePage() {
               icon={Gamepad2}
               title="Edutainment"
               subtitle="Engage"
-              description="Gamified learning experiences that feel like winning. From our iconic Millionaire Game Show to Sezwor Mode's interactive group quizzes — education has never been this engaging."
+              description="Gamified learning experiences that feel like winning. From our iconic Millionaire Game Show to Sezwor Mode's interactive group quizzes: education has never been this engaging."
               color="text-emerald-600"
               gradient="from-emerald-400 to-teal-600"
               href="/edutainment"
               features={[
                 'Millionaire educational game show',
-                'Sezwor Mode — interactive group quizzes',
+                'Sezwor Mode: interactive group quizzes',
                 'World National Flag Challenge',
                 'School & community event bookings',
               ]}
@@ -611,14 +611,14 @@ export default function HomePage() {
                 Teaching Tomorrow&apos;s Skills. <span className="gradient-text">Today.</span>
               </h2>
               <p className="text-slate-500 leading-relaxed mb-7">
-                Coding teaches more than syntax — it builds critical thinking, logical reasoning, and the ability to decompose complex problems.
+                Coding teaches more than syntax: it builds critical thinking, logical reasoning, and the ability to decompose complex problems.
                 Our competency-based AI pathway takes learners from understanding how AI works to building products that solve real-world challenges.
                 Students develop life skills that transfer to any career.
               </p>
               <div className="grid sm:grid-cols-2 gap-4 mb-8">
                 {[
                   { icon: Brain, title: 'AI Developer (L4)', desc: 'ML with Teachable Machine, GPT APIs, OpenCV, prompt engineering, Jupyter', color: 'bg-purple-50 text-purple-600' },
-                  { icon: Layers, title: 'Product Builder (L5)', desc: 'Next.js, Supabase, Stripe, Vercel — build & launch real SaaS', color: 'bg-emerald-50 text-emerald-600' },
+                  { icon: Layers, title: 'Product Builder (L5)', desc: 'Next.js, Supabase, Stripe, Vercel: build & launch real SaaS', color: 'bg-emerald-50 text-emerald-600' },
                   { icon: Rocket, title: 'Code Prodigy', desc: 'Elite mentorship combining all tracks with hackathons and industry exposure', color: 'bg-amber-50 text-amber-600' },
                 ].map(({ icon: Icon, title, desc, color }) => (
                   <div key={title} className={`flex gap-3 p-4 rounded-2xl ${color.split(' ')[0]} border border-slate-100/50 hover:shadow-md transition-shadow duration-300`}>
@@ -712,19 +712,19 @@ export default function HomePage() {
               <Lightbulb className="w-3.5 h-3.5" /> The ScholarlyEcho Difference
             </div>
             <h2 className="section-heading mb-5 max-w-3xl mx-auto">
-              More Than Coding — <span className="gradient-text">Life Skills</span>
+              More Than Coding: <span className="gradient-text">Life Skills</span>
             </h2>
             <p className="section-subheading mx-auto">
-              Coding develops critical thinking, logical reasoning, creativity, and the ability to solve complex problems — skills that transfer to every career and life challenge.
+              Coding develops critical thinking, logical reasoning, creativity, and the ability to solve complex problems: skills that transfer to every career and life challenge.
             </p>
           </SectionWrapper>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {[
-              { icon: Lightbulb, title: 'Critical Thinking', desc: 'Every project requires breaking down complex problems into smaller steps — a skill that transfers to academics, careers, and everyday decisions.', color: 'bg-purple-50 text-purple-600', gradient: 'from-purple-500 to-indigo-600' },
+              { icon: Lightbulb, title: 'Critical Thinking', desc: 'Every project requires breaking down complex problems into smaller steps: a skill that transfers to academics, careers, and everyday decisions.', color: 'bg-purple-50 text-purple-600', gradient: 'from-purple-500 to-indigo-600' },
               { icon: Brain, title: 'Problem Solving', desc: 'Debugging code is training the brain to persist, analyze, and find solutions. These are the life skills employers value most.', color: 'bg-blue-50 text-blue-600', gradient: 'from-blue-500 to-brand-600' },
-              { icon: Trophy, title: 'Competition Ready', desc: 'Students are prepared for internationally recognized coding competitions — building confidence, resilience, and a competitive edge.', color: 'bg-amber-50 text-amber-600', gradient: 'from-amber-500 to-orange-500' },
-              { icon: BarChart3, title: 'Measurable Growth', desc: 'Competency-based progression. Every level ends with a real project that demonstrates mastery — not just time spent in a seat.', color: 'bg-emerald-50 text-emerald-600', gradient: 'from-emerald-500 to-teal-600' },
+              { icon: Trophy, title: 'Competition Ready', desc: 'Students are prepared for internationally recognized coding competitions: building confidence, resilience, and a competitive edge.', color: 'bg-amber-50 text-amber-600', gradient: 'from-amber-500 to-orange-500' },
+              { icon: BarChart3, title: 'Measurable Growth', desc: 'Competency-based progression. Every level ends with a real project that demonstrates mastery: not just time spent in a seat.', color: 'bg-emerald-50 text-emerald-600', gradient: 'from-emerald-500 to-teal-600' },
             ].map(({ icon: Icon, title, desc, color, gradient }, i) => (
               <motion.div key={title}
                 initial={{ opacity: 0, y: 28 }}
@@ -765,7 +765,7 @@ export default function HomePage() {
               { title: 'Coding for Kids', tag: 'Ages 5–12', desc: 'Fun, visual coding using Scratch and beginner Python. Builds logic, creativity, and confidence.', price: 'From $19/mo', icon: Code2, color: 'from-brand-500 to-purple-600', href: '/learning-hub' },
               { title: 'AI Foundations Track', tag: 'Ages 14+', desc: 'Machine learning, prompt engineering, Python AI. Prepare for the AI-first economy.', price: 'From $39/mo', icon: Brain, color: 'from-purple-500 to-indigo-600', href: '/learning-hub#ai-tracks' },
               { title: 'Product Builder', tag: 'Ages 16+', desc: 'Build and launch real SaaS products. Startup thinking, MVP development, and pitch coaching.', price: 'From $59/mo', icon: Rocket, color: 'from-emerald-400 to-teal-600', href: '/learning-hub#ai-tracks' },
-              { title: 'Code Prodigy Elite', tag: 'Application only', desc: 'Elite cohort for exceptional learners — hackathons, industry mentors, real project showcases.', price: 'Apply to access', icon: Trophy, color: 'from-amber-400 to-orange-500', href: '/learning-hub/code-prodigy' },
+              { title: 'Code Prodigy Elite', tag: 'Application only', desc: 'Elite cohort for exceptional learners: hackathons, industry mentors, real project showcases.', price: 'Apply to access', icon: Trophy, color: 'from-amber-400 to-orange-500', href: '/learning-hub/code-prodigy' },
             ].map(({ title, tag, desc, price, icon: Icon, color, href }, i) => (
               <motion.div key={title}
                 initial={{ opacity: 0, scale: 0.96 }}
@@ -807,7 +807,7 @@ export default function HomePage() {
               Learning Knows <span className="gradient-text-animated">No Borders</span>
             </h2>
             <p className="text-white/40 text-base sm:text-lg max-w-2xl mx-auto">
-              From Maryland to Nairobi, Lagos to London — ScholarlyEcho is where the world&apos;s youth come to level up.
+              From Maryland to Nairobi, Lagos to London: ScholarlyEcho is where the world&apos;s youth come to level up.
             </p>
           </SectionWrapper>
 
@@ -893,7 +893,7 @@ export default function HomePage() {
               </h3>
               <div className="space-y-3">
                 {[
-                  { title: 'Summer of Code 2025', date: 'Jun–Aug 2025', tag: 'Learning Hub', tagColor: 'bg-brand-50 text-brand-600', desc: 'Intensive summer coding bootcamp across 3 continents — 500+ students graduated.' },
+                  { title: 'Summer of Code 2025', date: 'Jun–Aug 2025', tag: 'Learning Hub', tagColor: 'bg-brand-50 text-brand-600', desc: 'Intensive summer coding bootcamp across 3 continents: 500+ students graduated.' },
                   { title: 'Build for Ramadan 2026', date: 'Mar 2026', tag: 'Community', tagColor: 'bg-emerald-50 text-emerald-600', desc: 'Special program blending tech education with community service during Ramadan.' },
                   { title: 'AI Track Launch 2025', date: 'Sep 2025', tag: 'AI Developer', tagColor: 'bg-purple-50 text-purple-600', desc: 'Launch of AI Developer and Product Builder tracks with first cohort of 120 students.' },
                 ].map((p, i) => (
@@ -923,8 +923,8 @@ export default function HomePage() {
               </h3>
               <div className="space-y-3">
                 {[
-                  { title: 'Summer of Code 2026', date: 'Jun–Aug 2026', tag: 'Learning Hub', tagColor: 'bg-brand-50 text-brand-600', desc: 'Our biggest summer bootcamp yet — online + physical in 5 cities globally. Early registration open.' },
-                  { title: 'Millionaire Game Show — Continental Tour', date: 'Apr 2026', tag: 'Edutainment', tagColor: 'bg-amber-50 text-amber-600', desc: 'Multi-city educational game show across Lagos, Accra, London, and more.' },
+                  { title: 'Summer of Code 2026', date: 'Jun–Aug 2026', tag: 'Learning Hub', tagColor: 'bg-brand-50 text-brand-600', desc: 'Our biggest summer bootcamp yet: online + physical in 5 cities globally. Early registration open.' },
+                  { title: 'Millionaire Game Show: Continental Tour', date: 'Apr 2026', tag: 'Edutainment', tagColor: 'bg-amber-50 text-amber-600', desc: 'Multi-city educational game show across Lagos, Accra, London, and more.' },
                   { title: 'Research-to-Impact Summit', date: 'May 2026', tag: 'Spotlight Media', tagColor: 'bg-amber-50 text-amber-600', desc: 'Global virtual summit connecting PhD researchers with communities for real-world impact.' },
                 ].map((p, i) => (
                   <motion.div key={p.title} initial={{ opacity: 0, x: 12 }} whileInView={{ opacity: 1, x: 0 }}
@@ -951,7 +951,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ═══ PARTNERS LOOP SLIDER (hidden — re-enable when partners are confirmed) ═══ */}
+      {/* ═══ PARTNERS LOOP SLIDER (hidden: re-enable when partners are confirmed) ═══ */}
       {/*
       <section className="py-14 bg-white border-t border-slate-100/60 overflow-hidden">
         <p className="text-center text-slate-300 text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.18em] mb-8">
@@ -986,10 +986,10 @@ export default function HomePage() {
               <Trophy className="w-3.5 h-3.5" /> Why Families Choose Us
             </div>
             <h2 className="section-heading mb-5 max-w-3xl mx-auto">
-              Beyond Coding — A <span className="gradient-text-animated">Launchpad</span> for Scholarships & Careers
+              Beyond Coding: A <span className="gradient-text-animated">Launchpad</span> for Scholarships & Careers
             </h2>
             <p className="section-subheading mx-auto">
-              Competitions. Scholarship-ready portfolios. Career acceleration. ScholarlyEcho equips young people to win — on the world stage and in the workplace.
+              Competitions. Scholarship-ready portfolios. Career acceleration. ScholarlyEcho equips young people to win: on the world stage and in the workplace.
             </p>
           </SectionWrapper>
 
@@ -997,13 +997,13 @@ export default function HomePage() {
             {[
               {
                 icon: Trophy, title: 'International Coding Competitions',
-                desc: 'Train for global contests — Codeforces, Scratch Global Olympiad, Technovation, Hackathons, FIRST Robotics.',
+                desc: 'Train for global contests: Codeforces, Scratch Global Olympiad, Technovation, Hackathons, FIRST Robotics.',
                 stat: '12+', statLabel: 'Competitions won',
                 gradient: 'from-amber-400 to-orange-500', bg: 'bg-amber-50', color: 'text-amber-600',
               },
               {
                 icon: GraduationCap, title: 'Scholarship-Ready Portfolio',
-                desc: 'Real projects, verified skills, and track records that admissions committees love — from local grants to Ivy League STEM awards.',
+                desc: 'Real projects, verified skills, and track records that admissions committees love: from local grants to Ivy League STEM awards.',
                 stat: 'Built', statLabel: 'For scholarship apps',
                 gradient: 'from-emerald-400 to-teal-600', bg: 'bg-emerald-50', color: 'text-emerald-600',
               },
@@ -1087,10 +1087,10 @@ export default function HomePage() {
               </div>
               <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white leading-[1.1] tracking-[-0.03em] mb-5"
                 style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
-                Try Your First Class — <span className="gradient-text-animated">Free</span>
+                Try Your First Class: <span className="gradient-text-animated">Free</span>
               </h2>
               <p className="text-white/55 text-[1.05rem] leading-[1.75] mb-7 max-w-[520px]">
-                Schedule a free, no-obligation assessment class with a certified mentor. We&apos;ll evaluate your child&apos;s skills, recommend the perfect pathway, and answer every question — all before you commit to anything.
+                Schedule a free, no-obligation assessment class with a certified mentor. We&apos;ll evaluate your child&apos;s skills, recommend the perfect pathway, and answer every question: all before you commit to anything.
               </p>
 
               <div className="space-y-3 mb-8">
@@ -1144,7 +1144,7 @@ export default function HomePage() {
               <br />Be one.
             </h2>
             <p className="text-white/40 text-base sm:text-lg mb-10 max-w-2xl mx-auto leading-relaxed">
-              Join 200+ young people already building skills, making impact, and writing their own story — with ScholarlyEcho.
+              Join 200+ young people already building skills, making impact, and writing their own story: with ScholarlyEcho.
             </p>
             <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 justify-center items-center">
               <button onClick={() => setTrialOpen(true)}

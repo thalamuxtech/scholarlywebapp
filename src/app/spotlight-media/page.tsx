@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -33,7 +33,7 @@ const thesisSpotlights = [
     color: 'from-emerald-500 to-teal-600', impact: '8 universities · 3 NGO partnerships',
   },
   {
-    topic: 'Entrepreneurship as Youth Employment — African Case Studies',
+    topic: 'Entrepreneurship as Youth Employment: African Case Studies',
     researcher: 'Dr. Abena Mensah', institution: 'Ashesi University, Ghana',
     domain: 'Economics', impl: 'Youth business incubator model for secondary schools',
     color: 'from-amber-500 to-orange-600', impact: '5 incubators launched',

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -12,7 +12,7 @@ import NewsletterForm from '@/components/NewsletterForm';
 const featured = {
   tag: 'AI Education',
   tagColor: 'bg-brand-50 text-brand-600',
-  title: 'How AI is Reshaping Youth Education Across Africa — And Why It Matters Now',
+  title: 'How AI is Reshaping Youth Education Across Africa: And Why It Matters Now',
   excerpt: 'From Lagos classrooms to London studios, a new generation of learners is building with artificial intelligence tools that didn\'t exist five years ago. We explore what this means for educators, parents, and policymakers.',
   author: 'ScholarlyEcho Editorial',
   date: 'March 20, 2026',
@@ -24,20 +24,20 @@ const posts = [
   {
     tag: 'Learning', tagColor: 'bg-emerald-50 text-emerald-600',
     title: '5 Things to Know Before Enrolling Your Child in an Online Coding Program',
-    excerpt: 'Not all programs are equal. Here\'s what to look for — curriculum depth, tutor quality, project outcomes, and pricing transparency.',
+    excerpt: 'Not all programs are equal. Here\'s what to look for: curriculum depth, tutor quality, project outcomes, and pricing transparency.',
     author: 'Adaeze Obi', date: 'March 15, 2026', readTime: '5 min read',
     icon: BookOpen, color: 'from-emerald-400 to-teal-500',
   },
   {
     tag: 'Research', tagColor: 'bg-amber-50 text-amber-600',
     title: 'Thesis to Impact: How Dr. Kwame\'s Research on Youth Mental Health Reached 30 Schools',
-    excerpt: 'A PhD that sat unpublished for two years found its audience through the ScholarlyEcho Thesis Spotlight — and changed 30 schools in Ghana.',
+    excerpt: 'A PhD that sat unpublished for two years found its audience through the ScholarlyEcho Thesis Spotlight: and changed 30 schools in Ghana.',
     author: 'Spotlight Media Team', date: 'March 10, 2026', readTime: '6 min read',
     icon: Mic2, color: 'from-amber-400 to-orange-500',
   },
   {
     tag: 'AI', tagColor: 'bg-purple-50 text-purple-600',
-    title: 'What is Prompt Engineering — and Why Every Student Should Learn It',
+    title: 'What is Prompt Engineering: and Why Every Student Should Learn It',
     excerpt: 'Prompt engineering is the most immediately marketable AI skill of 2026. Here\'s a beginner-friendly breakdown of what it is and how to start.',
     author: 'ScholarlyEcho AI Team', date: 'March 5, 2026', readTime: '4 min read',
     icon: Brain, color: 'from-purple-500 to-indigo-600',
@@ -52,7 +52,7 @@ const posts = [
   {
     tag: 'Events', tagColor: 'bg-teal-50 text-teal-600',
     title: 'What to Expect at the ScholarlyEcho AI Hackathon 2026',
-    excerpt: '80 teams, 48 hours, $5,000 in prizes. Here\'s everything you need to know to participate — and win.',
+    excerpt: '80 teams, 48 hours, $5,000 in prizes. Here\'s everything you need to know to participate: and win.',
     author: 'Events Team', date: 'Feb 22, 2026', readTime: '4 min read',
     icon: Sparkles, color: 'from-teal-400 to-cyan-500',
   },
@@ -206,7 +206,7 @@ export default function BlogPage() {
               Never Miss a Story
             </h2>
             <p className="text-white/40 text-[14px] sm:text-[15px] mb-7 leading-relaxed">
-              Get our best articles, research spotlights, and event announcements — weekly, no spam.
+              Get our best articles, research spotlights, and event announcements: weekly, no spam.
             </p>
             <NewsletterForm variant="dark" />
           </SectionWrapper>

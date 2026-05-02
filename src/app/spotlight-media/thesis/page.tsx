@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -76,7 +76,7 @@ export default function ThesisSpotlightPage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <SectionWrapper className="text-center mb-14">
             <h2 className="section-heading mb-4">How the Spotlight Works</h2>
-            <p className="section-subheading mx-auto">From submission to community impact — a clear 5-step journey.</p>
+            <p className="section-subheading mx-auto">From submission to community impact: a clear 5-step journey.</p>
           </SectionWrapper>
           <div className="relative">
             <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-gradient-to-b from-amber-400 to-brand-500 hidden md:block" />

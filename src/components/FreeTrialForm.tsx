@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -313,7 +313,7 @@ export default function FreeTrialForm({ variant = 'card', onClose, compact = fal
         </div>
       </div>
 
-      {/* Availability — days */}
+      {/* Availability: days */}
       <div>
         <label className="block text-[13px] font-bold text-slate-700 mb-2">Which days work for you?</label>
         <div className="grid grid-cols-3 gap-2">
@@ -334,7 +334,7 @@ export default function FreeTrialForm({ variant = 'card', onClose, compact = fal
         </div>
       </div>
 
-      {/* Availability — time of day */}
+      {/* Availability: time of day */}
       <div>
         <label className="block text-[13px] font-bold text-slate-700 mb-2">What time of day?</label>
         <div className="grid grid-cols-3 gap-2">
@@ -411,7 +411,7 @@ export default function FreeTrialForm({ variant = 'card', onClose, compact = fal
         Schedule Your FREE <span className="gradient-text">No-Obligation</span> Assessment Class
       </h3>
       <p className="text-slate-500 text-[13px] leading-relaxed">
-        Meet a certified mentor, get a personalized skill pathway, and see why homeschooling families and learners from 5+ countries love ScholarlyEcho — at zero cost.
+        Meet a certified mentor, get a personalized skill pathway, and see why homeschooling families and learners from 5+ countries love ScholarlyEcho: at zero cost.
       </p>
     </div>
   );

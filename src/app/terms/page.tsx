@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
@@ -11,7 +11,7 @@ const sections = [
     color: 'bg-brand-50 text-brand-600',
     content: [
       { heading: 'Age Requirements', text: 'ScholarlyEcho is open to learners aged 7 and above. Learners under 13 must have verifiable parental or guardian consent prior to enrollment. Learners aged 13–17 are considered minors and may require parental co-agreement depending on their country of residence.' },
-      { heading: 'Account Accuracy', text: 'You agree to provide accurate, current, and complete information during registration and to keep your profile up to date. Providing false information — including misrepresenting a child\'s age — constitutes a breach of these Terms and may result in immediate account suspension.' },
+      { heading: 'Account Accuracy', text: 'You agree to provide accurate, current, and complete information during registration and to keep your profile up to date. Providing false information: including misrepresenting a child\'s age: constitutes a breach of these Terms and may result in immediate account suspension.' },
       { heading: 'Account Security', text: 'You are responsible for maintaining the confidentiality of your login credentials. You agree to notify us immediately at scholarlyechos@gmail.com if you suspect unauthorised access to your account.' },
     ],
   },
@@ -22,7 +22,7 @@ const sections = [
     content: [
       { heading: 'Permitted Use', text: 'ScholarlyEcho grants you a limited, non-exclusive, non-transferable licence to access and use the platform for personal, non-commercial educational purposes in accordance with these Terms.' },
       { heading: 'Prohibited Conduct', text: 'You may not use the platform to: distribute spam or malware; attempt to reverse-engineer or scrape content; impersonate other users or staff; share login credentials; upload offensive, illegal, or harmful content; or violate any applicable laws.' },
-      { heading: 'User-Generated Content', text: 'Any projects, code, or submissions you create remain yours. By submitting work to the platform, you grant ScholarlyEcho a non-exclusive licence to display, showcase, and use your work for educational and promotional purposes (e.g., Spotlight Media features) — we will always credit you.' },
+      { heading: 'User-Generated Content', text: 'Any projects, code, or submissions you create remain yours. By submitting work to the platform, you grant ScholarlyEcho a non-exclusive licence to display, showcase, and use your work for educational and promotional purposes (e.g., Spotlight Media features): we will always credit you.' },
     ],
   },
   {

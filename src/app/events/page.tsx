@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -12,31 +12,31 @@ import SectionWrapper from '@/components/ui/SectionWrapper';
 const events = [
   {
     date: 'April 12, 2026', time: '9:00 AM – 5:00 PM UTC',
-    title: 'Global Holiday Coding Bootcamp — AI Edition',
+    title: 'Global Holiday Coding Bootcamp: AI Edition',
     type: 'Learning Hub', icon: BookOpen,
     location: 'Online (Worldwide) + Lagos Hub',
     seats: '120 seats', price: '$29 / Free on scholarship',
     color: 'from-brand-500 to-purple-600',
     tagColor: 'bg-brand-50 text-brand-600',
-    desc: '10-day Easter bootcamp — learners choose from Web Dev, AI Foundations, or Product Builder sprint tracks. Live sessions, mentors, final project demo.',
+    desc: '10-day Easter bootcamp: learners choose from Web Dev, AI Foundations, or Product Builder sprint tracks. Live sessions, mentors, final project demo.',
     badge: 'Multi-track',
   },
   {
     date: 'April 26, 2026', time: '10:00 AM – 3:00 PM (Local)',
-    title: 'Millionaire Game Show — Continental Tour 2026',
+    title: 'Millionaire Game Show: Continental Tour 2026',
     type: 'Edutainment', icon: Trophy,
     location: 'Lagos · Accra · Nairobi · London (Livestreamed)',
     seats: '500 per city', price: 'Free to attend',
     color: 'from-emerald-400 to-teal-600',
     tagColor: 'bg-emerald-50 text-emerald-600',
-    desc: 'Our flagship educational game show returns — now across 4 cities simultaneously with a live global leaderboard. Schools compete for the continental title.',
+    desc: 'Our flagship educational game show returns: now across 4 cities simultaneously with a live global leaderboard. Schools compete for the continental title.',
     badge: 'Multi-city',
   },
   {
     date: 'May 8–9, 2026', time: 'All Day (UTC)',
     title: 'Research-to-Impact Global Summit',
     type: 'Spotlight Media', icon: Mic2,
-    location: 'Virtual — Zoom (Global)',
+    location: 'Virtual: Zoom (Global)',
     seats: 'Unlimited virtual', price: 'Free',
     color: 'from-amber-400 to-orange-500',
     tagColor: 'bg-amber-50 text-amber-600',
@@ -56,7 +56,7 @@ const events = [
   },
   {
     date: 'June 14, 2026', time: '10:00 AM – 2:00 PM WAT',
-    title: 'World Flag Challenge — African Continental Finals',
+    title: 'World Flag Challenge: African Continental Finals',
     type: 'Edutainment', icon: Globe,
     location: 'Abuja, Nigeria + Livestream',
     seats: '300 seats', price: 'Free',
@@ -67,7 +67,7 @@ const events = [
   },
   {
     date: 'July 5, 2026', time: '10:00 AM – 4:00 PM',
-    title: 'ScholarlyEcho Open Day — Global Edition',
+    title: 'ScholarlyEcho Open Day: Global Edition',
     type: 'Community', icon: Users,
     location: 'Maryland, USA + Lagos, Nigeria + Virtual',
     seats: 'Open registration', price: 'Free',
@@ -103,7 +103,7 @@ export default function EventsPage() {
           </motion.h1>
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
             className="text-white/45 text-base sm:text-lg mb-8 leading-[1.75]">
-            Hackathons, game shows, research summits, continental competitions — ScholarlyEcho events
+            Hackathons, game shows, research summits, continental competitions: ScholarlyEcho events
             are where knowledge meets adrenaline, globally.
           </motion.p>
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}
@@ -124,7 +124,7 @@ export default function EventsPage() {
         <div className="max-w-5xl mx-auto px-5 sm:px-8 lg:px-10">
           <SectionWrapper className="text-center mb-14">
             <h2 className="section-heading mb-4">Upcoming Events 2026</h2>
-            <p className="section-subheading mx-auto">Register early — spaces fill fast. Many events are free.</p>
+            <p className="section-subheading mx-auto">Register early: spaces fill fast. Many events are free.</p>
           </SectionWrapper>
 
           <div className="space-y-5">
@@ -239,7 +239,7 @@ export default function EventsPage() {
             </h2>
             <p className="text-white/40 max-w-xl mx-auto mb-8 text-[15px] leading-relaxed">
               Put your brand at the forefront of global youth development. Co-brand events,
-              reach thousands of learners, parents, and educators — and make a measurable difference.
+              reach thousands of learners, parents, and educators: and make a measurable difference.
             </p>
             <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 justify-center items-center sm:items-start">
               <Link href="/contact" className="btn-primary">Discuss Sponsorship <ArrowRight className="w-4 h-4" /></Link>

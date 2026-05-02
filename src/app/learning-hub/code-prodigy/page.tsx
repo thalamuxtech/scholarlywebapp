@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -17,7 +17,7 @@ const requirements = [
 ];
 
 const benefits = [
-  { icon: Code2, title: 'Advanced Curriculum', desc: 'Full-stack projects, APIs, databases, deployment — industry-level work.' },
+  { icon: Code2, title: 'Advanced Curriculum', desc: 'Full-stack projects, APIs, databases, deployment: industry-level work.' },
   { icon: Users, title: 'Peer Cohort', desc: 'Work alongside Nigeria\'s most talented young coders in a dedicated cohort.' },
   { icon: Trophy, title: 'Competitions', desc: 'Hack-style challenges, internal competitions, and national leaderboard recognition.' },
   { icon: Award, title: 'Recognition', desc: 'Featured on ScholarlyEcho spotlight, LinkedIn profile optimization, and industry exposure.' },
@@ -71,7 +71,7 @@ export default function CodeProdigyPage() {
 
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
             className="text-white/65 text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
-            For learners who aren't just learning to code — they're building the future.
+            For learners who aren't just learning to code: they're building the future.
             The elite track for Africa's next generation of software engineers and tech innovators.
           </motion.p>
 
@@ -95,14 +95,14 @@ export default function CodeProdigyPage() {
               <div className="section-tag mb-5" style={{ background: 'rgba(245,158,11,0.1)', color: '#d97706', borderColor: 'rgba(245,158,11,0.2)' }}>
                 <Star className="w-3.5 h-3.5" /> Elite Track
               </div>
-              <h2 className="section-heading mb-6">Not Just Advanced — Elite</h2>
+              <h2 className="section-heading mb-6">Not Just Advanced: Elite</h2>
               <p className="text-slate-500 leading-relaxed mb-6">
                 Code Prodigy isn't just a harder version of our standard programs. It's an entirely different
                 experience designed for learners who have demonstrated exceptional aptitude and ambition.
               </p>
               <p className="text-slate-500 leading-relaxed mb-8">
                 Cohorts are small (max 12 per group), mentors are professional engineers, and projects are
-                real — built to solve actual community problems and presented to industry panels.
+                real: built to solve actual community problems and presented to industry panels.
               </p>
               <h4 className="font-bold text-slate-900 mb-4">Who qualifies?</h4>
               <ul className="space-y-3">

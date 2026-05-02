@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import Link from 'next/link';
@@ -73,18 +73,18 @@ const levels = [
 const formats = [
   { icon: UserCheck, title: '1-on-1 Coaching', desc: 'Fully personalized pacing with a dedicated tutor. Best for learners who thrive with individual attention and custom goals.', badge: 'Most flexible', color: 'from-brand-500 to-purple-600' },
   { icon: Users, title: 'Group Classes', desc: 'Collaborative learning in cohorts of 5–8. Builds teamwork, communication, and peer accountability alongside technical skills.', badge: 'Most popular', color: 'from-amber-400 to-orange-500' },
-  { icon: Zap, title: 'Intensive Bootcamp', desc: '10-day immersive sprints during school breaks. Maximum skill-building in minimum time — ideal for fast-tracking a level.', badge: 'Fast-track', color: 'from-emerald-400 to-teal-600' },
+  { icon: Zap, title: 'Intensive Bootcamp', desc: '10-day immersive sprints during school breaks. Maximum skill-building in minimum time: ideal for fast-tracking a level.', badge: 'Fast-track', color: 'from-emerald-400 to-teal-600' },
   { icon: CalendarDays, title: 'Holiday Programs', desc: 'Structured programs engineered around school schedules. Perfect timing for a deep dive without disrupting academic work.', badge: 'School-aligned', color: 'from-pink-500 to-rose-600' },
 ];
 
 const faqs = [
-  { q: 'What age can my child start?', a: 'We welcome learners from age 5. However, our levels are competency-based, not age-based — a talented 10-year-old can be in the Creator level if they demonstrate the skills. Every learner is assessed first to determine the best starting level — this is always free.' },
+  { q: 'What age can my child start?', a: 'We welcome learners from age 5. However, our levels are competency-based, not age-based: a talented 10-year-old can be in the Creator level if they demonstrate the skills. Every learner is assessed first to determine the best starting level: this is always free.' },
   { q: 'Do you offer payment plans?', a: 'Yes! We offer monthly subscriptions, term-based packages, and installment plans in USD. Scholarship and need-based discounts are available for qualifying learners globally.' },
-  { q: 'Are classes online or physical?', a: 'Both! We offer fully online sessions via Zoom, and in-person classes at partner locations. We are online-first with a global reach — students from 5+ countries are enrolled.' },
-  { q: 'Is this suitable for homeschooling families?', a: 'Absolutely — we are a favourite among homeschooling families worldwide. Our online-first delivery, competency-based pacing, weekday/weekend slot options, and parent-visible progress tracking fit naturally into any homeschool rhythm. The curriculum strengthens computational thinking, logical reasoning, focus, and creative problem-solving — proven drivers of healthy brain development in children and teens. Sibling discounts make multi-child homeschool families especially welcome.' },
-  { q: 'What do students actually build?', a: 'Real projects — websites, apps, AI tools, and SaaS products. Every level ends with portfolio-ready work. AI Builder students have deployed AI apps; Product Builder students have launched live products.' },
-  { q: 'What makes your AI tracks different?', a: 'We don\'t just teach theory — learners build actual AI-powered products. From chatbots to computer vision apps to GPT-integrated tools. Our curriculum is updated quarterly to match industry reality.' },
-  { q: 'How qualified are the tutors?', a: 'All tutors are vetted professionals — software engineers, AI practitioners, or career educators with deep domain expertise. Many work in top tech companies and teach part-time with genuine passion for youth development.' },
+  { q: 'Are classes online or physical?', a: 'Both! We offer fully online sessions via Zoom, and in-person classes at partner locations. We are online-first with a global reach: students from 5+ countries are enrolled.' },
+  { q: 'Is this suitable for homeschooling families?', a: 'Absolutely: we are a favourite among homeschooling families worldwide. Our online-first delivery, competency-based pacing, weekday/weekend slot options, and parent-visible progress tracking fit naturally into any homeschool rhythm. The curriculum strengthens computational thinking, logical reasoning, focus, and creative problem-solving: proven drivers of healthy brain development in children and teens. Sibling discounts make multi-child homeschool families especially welcome.' },
+  { q: 'What do students actually build?', a: 'Real projects: websites, apps, AI tools, and SaaS products. Every level ends with portfolio-ready work. AI Builder students have deployed AI apps; Product Builder students have launched live products.' },
+  { q: 'What makes your AI tracks different?', a: 'We don\'t just teach theory: learners build actual AI-powered products. From chatbots to computer vision apps to GPT-integrated tools. Our curriculum is updated quarterly to match industry reality.' },
+  { q: 'How qualified are the tutors?', a: 'All tutors are vetted professionals: software engineers, AI practitioners, or career educators with deep domain expertise. Many work in top tech companies and teach part-time with genuine passion for youth development.' },
 ];
 
 export default function LearningHubPage() {
@@ -126,7 +126,7 @@ export default function LearningHubPage() {
 
               <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
                 className="text-white/45 text-[1.05rem] leading-[1.75] mb-8 max-w-[480px]">
-                Coding and AI are the 4th literacy — and the ultimate life skill. Our competency-based levels build critical thinking, problem-solving, and creativity through real projects. Students advance by demonstrated skill, not age, and are prepared for international coding competitions. <span className="text-white/70">A perfect fit for homeschooling families: flexible scheduling, parent dashboards, and rich brain-development activities for growing minds.</span>
+                Coding and AI are the 4th literacy: and the ultimate life skill. Our competency-based levels build critical thinking, problem-solving, and creativity through real projects. Students advance by demonstrated skill, not age, and are prepared for international coding competitions. <span className="text-white/70">A perfect fit for homeschooling families: flexible scheduling, parent dashboards, and rich brain-development activities for growing minds.</span>
               </motion.p>
 
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}
@@ -209,7 +209,7 @@ export default function LearningHubPage() {
             </div>
             <h2 className="section-heading mb-4">From <span className="gradient-text">First Click</span> to <span className="gradient-text">Production Code</span></h2>
             <p className="section-subheading mx-auto">
-              Block coding for the youngest learners — and a real curriculum stack for everything beyond:
+              Block coding for the youngest learners: and a real curriculum stack for everything beyond:
               web, mobile, desktop, and AI.
             </p>
           </SectionWrapper>
@@ -227,7 +227,7 @@ export default function LearningHubPage() {
               We accept specialized requests
             </h3>
             <p className="text-slate-500 text-[13.5px] max-w-xl mx-auto leading-relaxed mb-4">
-              From robotics curriculum design to a custom AI track for a research lab — if your learner has a specific tool, language or outcome in mind, we&apos;ll build the path with you.
+              From robotics curriculum design to a custom AI track for a research lab: if your learner has a specific tool, language or outcome in mind, we&apos;ll build the path with you.
             </p>
             <Link href="/contact"
               className="inline-flex items-center gap-1.5 text-brand-600 font-bold text-sm hover:gap-2.5 transition-all">
@@ -246,7 +246,7 @@ export default function LearningHubPage() {
             </div>
             <h2 className="section-heading mb-5">5 Levels. One Clear Path.</h2>
             <p className="section-subheading mx-auto">
-              From Scratch & MIT App Inventor to AI-powered products and live SaaS launches — every learner has a defined, progressive path forward.
+              From Scratch & MIT App Inventor to AI-powered products and live SaaS launches: every learner has a defined, progressive path forward.
             </p>
           </SectionWrapper>
 
@@ -257,7 +257,7 @@ export default function LearningHubPage() {
             <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
               <div>
                 <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 text-white text-[11px] font-bold mb-3">
-                  ✨ NEW IN 2026 — Levels 4 & 5
+                  ✨ NEW IN 2026: Levels 4 & 5
                 </div>
                 <h3 className="text-white text-2xl font-bold mb-2" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
                   AI Developer & Product Builder Tracks
@@ -293,7 +293,7 @@ export default function LearningHubPage() {
                   </div>
                 )}
                 <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-white text-[11px] font-bold bg-gradient-to-r ${level.color} mb-4 shadow-sm`}>
-                  Level {level.id} — {level.name}
+                  Level {level.id}: {level.name}
                 </div>
                 <div className="text-slate-500 text-[12px] font-semibold mb-0.5">{level.age}</div>
                 <div className="text-slate-400 text-[11px] mb-3 font-medium">{level.tag}</div>
@@ -334,7 +334,7 @@ export default function LearningHubPage() {
             </div>
             <h2 className="section-heading mb-5">Built for the AI Era</h2>
             <p className="section-subheading mx-auto">
-              Our two advanced tracks prepare learners not just to use AI — but to build with it, and launch real products around it.
+              Our two advanced tracks prepare learners not just to use AI: but to build with it, and launch real products around it.
             </p>
           </SectionWrapper>
 
@@ -352,7 +352,7 @@ export default function LearningHubPage() {
                 level: 5, name: 'Product Builder', age: 'Ages 16+', color: 'from-emerald-500 to-teal-600',
                 icon: Rocket,
                 tools: ['Next.js', 'Supabase', 'Stripe', 'Vercel', 'Figma'],
-                desc: 'The capstone track. Learners go from idea to a fully launched product — designing with Figma, building full-stack with Next.js + Supabase, integrating payments with Stripe, deploying on Vercel, acquiring users, and pitching to mentors and potential investors.',
+                desc: 'The capstone track. Learners go from idea to a fully launched product: designing with Figma, building full-stack with Next.js + Supabase, integrating payments with Stripe, deploying on Vercel, acquiring users, and pitching to mentors and potential investors.',
                 modules: ['Full-Stack with Next.js + Supabase + PostgreSQL', 'UI design with Figma · payments with Stripe', 'MVP Development Sprints & agile workflow', 'Growth, user acquisition & product analytics', 'Pitch Deck, Demo Day & fundraising basics'],
                 outcome: 'Launch a live SaaS product with real users and revenue potential',
               },
@@ -366,7 +366,7 @@ export default function LearningHubPage() {
                 <div className="grid md:grid-cols-3 gap-8">
                   <div>
                     <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-white text-[12px] font-bold bg-gradient-to-r ${color} mb-4`}>
-                      <Icon className="w-4 h-4" /> Level {level} — {name}
+                      <Icon className="w-4 h-4" /> Level {level}: {name}
                     </div>
                     <div className="text-slate-400 text-[12px] font-medium mb-3">{age}</div>
                     <div className="flex flex-wrap gap-1.5 mb-3">
@@ -422,7 +422,7 @@ export default function LearningHubPage() {
               Build Without Writing Code. <span className="gradient-text">Create With AI.</span>
             </h2>
             <p className="section-subheading mx-auto">
-              At Level 3 Creator and beyond, learners can specialize into no-code product building and AI content design — launching apps, brands, and creative studios without a single line of code when they choose.
+              At Level 3 Creator and beyond, learners can specialize into no-code product building and AI content design: launching apps, brands, and creative studios without a single line of code when they choose.
             </p>
           </SectionWrapper>
 
@@ -437,14 +437,14 @@ export default function LearningHubPage() {
               },
               {
                 icon: Palette, title: 'AI Content Design',
-                desc: 'Create scroll-stopping visuals, videos, voiceovers and brand kits with generative AI — like a one-person studio.',
+                desc: 'Create scroll-stopping visuals, videos, voiceovers and brand kits with generative AI: like a one-person studio.',
                 tools: ['Midjourney', 'Canva Magic', 'Runway', 'ElevenLabs', 'Adobe Firefly', 'Descript'],
                 outcome: 'Ship a full AI-generated brand kit',
                 gradient: 'from-pink-500 to-rose-500',
               },
               {
                 icon: Wand2, title: 'AI Automation & Agents',
-                desc: 'Automate real workflows and build AI agents with Zapier, Make, n8n and custom GPTs — no backend required.',
+                desc: 'Automate real workflows and build AI agents with Zapier, Make, n8n and custom GPTs: no backend required.',
                 tools: ['Zapier', 'Make', 'n8n', 'Custom GPTs', 'Claude Projects', 'Lindy AI'],
                 outcome: 'Deploy a live AI agent that saves 10+ hours/week',
                 gradient: 'from-emerald-500 to-teal-600',
@@ -487,7 +487,7 @@ export default function LearningHubPage() {
               Competitions. <span className="gradient-text">Scholarships.</span> Careers.
             </h2>
             <p className="section-subheading mx-auto">
-              Our learners don&apos;t just finish a course — they compete globally, win scholarships, and launch careers before their peers even graduate.
+              Our learners don&apos;t just finish a course: they compete globally, win scholarships, and launch careers before their peers even graduate.
             </p>
           </SectionWrapper>
           <div className="grid md:grid-cols-3 gap-6">
@@ -499,7 +499,7 @@ export default function LearningHubPage() {
               },
               {
                 icon: GraduationCap, title: 'Scholarship-Ready Portfolios',
-                stat: 'Application-ready', desc: 'Portfolios packed with shipped projects, competition results and mentor recommendations — exactly what admissions officers and scholarship committees want to see.',
+                stat: 'Application-ready', desc: 'Portfolios packed with shipped projects, competition results and mentor recommendations: exactly what admissions officers and scholarship committees want to see.',
                 gradient: 'from-emerald-500 to-teal-600',
               },
               {
@@ -552,7 +552,7 @@ export default function LearningHubPage() {
                   'Personalized skill assessment & pathway',
                   'Preview coding, no-code & AI tracks live',
                   'Competition & scholarship roadmap',
-                  'Meet a world-class mentor — on us',
+                  'Meet a world-class mentor: on us',
                 ].map((t) => (
                   <div key={t} className="flex items-center gap-3 text-white/70 text-[14px]">
                     <div className="w-5 h-5 rounded-full bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center flex-shrink-0">
@@ -615,9 +615,9 @@ export default function LearningHubPage() {
                 Patient. Experienced. <span className="gradient-text-animated">Genuinely Invested.</span>
               </h2>
               <p className="text-white/60 leading-relaxed mb-7">
-                Our instructors have spent years in classrooms — not just behind a screen. They know how
+                Our instructors have spent years in classrooms: not just behind a screen. They know how
                 to break down hard ideas, manage a live cohort, and meet a child where they are. The
-                approach is simple: <span className="text-white/85 font-semibold">&ldquo;let&apos;s work on it together&rdquo;</span> — every week, every project.
+                approach is simple: <span className="text-white/85 font-semibold">&ldquo;let&apos;s work on it together&rdquo;</span>: every week, every project.
               </p>
               <div className="grid grid-cols-2 gap-4">
                 {[
@@ -637,9 +637,9 @@ export default function LearningHubPage() {
             <SectionWrapper delay={0.2}>
               <div className="grid grid-cols-2 gap-3">
                 {[
-                  { icon: Award, title: 'Years in the classroom', desc: 'Multi-year track record teaching coding to children — not weekend hobbyists.', color: 'from-brand-500 to-purple-600' },
+                  { icon: Award, title: 'Years in the classroom', desc: 'Multi-year track record teaching coding to children: not weekend hobbyists.', color: 'from-brand-500 to-purple-600' },
                   { icon: Users, title: 'Live cohort management', desc: 'Real practice running engaged, well-paced sessions with mixed-skill groups.', color: 'from-amber-400 to-orange-500' },
-                  { icon: UserCheck, title: '&ldquo;Let&apos;s work on it together&rdquo;', desc: 'Side-by-side problem-solving — never lecturing past a stuck learner.', color: 'from-emerald-400 to-teal-600' },
+                  { icon: UserCheck, title: '&ldquo;Let&apos;s work on it together&rdquo;', desc: 'Side-by-side problem-solving: never lecturing past a stuck learner.', color: 'from-emerald-400 to-teal-600' },
                   { icon: Sparkles, title: 'Teachers who inspire', desc: 'Instructors who make children excited to come back to the next session.', color: 'from-pink-500 to-rose-600' },
                 ].map(({ icon: Icon, title, desc, color }, i) => (
                   <motion.div key={title}

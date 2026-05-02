@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -14,9 +14,9 @@ import { CourseStack } from '@/components/TechLogos';
 const values = [
   { icon: Lightbulb, title: 'Knowledge-First', desc: 'Every program begins with a clear answer to "what will this learner know or be able to do differently?" before a single session is designed.', color: 'bg-brand-100 text-brand-600' },
   { icon: Users, title: 'Youth-Centered', desc: 'Our design, language, curriculum pace, and community are built around how young people actually think, learn, and grow.', color: 'bg-amber-100 text-amber-600' },
-  { icon: Target, title: 'Practical Impact', desc: 'We measure success by projects built, skills demonstrated, and lives changed — not just course completions or certificates issued.', color: 'bg-emerald-100 text-emerald-600' },
+  { icon: Target, title: 'Practical Impact', desc: 'We measure success by projects built, skills demonstrated, and lives changed: not just course completions or certificates issued.', color: 'bg-emerald-100 text-emerald-600' },
   { icon: Globe, title: 'Excellence for All', desc: 'Premium quality education that never gatekeeps. Geography, income, and background should never determine who gets access to world-class skills.', color: 'bg-purple-100 text-purple-600' },
-  { icon: Heart, title: 'Community First', desc: 'Individual success is the entry point. The true goal is communities that rise together — informed by local context, connected to global opportunity.', color: 'bg-rose-100 text-rose-600' },
+  { icon: Heart, title: 'Community First', desc: 'Individual success is the entry point. The true goal is communities that rise together: informed by local context, connected to global opportunity.', color: 'bg-rose-100 text-rose-600' },
 ];
 
 const team = [
@@ -29,10 +29,10 @@ const team = [
 ];
 
 const milestones = [
-  { year: '2015', event: 'Code2Schools & Google CS-First Coding Instructor — began teaching coding to youth', color: 'bg-teal-500' },
+  { year: '2015', event: 'Code2Schools & Google CS-First Coding Instructor: began teaching coding to youth', color: 'bg-teal-500' },
   { year: '2016–18', event: 'African Code Week Instructor & EduTeens Science Foundation Instructor', color: 'bg-blue-500' },
-  { year: '2020', event: 'Private Instructor — bespoke coding mentorship for families and small cohorts', color: 'bg-amber-500' },
-  { year: '2024', event: 'BitsyBuilders Lead Instructor — leading curriculum delivery and student outcomes', color: 'bg-brand-500' },
+  { year: '2020', event: 'Private Instructor: bespoke coding mentorship for families and small cohorts', color: 'bg-amber-500' },
+  { year: '2024', event: 'BitsyBuilders Lead Instructor: leading curriculum delivery and student outcomes', color: 'bg-brand-500' },
   { year: '2025', event: 'ScholarlyEcho founded · Spotlight series launched · Summer of Code 2025', color: 'bg-purple-500' },
   { year: '2026', event: 'Internal restructure · Specialized Coding, AI & Robotics curriculum design', color: 'bg-emerald-500' },
 ];
@@ -60,7 +60,7 @@ export default function AboutPage() {
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
             className="text-white/45 text-base sm:text-lg max-w-2xl mx-auto leading-[1.75]">
             ScholarlyEcho started with a simple but urgent question: What would it look like if every young person —
-            regardless of where they were born — had access to the skills, stories, and experiences to shape the future?
+            regardless of where they were born: had access to the skills, stories, and experiences to shape the future?
           </motion.p>
         </div>
         <div className="absolute bottom-0 left-0 right-0 h-px" style={{ background: 'linear-gradient(90deg, transparent 0%, rgba(110,66,255,0.3) 30%, rgba(168,85,247,0.4) 50%, rgba(236,72,153,0.3) 70%, transparent 100%)' }} />
@@ -213,13 +213,13 @@ export default function AboutPage() {
             </div>
             <h2 className="section-heading mb-3">A Real Stack. <span className="gradient-text">Real Outcomes.</span></h2>
             <p className="section-subheading mx-auto">
-              We teach what industry actually uses — across web, mobile, desktop, and AI.
+              We teach what industry actually uses: across web, mobile, desktop, and AI.
             </p>
           </SectionWrapper>
           <CourseStack theme="light" />
           <p className="text-center text-[13px] text-slate-500 mt-8">
             <Sparkles className="w-3.5 h-3.5 inline -mt-0.5 mr-1 text-amber-500" />
-            We also accept <span className="font-bold text-slate-700">specialized requests</span> — custom curriculum, advanced tracks, partner programs.
+            We also accept <span className="font-bold text-slate-700">specialized requests</span>: custom curriculum, advanced tracks, partner programs.
           </p>
         </div>
       </section>
@@ -235,7 +235,7 @@ export default function AboutPage() {
               Be Part of the Movement
             </h2>
             <p className="text-white/40 mb-8 text-[15px] leading-relaxed">
-              Whether as a learner, parent, researcher, partner, or investor — there's a place for you in the ScholarlyEcho story.
+              Whether as a learner, parent, researcher, partner, or investor: there's a place for you in the ScholarlyEcho story.
             </p>
             <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 justify-center items-center sm:items-start">
               <Link href="/learning-hub" className="btn-primary">Start Learning <ArrowRight className="w-4 h-4" /></Link>

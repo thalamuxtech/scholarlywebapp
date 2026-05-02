@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useMemo, Suspense } from 'react';
 import Link from 'next/link';
@@ -135,7 +135,7 @@ function RegisterContent() {
 
   const applyCoupon = async () => {
     setCouponState('checking'); setCouponError('');
-    // Use 'all' as planLabel — the lookupCoupon plan check is permissive when appliesTo is 'all'.
+    // Use 'all' as planLabel: the lookupCoupon plan check is permissive when appliesTo is 'all'.
     const result = await lookupCoupon(couponInput, SUMMER_PROGRAM_ID, 'all');
     if (result.ok) {
       setCoupon(result.coupon);
@@ -532,7 +532,7 @@ function RegisterContent() {
                           );
                         })}
                         {sibCount >= 3 && (
-                          <p className="text-[11px] text-slate-400 italic px-1">For 4+ children, register the first three here — we&apos;ll follow up to capture the rest.</p>
+                          <p className="text-[11px] text-slate-400 italic px-1">For 4+ children, register the first three here: we&apos;ll follow up to capture the rest.</p>
                         )}
                       </motion.div>
                     )}
@@ -580,7 +580,7 @@ function RegisterContent() {
                         <span className="px-2 py-0.5 rounded-md bg-rose-100 text-rose-700 text-[10px] font-extrabold uppercase tracking-wider">Up to 5 available</span>
                       </div>
                       <p className="text-[12px] text-slate-500 leading-relaxed">
-                        Cost should never be the reason a child misses out. Tell us your story below — we&apos;ll review every request personally and reply within a few days.
+                        Cost should never be the reason a child misses out. Tell us your story below: we&apos;ll review every request personally and reply within a few days.
                       </p>
                     </div>
                   </label>
@@ -602,7 +602,7 @@ function RegisterContent() {
                           rows={4}
                           value={data.scholarshipReason || ''}
                           onChange={(e) => setData({ ...data, scholarshipReason: e.target.value })}
-                          placeholder="Share your situation honestly — household circumstances, why this program matters for your child, anything that helps us evaluate fairly. Everything you write stays confidential."
+                          placeholder="Share your situation honestly: household circumstances, why this program matters for your child, anything that helps us evaluate fairly. Everything you write stays confidential."
                           className="w-full px-4 py-3 rounded-xl border-2 border-rose-200 bg-white focus:outline-none focus:border-rose-400 transition-colors text-slate-800 placeholder:text-slate-300 text-sm resize-none" />
                         <div className="mt-2 flex items-center gap-1.5 text-[11px] text-slate-500">
                           <ShieldCheck className="w-3 h-3 text-emerald-500" />

@@ -1,10 +1,10 @@
-'use client';
+﻿'use client';
 
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 
 /* ─────────────────────────────────────────────────────────────
-   Tech Logos — used across the website to showcase the actual
+   Tech Logos: used across the website to showcase the actual
    tools, languages and platforms taught in our programs.
    Each logo entry carries its brand color so we can tint the
    monochrome simple-icons SVGs and the surrounding chip.
@@ -27,7 +27,7 @@ const BLOCK_CODING: Logo[] = [
   { name: 'Makeblock',        color: '#0BA8DD', bg: 'rgba(11,168,221,0.10)', img: '/logos/makeblock.png' },
 ];
 
-/* ── Web — frontend & backend ──────────────────────────────── */
+/* ── Web: frontend & backend ──────────────────────────────── */
 const WEB: Logo[] = [
   { name: 'HTML5',      color: '#E34F26', bg: 'rgba(227,79,38,0.10)',   svg: '/logos/html5.svg' },
   { name: 'CSS3',       color: '#1572B6', bg: 'rgba(21,114,182,0.10)',  svg: '/logos/css3.svg' },
@@ -85,7 +85,7 @@ export const CATEGORIES: Record<CategoryKey, { label: string; eyebrow?: string; 
 };
 
 /* ─────────────────────────────────────────────────────────────
-   <LogoChip /> — single chip rendering
+   <LogoChip />: single chip rendering
    ───────────────────────────────────────────────────────────── */
 
 function LogoChip({ logo, theme = 'light', compact = false }: { logo: Logo; theme?: 'light' | 'dark'; compact?: boolean }) {
@@ -138,7 +138,7 @@ function LogoChip({ logo, theme = 'light', compact = false }: { logo: Logo; them
 }
 
 /* ─────────────────────────────────────────────────────────────
-   <TechLogos /> — single category, default to "block" for
+   <TechLogos />: single category, default to "block" for
    backward compatibility (the older summer-coding strip).
    ───────────────────────────────────────────────────────────── */
 
@@ -173,7 +173,7 @@ export default function TechLogos({ theme = 'light', eyebrow, category = 'block'
 }
 
 /* ─────────────────────────────────────────────────────────────
-   <CourseStack /> — full curriculum showcase: stacked categories
+   <CourseStack />: full curriculum showcase: stacked categories
    with their eyebrow + chips. Used on Learning Hub, About,
    homepage curriculum section.
    ───────────────────────────────────────────────────────────── */

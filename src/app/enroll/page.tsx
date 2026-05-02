@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import Link from 'next/link';
@@ -19,7 +19,7 @@ const programs = [
     icon: BookOpen,
     title: 'Learning Hub',
     subtitle: 'Coding & Tech Education',
-    desc: 'Enroll in our 5-level Coders Ladder — from Scratch to building real SaaS products.',
+    desc: 'Enroll in our 5-level Coders Ladder: from Scratch to building real SaaS products.',
     color: 'from-brand-500 to-purple-600',
     light: 'bg-brand-50 text-brand-600 border-brand-100',
     fields: ['name', 'email', 'phone', 'dob', 'country', 'state', 'plan', 'level', 'priorExperience', 'siblings'],
@@ -49,7 +49,7 @@ const programs = [
     icon: Trophy,
     title: 'Code Prodigy',
     subtitle: 'Elite Application',
-    desc: 'Apply to our elite program for exceptional learners — hackathons, industry mentors, and real projects.',
+    desc: 'Apply to our elite program for exceptional learners: hackathons, industry mentors, and real projects.',
     color: 'from-amber-400 to-orange-500',
     light: 'bg-amber-50 text-amber-700 border-amber-100',
     fields: ['name', 'email', 'phone', 'dob', 'country', 'state', 'priorExperience', 'portfolio', 'motivation'],
@@ -74,7 +74,7 @@ const fieldConfig: Record<string, { label: string; type: string; placeholder: st
   motivation: { label: 'Why Code Prodigy?', type: 'textarea', placeholder: 'Why do you want to join the elite program? What are you building?', icon: Sparkles, rows: 4 },
 };
 
-const planOptions = ['Starter — $110/mo (1 session/week)', 'Standard — $200/mo (2 sessions/week)', 'Premium 1-on-1 — $350/mo', 'Code Prodigy — $450/mo (Elite)', 'Not sure — help me choose'];
+const planOptions = ['Starter: $110/mo (1 session/week)', 'Standard: $200/mo (2 sessions/week)', 'Premium 1-on-1: $350/mo', 'Code Prodigy: $450/mo (Elite)', 'Not sure: help me choose'];
 const priorExpOptions = ['No prior experience', 'Scratch / block-based coding', 'Basic Python or JavaScript', 'HTML/CSS websites', 'Built apps or projects before', 'Comfortable with multiple languages'];
 const siblingOptions = ['Just me (no siblings)', '1 sibling (10% off 2nd child)', '2 siblings (10% + 15% off)', '3+ siblings (contact us)'];
 
@@ -206,7 +206,7 @@ export default function EnrollPage() {
           </motion.h1>
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
             className="text-white/40 text-base sm:text-lg leading-relaxed max-w-xl mx-auto">
-            Select a program below to get started. Each form takes less than 2 minutes. Homeschooling families welcome — flexible schedules and sibling discounts available.
+            Select a program below to get started. Each form takes less than 2 minutes. Homeschooling families welcome: flexible schedules and sibling discounts available.
           </motion.p>
         </div>
         <div className="absolute bottom-0 left-0 right-0 h-px"
@@ -576,7 +576,7 @@ export default function EnrollPage() {
                                         </div>
                                         {s.basePrice > 0 && (
                                           <div className="flex items-center justify-between text-[11px] text-slate-400 pl-7">
-                                            <span className="truncate pr-2">{s.planLabel?.split(' — ')[0]} · ${s.basePrice}{s.per === 'mo' && '/mo'}</span>
+                                            <span className="truncate pr-2">{s.planLabel?.split(': ')[0]} · ${s.basePrice}{s.per === 'mo' && '/mo'}</span>
                                             {s.discountAmount > 0 && (
                                               <span className="text-emerald-600 font-semibold flex items-center gap-1 flex-shrink-0">
                                                 <Percent className="w-2.5 h-2.5" /> {s.discountPct}% off · −${s.discountAmount}

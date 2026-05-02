@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import Link from 'next/link';
@@ -69,7 +69,7 @@ export default function ContactPage() {
           </motion.h1>
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
             className="text-white/45 text-base sm:text-lg max-w-xl mx-auto leading-relaxed">
-            Enrollment, partnerships, research, events, sponsorships, school bookings — we're here for all of it.
+            Enrollment, partnerships, research, events, sponsorships, school bookings: we're here for all of it.
           </motion.p>
         </div>
         <div className="absolute bottom-0 left-0 right-0 h-px" style={{ background: 'linear-gradient(90deg, transparent 0%, rgba(110,66,255,0.3) 30%, rgba(168,85,247,0.4) 50%, rgba(236,72,153,0.3) 70%, transparent 100%)' }} />
@@ -336,7 +336,7 @@ export default function ContactPage() {
               { icon: Globe, title: 'Governments & NGOs', desc: 'National youth tech programs, digital literacy drives, and community development collaboration.', color: 'bg-emerald-100 text-emerald-600' },
               { icon: Mic2, title: 'Media & Content', desc: 'Co-create podcast series, research spotlights, and story campaigns that inspire youth globally.', color: 'bg-purple-100 text-purple-600' },
               { icon: FlaskConical, title: 'Research Partners', desc: 'Connect academic research to real-world implementation through our Thesis Spotlight platform.', color: 'bg-teal-100 text-teal-600' },
-              { icon: Users, title: 'Community Leaders', desc: 'Bring ScholarlyEcho programs to your community — we provide resources, training, and support.', color: 'bg-rose-100 text-rose-600' },
+              { icon: Users, title: 'Community Leaders', desc: 'Bring ScholarlyEcho programs to your community: we provide resources, training, and support.', color: 'bg-rose-100 text-rose-600' },
             ].map(({ icon: Icon, title, desc, color }, i) => (
               <motion.div key={title}
                 initial={{ opacity: 0, y: 20 }}

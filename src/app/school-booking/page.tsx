@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
 import Link from 'next/link';
@@ -33,7 +33,7 @@ const programs = [
   {
     title: 'Holiday Intensive',
     duration: '1–2 weeks',
-    desc: 'Short intensive program during school holidays. Students complete a full project cycle — from idea to working prototype — in a fast-paced, fun environment.',
+    desc: 'Short intensive program during school holidays. Students complete a full project cycle: from idea to working prototype: in a fast-paced, fun environment.',
     icon: Rocket,
     color: 'from-amber-500 to-orange-500',
     features: ['Easter, mid-term & Christmas breaks', 'Build & present a complete project', 'Team challenges & hackathon format', 'Industry guest speakers'],
@@ -49,12 +49,12 @@ const programs = [
 ];
 
 const benefits = [
-  { icon: Trophy, title: 'Project-Based Learning', desc: 'Every program ends with students presenting real projects they built — apps, websites, AI tools, and games.' },
+  { icon: Trophy, title: 'Project-Based Learning', desc: 'Every program ends with students presenting real projects they built: apps, websites, AI tools, and games.' },
   { icon: GraduationCap, title: 'Final Challenge', desc: 'Each program culminates in a challenge or hackathon where students compete, collaborate, and showcase their work.' },
   { icon: Users, title: 'Small Groups', desc: 'Classes of 5–20 students ensure personalized attention. Every student gets hands-on support from certified instructors.' },
   { icon: Globe, title: 'Global Curriculum', desc: 'Our 5-level Coders Ladder is trusted by schools and homeschooling families across 5+ countries. Project-based, age-appropriate, and constantly updated.' },
   { icon: Sparkles, title: 'Certified Instructors', desc: 'Google CS-First certified instructors with 12+ years of coding education experience and advanced CS/AI degrees.' },
-  { icon: Calendar, title: 'Flexible Scheduling', desc: 'Programs designed around school calendars — summer, term-time, holidays, or custom schedules.' },
+  { icon: Calendar, title: 'Flexible Scheduling', desc: 'Programs designed around school calendars: summer, term-time, holidays, or custom schedules.' },
 ];
 
 export default function SchoolBookingPage() {
@@ -100,7 +100,7 @@ export default function SchoolBookingPage() {
           </motion.h1>
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
             className="text-white/40 text-base sm:text-lg leading-relaxed max-w-xl mx-auto mb-8">
-            Bootcamps, after-school programs, and custom partnerships — every program ends with students presenting real projects they built.
+            Bootcamps, after-school programs, and custom partnerships: every program ends with students presenting real projects they built.
           </motion.p>
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}
             className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -161,7 +161,7 @@ export default function SchoolBookingPage() {
         </div>
       </section>
 
-      {/* Tools / Tech Logos — full curriculum */}
+      {/* Tools / Tech Logos: full curriculum */}
       <section className="py-14 sm:py-18 bg-white border-t border-slate-100">
         <div className="max-w-6xl mx-auto px-5 sm:px-8 lg:px-10">
           <SectionWrapper className="text-center mb-8 sm:mb-10">
@@ -294,7 +294,7 @@ export default function SchoolBookingPage() {
                       <option>After-School Coding Program</option>
                       <option>Holiday Intensive</option>
                       <option>Custom School Partnership</option>
-                      <option>Not sure — advise me</option>
+                      <option>Not sure: advise me</option>
                     </select>
                   </div>
                 </div>

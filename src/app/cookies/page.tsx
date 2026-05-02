@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
@@ -10,30 +10,30 @@ const cookieTypes = [
     badge: 'Always Active',
     badgeColor: 'bg-emerald-100 text-emerald-700',
     description: 'These cookies are essential for the platform to function. They enable core features like login sessions, payment security tokens, and CSRF protection. They cannot be disabled.',
-    examples: ['session_id — keeps you logged in', 'csrf_token — protects form submissions', 'stripe_mid — Stripe fraud prevention'],
+    examples: ['session_id: keeps you logged in', 'csrf_token: protects form submissions', 'stripe_mid: Stripe fraud prevention'],
     canDisable: false,
   },
   {
     name: 'Functional',
     badge: 'Optional',
     badgeColor: 'bg-brand-50 text-brand-600',
-    description: 'Functional cookies remember your preferences and personalise your experience — such as your language setting, dark/light mode, and last-visited level.',
-    examples: ['pref_theme — remembers light/dark mode', 'pref_lang — remembers your language', 'last_level — resumes where you left off'],
+    description: 'Functional cookies remember your preferences and personalise your experience: such as your language setting, dark/light mode, and last-visited level.',
+    examples: ['pref_theme: remembers light/dark mode', 'pref_lang: remembers your language', 'last_level: resumes where you left off'],
     canDisable: true,
   },
   {
     name: 'Analytics',
     badge: 'Optional',
     badgeColor: 'bg-amber-50 text-amber-700',
-    description: 'Analytics cookies help us understand how learners navigate the platform — which pages are most visited, where users drop off, and how features perform. All data is anonymised and never tied to your identity.',
-    examples: ['_analytics_id — anonymous session identifier', 'page_views — pages visited (no PII)', 'feature_usage — which tools are used'],
+    description: 'Analytics cookies help us understand how learners navigate the platform: which pages are most visited, where users drop off, and how features perform. All data is anonymised and never tied to your identity.',
+    examples: ['_analytics_id: anonymous session identifier', 'page_views: pages visited (no PII)', 'feature_usage: which tools are used'],
     canDisable: true,
   },
   {
     name: 'No Advertising Cookies',
     badge: 'Never Used',
     badgeColor: 'bg-slate-100 text-slate-500',
-    description: 'ScholarlyEcho does not use advertising, retargeting, or cross-site tracking cookies. We do not partner with ad networks, and we never track learners — especially children — for commercial targeting purposes.',
+    description: 'ScholarlyEcho does not use advertising, retargeting, or cross-site tracking cookies. We do not partner with ad networks, and we never track learners: especially children: for commercial targeting purposes.',
     examples: [],
     canDisable: false,
     isNone: true,

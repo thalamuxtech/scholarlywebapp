@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -22,13 +22,13 @@ const metrics = [
 const stories = [
   {
     name: 'Kemi Olatunji', age: 16, from: 'Abeokuta, Nigeria', flag: '🇳🇬',
-    story: 'Joined ScholarlyEcho at 13 with zero coding background. By 16, she built an AI-powered plant disease detector used by over 500 farmers in Ogun State — and presented it at a global youth tech conference in Berlin.',
+    story: 'Joined ScholarlyEcho at 13 with zero coding background. By 16, she built an AI-powered plant disease detector used by over 500 farmers in Ogun State: and presented it at a global youth tech conference in Berlin.',
     color: 'from-emerald-400 to-teal-500',
     track: 'AI Builder Track',
   },
   {
     name: 'Amara Diallo', age: 17, from: 'Dakar, Senegal', flag: '🇸🇳',
-    story: 'Product Builder graduate who launched "StudySync" — a SaaS tool connecting university students for peer study sessions. 2,000+ users within 3 months of launch. Now fundraising her seed round.',
+    story: 'Product Builder graduate who launched "StudySync": a SaaS tool connecting university students for peer study sessions. 2,000+ users within 3 months of launch. Now fundraising her seed round.',
     color: 'from-brand-400 to-purple-500',
     track: 'Product Builder Track',
   },
@@ -40,7 +40,7 @@ const stories = [
   },
   {
     name: 'Rachel Thompson', age: 42, from: 'Atlanta, USA', flag: '🇺🇸',
-    story: 'High school STEM teacher who integrated ScholarlyEcho\'s AI Foundations curriculum into her classroom. 28 of her students completed the AI track — 12 went on to study Computer Science at university.',
+    story: 'High school STEM teacher who integrated ScholarlyEcho\'s AI Foundations curriculum into her classroom. 28 of her students completed the AI track: 12 went on to study Computer Science at university.',
     color: 'from-violet-400 to-purple-600',
     track: 'School Partnership',
   },

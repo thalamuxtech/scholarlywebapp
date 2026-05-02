@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -12,7 +12,7 @@ type ConfirmOptions = {
   confirmLabel?: string;
   cancelLabel?: string;
   tone?: Tone;
-  itemName?: string;        // shows in a highlighted chip — e.g. coupon code, program name
+  itemName?: string;        // shows in a highlighted chip: e.g. coupon code, program name
   requireTyping?: string;   // user must type this string to enable confirm
 };
 

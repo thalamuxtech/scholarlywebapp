@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
@@ -16,7 +16,7 @@ export default function SummerFlyerPopup() {
     try {
       const dismissed = window.localStorage.getItem(STORAGE_KEY);
       if (dismissed) return;
-    } catch { /* localStorage may be blocked — fall through */ }
+    } catch { /* localStorage may be blocked: fall through */ }
 
     // Slight delay so it doesn't fight the page-load paint.
     const t = window.setTimeout(() => setOpen(true), 1100);
@@ -87,7 +87,7 @@ export default function SummerFlyerPopup() {
               className="relative z-10 block mt-3 mx-3 rounded-2xl overflow-hidden group">
               <Image
                 src="/summer-bootcamp-2026.png"
-                alt="ScholarlyEcho Summer Coding Bootcamp 2026 — June 29 start, Logic Builders 5+ and Code Masters 9+"
+                alt="ScholarlyEcho Summer Coding Bootcamp 2026: June 29 start, Logic Builders 5+ and Code Masters 9+"
                 width={1200}
                 height={1500}
                 priority
