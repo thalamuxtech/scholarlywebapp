@@ -762,11 +762,11 @@ export default function HomePage() {
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {[
-              { title: 'Coding for Kids', tag: 'Ages 5–12', desc: 'Fun, visual coding using Scratch and beginner Python. Builds logic, creativity, and confidence.', price: 'From $19/mo', icon: Code2, color: 'from-brand-500 to-purple-600', href: '/learning-hub' },
-              { title: 'AI Foundations Track', tag: 'Ages 14+', desc: 'Machine learning, prompt engineering, Python AI. Prepare for the AI-first economy.', price: 'From $39/mo', icon: Brain, color: 'from-purple-500 to-indigo-600', href: '/learning-hub#ai-tracks' },
-              { title: 'Product Builder', tag: 'Ages 16+', desc: 'Build and launch real SaaS products. Startup thinking, MVP development, and pitch coaching.', price: 'From $59/mo', icon: Rocket, color: 'from-emerald-400 to-teal-600', href: '/learning-hub#ai-tracks' },
-              { title: 'Code Prodigy Elite', tag: 'Application only', desc: 'Elite cohort for exceptional learners: hackathons, industry mentors, real project showcases.', price: 'Apply to access', icon: Trophy, color: 'from-amber-400 to-orange-500', href: '/learning-hub/code-prodigy' },
-            ].map(({ title, tag, desc, price, icon: Icon, color, href }, i) => (
+              { title: 'Coding for Kids', tag: 'Ages 5–12', desc: 'Fun, visual coding using Scratch and beginner Python. Builds logic, creativity, and confidence.', icon: Code2, color: 'from-brand-500 to-purple-600', href: '/learning-hub' },
+              { title: 'AI Foundations Track', tag: 'Ages 14+', desc: 'Machine learning, prompt engineering, Python AI. Prepare for the AI-first economy.', icon: Brain, color: 'from-purple-500 to-indigo-600', href: '/learning-hub#ai-tracks' },
+              { title: 'Product Builder', tag: 'Ages 16+', desc: 'Build and launch real SaaS products. Startup thinking, MVP development, and pitch coaching.', icon: Rocket, color: 'from-emerald-400 to-teal-600', href: '/learning-hub#ai-tracks' },
+              { title: 'Code Prodigy Elite', tag: 'Application only', desc: 'Elite cohort for exceptional learners: hackathons, industry mentors, real project showcases.', icon: Trophy, color: 'from-amber-400 to-orange-500', href: '/learning-hub/code-prodigy' },
+            ].map(({ title, tag, desc, icon: Icon, color, href }, i) => (
               <motion.div key={title}
                 initial={{ opacity: 0, scale: 0.96 }}
                 whileInView={{ opacity: 1, scale: 1 }}
@@ -783,8 +783,7 @@ export default function HomePage() {
                   <h4 className="text-[16px] font-bold text-slate-900 mb-1.5 group-hover:text-brand-600 transition-colors duration-300" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>{title}</h4>
                   <p className="text-slate-500 text-[13px] leading-relaxed">{desc}</p>
                 </div>
-                <div className="mt-auto flex items-center justify-between pt-4 border-t border-slate-100">
-                  <span className="text-[13px] font-bold text-slate-700">{price}</span>
+                <div className="mt-auto flex items-center justify-end pt-4 border-t border-slate-100">
                   <Link href={href} className="inline-flex items-center gap-1.5 text-[12px] font-bold text-brand-600 hover:gap-2.5 transition-all duration-300">
                     Learn more <ChevronRight className="w-3.5 h-3.5" />
                   </Link>
