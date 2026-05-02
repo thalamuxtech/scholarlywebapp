@@ -12,11 +12,11 @@ import NewsletterForm from '@/components/NewsletterForm';
 const footerLinks = {
   Learn: [
     { label: 'Free Assessment Class', href: '/assessment-class' },
-    { label: 'Learning Hub', href: '/learning-hub' },
     { label: 'AI & Product Tracks', href: '/learning-hub#ai-tracks' },
     { label: 'Code Prodigy', href: '/learning-hub/code-prodigy' },
+    { label: 'Summer 2026', href: '/summer-coding-2026' },
     { label: 'Pricing', href: '/pricing' },
-    { label: 'Scholarship & Aid', href: '/pricing#scholarship' },
+    { label: 'Scholarship & Discount', href: '/scholarship-discount' },
   ],
   Inspire: [
     { label: 'Spotlight Media', href: '/spotlight-media' },

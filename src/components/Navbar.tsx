@@ -14,9 +14,6 @@ const navLinks: NavLink[] = [
   { label: 'Inspire', href: '/spotlight-media' },
   { label: 'Engage', href: '/edutainment' },
   { label: 'Impact', href: '/impact' },
-  { label: 'About', href: '/about' },
-  { label: 'Events', href: '/events' },
-  { label: 'Summer 2026', href: '/summer-coding-2026', highlight: true },
 ];
 
 export default function Navbar() {
