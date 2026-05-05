@@ -7,8 +7,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   User, Mail, Phone, MapPin, GraduationCap, Loader2, Sparkles,
   Tag, X as XIcon, Percent, ShieldCheck, CheckCircle2, ArrowRight,
-  Sun, Cpu, Lightbulb, Calendar, Trophy, Award, Gift, Rocket, ArrowLeft, HandHeart, Heart
+  Sun, Cpu, Lightbulb, Calendar, Trophy, Award, Gift, Rocket, ArrowLeft, HandHeart, Heart, Video
 } from 'lucide-react';
+
+const INFO_SESSION_DATE_ISO = '2026-05-23';
+const INFO_SESSION_LABEL = 'May 23, 2026';
 import { submitForm } from '@/lib/formSubmit';
 import { useToast } from '@/components/Toast';
 import { COUNTRIES, US_STATES, US_COUNTRY, OTHER_OPTION } from '@/lib/locations';
@@ -171,6 +174,10 @@ function RegisterContent() {
       if (dob) payload[`sibling${i}_age`] = String(calculateAge(dob));
     }
     if (sibCount > 0) payload.siblingCount = String(sibCount);
+    if (data.infoSessionRsvp === 'yes') {
+      payload.infoSessionRsvp = 'yes';
+      payload.infoSessionDate = INFO_SESSION_DATE_ISO;
+    }
 
     // Fee breakdown
     fee.students.forEach((s, i) => {
@@ -548,6 +555,29 @@ function RegisterContent() {
                     <option value="">Select...</option>
                     {HEAR_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
                   </select>
+                </div>
+
+                {/* ─── Info Session RSVP ─── */}
+                <div className="rounded-2xl border-2 border-brand-100 bg-gradient-to-br from-brand-50/50 via-white to-purple-50/40 p-4 sm:p-5">
+                  <label className="flex items-start gap-3 cursor-pointer select-none">
+                    <input type="checkbox"
+                      checked={data.infoSessionRsvp === 'yes'}
+                      onChange={(e) => setData({ ...data, infoSessionRsvp: e.target.checked ? 'yes' : '' })}
+                      className="sr-only" />
+                    <span className={`mt-0.5 w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition-all ${data.infoSessionRsvp === 'yes' ? 'bg-gradient-to-br from-brand-500 to-purple-600 border-transparent' : 'border-slate-300 bg-white'}`}>
+                      {data.infoSessionRsvp === 'yes' && <CheckCircle2 className="w-3.5 h-3.5 text-white" strokeWidth={3} />}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
+                        <Video className="w-4 h-4 text-brand-500" />
+                        <span className="font-bold text-slate-800 text-[13.5px]">Join our live info session</span>
+                        <span className="px-2 py-0.5 rounded-md bg-brand-100 text-brand-700 text-[10px] font-extrabold uppercase tracking-wider">{INFO_SESSION_LABEL}</span>
+                      </div>
+                      <p className="text-[12px] text-slate-500 leading-relaxed">
+                        Meet the instructors, see the curriculum, and ask questions. We&apos;ll email you a reminder with the join link.
+                      </p>
+                    </div>
+                  </label>
                 </div>
 
                 {/* Notes */}

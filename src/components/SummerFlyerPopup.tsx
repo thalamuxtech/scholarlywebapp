@@ -4,12 +4,38 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ArrowRight, Sun } from 'lucide-react';
+import { X, ArrowRight, Sun, Video, Loader2, CheckCircle2, Mail } from 'lucide-react';
+import { submitForm } from '@/lib/formSubmit';
 
 const STORAGE_KEY = 'se_summer_flyer_2026_dismissed';
+const INFO_SESSION_DATE_ISO = '2026-05-23';
+const INFO_SESSION_LABEL = 'May 23, 2026';
 
 export default function SummerFlyerPopup() {
   const [open, setOpen] = useState(false);
+  const [rsvpName, setRsvpName] = useState('');
+  const [rsvpEmail, setRsvpEmail] = useState('');
+  const [rsvpStatus, setRsvpStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [rsvpError, setRsvpError] = useState('');
+
+  const submitInfoSessionRsvp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!rsvpEmail.trim()) return;
+    setRsvpStatus('loading');
+    setRsvpError('');
+    const result = await submitForm('info-session', {
+      name: rsvpName.trim(),
+      email: rsvpEmail.trim(),
+      infoSessionDate: INFO_SESSION_DATE_ISO,
+      source: 'summer-flyer-popup',
+    });
+    if (result.success) {
+      setRsvpStatus('success');
+    } else {
+      setRsvpStatus('error');
+      setRsvpError(result.error || 'Something went wrong. Please try again.');
+    }
+  };
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -58,7 +84,7 @@ export default function SummerFlyerPopup() {
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-[420px] sm:max-w-[460px] max-h-[92vh] overflow-hidden rounded-3xl shadow-2xl">
+            className="relative w-full max-w-[420px] sm:max-w-[460px] max-h-[92vh] overflow-y-auto overflow-x-hidden rounded-3xl shadow-2xl">
 
             {/* Animated gradient border */}
             <div className="absolute inset-0 rounded-3xl p-[2px]"
@@ -115,6 +141,60 @@ export default function SummerFlyerPopup() {
                 className="block mx-auto mt-2 text-[11px] text-slate-400 hover:text-slate-600 font-semibold transition-colors">
                 Maybe later
               </button>
+            </div>
+
+            {/* Info session RSVP */}
+            <div className="relative z-10 mx-3 mb-4 rounded-2xl border-2 border-brand-100 bg-gradient-to-br from-brand-50/60 via-white to-purple-50/40 p-4">
+              <div className="flex items-center gap-2 mb-2 flex-wrap">
+                <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-brand-500 to-purple-600 flex items-center justify-center flex-shrink-0">
+                  <Video className="w-3.5 h-3.5 text-white" />
+                </div>
+                <span className="font-extrabold text-slate-800 text-[13px]">Free Info Session</span>
+                <span className="px-2 py-0.5 rounded-md bg-brand-100 text-brand-700 text-[10px] font-extrabold uppercase tracking-wider">{INFO_SESSION_LABEL}</span>
+              </div>
+              <p className="text-[11.5px] text-slate-500 leading-relaxed mb-3">
+                Not ready to sign up yet? Join our live info session — meet the instructors and get all your questions answered.
+              </p>
+
+              {rsvpStatus === 'success' ? (
+                <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-emerald-50 border border-emerald-100">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                  <span className="text-[12px] font-bold text-emerald-700">You&apos;re on the list! Check your email for the reminder.</span>
+                </div>
+              ) : (
+                <form onSubmit={submitInfoSessionRsvp} className="space-y-2">
+                  <input
+                    type="text"
+                    value={rsvpName}
+                    onChange={(e) => setRsvpName(e.target.value)}
+                    placeholder="Your name (optional)"
+                    className="w-full px-3 py-2.5 rounded-lg border-2 border-slate-200 bg-white focus:outline-none focus:border-brand-400 text-slate-800 placeholder:text-slate-300 text-[12.5px]"
+                  />
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-300" />
+                      <input
+                        type="email"
+                        required
+                        value={rsvpEmail}
+                        onChange={(e) => { setRsvpEmail(e.target.value); setRsvpError(''); }}
+                        placeholder="your@email.com"
+                        className="w-full pl-9 pr-3 py-2.5 rounded-lg border-2 border-slate-200 bg-white focus:outline-none focus:border-brand-400 text-slate-800 placeholder:text-slate-300 text-[12.5px]"
+                      />
+                    </div>
+                    <button
+                      type="submit"
+                      disabled={rsvpStatus === 'loading' || !rsvpEmail.trim()}
+                      className="px-4 py-2.5 rounded-lg text-white text-[12px] font-extrabold shadow-sm hover:shadow-md disabled:opacity-50 transition-all flex items-center gap-1.5"
+                      style={{ background: 'linear-gradient(135deg, #6e42ff, #ec4899)' }}>
+                      {rsvpStatus === 'loading' ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Remind Me'}
+                    </button>
+                  </div>
+                  {rsvpError && (
+                    <p className="text-[11px] text-rose-500 font-medium ml-1">{rsvpError}</p>
+                  )}
+                </form>
+              )}
             </div>
           </motion.div>
         </motion.div>
