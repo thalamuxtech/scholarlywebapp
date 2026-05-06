@@ -1,14 +1,16 @@
 ﻿'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
   Sun, Code2, Sparkles, Trophy, Award, Calendar, Clock, Users,
   Rocket, Brain, GraduationCap, Star, CheckCircle2, ArrowRight,
   Globe, Zap, Target, Cpu, Lightbulb, BookOpen, Medal, Gift,
-  Flame, ShieldCheck, Layers, Heart, HandHeart
+  Flame, ShieldCheck, Layers, Heart, HandHeart, Video
 } from 'lucide-react';
 import TechLogos from '@/components/TechLogos';
+import InfoSessionPopup from '@/components/InfoSessionPopup';
 
 const TRACKS = [
   {
@@ -65,13 +67,14 @@ const FAQ = [
   { q: 'When does the program start?', a: 'Monday, June 29, 2026. Sessions run twice a week throughout summer break: exact days will be confirmed at registration based on your time zone and cohort availability.' },
   { q: 'How is the price calculated for siblings?', a: '$245 per child after the standard 30% discount is already applied. When you register additional siblings, an extra 10% sibling discount stacks on the 2nd child, 15% on the 3rd, and you can apply a coupon code for further savings.' },
   { q: 'Will my child receive a certificate?', a: 'Yes: every learner who completes the capstone receives an official ScholarlyEcho Summer 2026 Certificate of Completion. Top capstones win prizes and a Hall of Builders feature.' },
-  { q: 'Is this 100% online?', a: 'Yes. Live, instructor-led sessions on Zoom, twice a week. Recordings provided so no session is missed.' },
   { q: 'What does my child walk away with?', a: 'A real app or game they built themselves, a certificate of completion, and a stronger foundation in coding. Logic Builders graduates are ready to step up to Code Masters; Code Masters graduates are ready for our term-time programs to keep building.' },
 ];
 
 export default function SummerCoding2026Page() {
+  const [infoSessionOpen, setInfoSessionOpen] = useState(false);
   return (
     <div className="overflow-hidden">
+      <InfoSessionPopup open={infoSessionOpen} onClose={() => setInfoSessionOpen(false)} source="summer-coding-page" />
       {/* ═══ HERO ═══ */}
       <section className="relative pt-28 pb-16 sm:pt-32 sm:pb-20 md:pt-36 md:pb-28 noise-overlay overflow-hidden"
         style={{ background: 'linear-gradient(165deg, #070c1b 0%, #1a0d2e 25%, #2a0d1f 50%, #1a0d2e 75%, #070c1b 100%)' }}>
@@ -153,6 +156,10 @@ export default function SummerCoding2026Page() {
               className="inline-flex items-center justify-center gap-2 px-7 py-4 rounded-2xl border border-white/15 text-white/85 font-semibold hover:bg-white/[0.06] transition-all">
               Explore the Tracks
             </a>
+            <button type="button" onClick={() => setInfoSessionOpen(true)}
+              className="inline-flex items-center justify-center gap-2 px-7 py-4 rounded-2xl border border-white/15 text-white/85 font-semibold hover:bg-white/[0.06] transition-all">
+              <Video className="w-4 h-4" /> Join Info Session · May 23
+            </button>
           </motion.div>
 
           {/* Stat row */}
@@ -305,7 +312,7 @@ export default function SummerCoding2026Page() {
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              { icon: Calendar, t: '2× a week sessions', d: 'Live, instructor-led, recorded for replay' },
+              { icon: Calendar, t: '2× a week sessions', d: 'Live, instructor-led on Zoom' },
               { icon: Trophy, t: 'Capstone project', d: 'A real, shippable build by Demo Day' },
               { icon: Award, t: 'Official certificate', d: 'Issued by ScholarlyEcho on completion' },
               { icon: Medal, t: 'Prizes for top builds', d: 'Cash, gear, and Hall-of-Builders feature' },

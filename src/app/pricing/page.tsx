@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
   CheckCircle2, ArrowRight, Sparkles, Star,
-  Users, Clock, Zap, Shield, HeartHandshake,
+  Users, Zap, Shield, HeartHandshake,
   Brain, Rocket, Globe, Trophy, Code2
 } from 'lucide-react';
 import SectionWrapper from '@/components/ui/SectionWrapper';
@@ -88,13 +88,6 @@ const packages = [
     ],
     cta: 'Apply Now',
   },
-];
-
-const extras = [
-  { name: 'Holiday Bootcamp', price: '$99', desc: '10-day intensive bootcamp. Build a full project, level up fast. Available globally online.', icon: Zap, color: 'from-brand-500 to-purple-600' },
-  { name: 'Weekend Sprint', price: '$59', desc: '6-week weekend program. Ideal for busy learners, working teens, and adult learners.', icon: Clock, color: 'from-amber-400 to-orange-500' },
-  { name: 'School / Institution', price: 'Custom', desc: 'Curriculum integration, bulk enrollment, teacher training, and co-branded programs.', icon: Users, color: 'from-emerald-400 to-teal-600' },
-  { name: 'Mentorship Add-on', price: '+$19/mo', desc: 'Add dedicated 1-on-1 mentorship sessions to any Standard or AI & Product plan.', icon: HeartHandshake, color: 'from-pink-500 to-rose-600' },
 ];
 
 const comparisons = [
@@ -268,33 +261,6 @@ export default function PricingPage() {
         </div>
       </section>
 
-      {/* ── Add-ons ── */}
-      <section className="py-12 sm:py-16 md:py-20 bg-slate-50">
-        <div className="max-w-6xl mx-auto px-5 sm:px-8 lg:px-10">
-          <SectionWrapper className="text-center mb-12">
-            <h2 className="section-heading mb-4">Add-Ons & Custom Options</h2>
-            <p className="section-subheading mx-auto">Flexible add-ons to supercharge any plan.</p>
-          </SectionWrapper>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {extras.map(({ name, price, desc, icon: Icon, color }, i) => (
-              <motion.div key={name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="premium-card group hover:border-transparent hover:shadow-xl transition-all duration-300">
-                <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${color} flex items-center justify-center mb-4 shadow-md group-hover:scale-110 transition-transform duration-300`}>
-                  <Icon className="w-5.5 h-5.5 text-white" />
-                </div>
-                <h4 className="font-bold text-slate-900 mb-1 text-[15px]">{name}</h4>
-                <div className="text-brand-600 font-extrabold text-xl mb-3">{price}</div>
-                <p className="text-slate-500 text-[13px] leading-relaxed">{desc}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ── Scholarship ── */}
       <section id="scholarship" className="py-12 sm:py-16 md:py-20 mesh-bg">
         <div className="max-w-4xl mx-auto px-5 text-center">
@@ -340,7 +306,7 @@ export default function PricingPage() {
               { q: 'Can I switch plans anytime?', a: 'Yes. You can upgrade, downgrade, or cancel at any time from your dashboard. Prorated refunds are available for annual plans.' },
               { q: 'Is there a free trial?', a: 'Every new learner gets a free assessment session and a free introductory class before committing to any plan.' },
               { q: 'Do you support currencies other than USD?', a: 'All plans are priced in USD for global consistency. We support international card payments and regional payment methods via Paystack and Flutterwave for African learners.' },
-              { q: 'Are group sessions live or recorded?', a: 'All sessions are live with real-time tutor interaction. Sessions are also recorded and available in your dashboard for 30 days.' },
+              { q: 'Are group sessions live or recorded?', a: 'Students have video guides in each module of the program and also have live Instructor Office Hours to deepen their understanding and guide their curiosity.' },
               { q: 'Do you support homeschooling families?', a: 'Yes: homeschoolers are one of our fastest-growing communities. We offer flexible weekday/weekend scheduling, self-paced progression, parent-visible dashboards, and stacking sibling discounts so multi-child homeschool families can enrol affordably. Our curriculum is intentionally designed for cognitive and brain development: strengthening logic, focus, creativity, and problem-solving.' },
             ].map(({ q, a }, i) => (
               <motion.details key={i}

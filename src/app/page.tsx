@@ -14,7 +14,9 @@ import {
 import AnimatedCounter from '@/components/ui/AnimatedCounter';
 import SectionWrapper from '@/components/ui/SectionWrapper';
 import FreeTrialForm, { FreeTrialModal } from '@/components/FreeTrialForm';
+import InfoSessionPopup from '@/components/InfoSessionPopup';
 import { CourseStack } from '@/components/TechLogos';
+import { usePrograms, tagColorFor, isPast, isUpcoming } from '@/lib/programs';
 
 /* ─────────────────── Sub-components ─────────────────── */
 
@@ -94,32 +96,26 @@ function BranchCard({ icon: Icon, title, subtitle, description, color, gradient,
   );
 }
 
-function TestimonialCard({ quote, name, role, flag, delay }: { quote: string; name: string; role: string; flag: string; delay: number }) {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true });
-  return (
-    <motion.div ref={ref} initial={{ opacity: 0, y: 28 }} animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ delay, duration: 0.6 }} className="premium-card flex flex-col gap-4 h-full relative overflow-hidden group">
-      {/* Subtle gradient accent */}
-      <div className="absolute top-0 right-0 w-32 h-32 rounded-full blur-3xl opacity-0 group-hover:opacity-[0.06] transition-opacity duration-700 bg-brand-500" />
-      <div className="flex gap-0.5">
-        {[...Array(5)].map((_, i) => <Star key={i} className="w-4 h-4 text-amber-400 fill-amber-400" />)}
-      </div>
-      <p className="text-slate-600 leading-relaxed text-sm flex-1">&ldquo;{quote}&rdquo;</p>
-      <div className="flex items-center gap-3 pt-3 border-t border-slate-100">
-        <div className="text-2xl">{flag}</div>
-        <div>
-          <div className="text-sm font-bold text-slate-900">{name}</div>
-          <div className="text-xs text-slate-400">{role}</div>
-        </div>
-      </div>
-    </motion.div>
-  );
+function formatProgramDate(iso: string): string {
+  // ISO date "YYYY-MM-DD" → "Mon YYYY" (avoid timezone offset by using parts directly).
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso);
+  if (!m) return iso;
+  const [, y, mo] = m;
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const idx = parseInt(mo, 10) - 1;
+  if (idx < 0 || idx > 11) return iso;
+  return `${months[idx]} ${m[3]}, ${y}`;
 }
 
 /* ═══════════════════ PAGE ═══════════════════ */
 export default function HomePage() {
   const [trialOpen, setTrialOpen] = useState(false);
+  const [infoSessionOpen, setInfoSessionOpen] = useState(false);
+  const { programs: dbPrograms, loaded: programsLoaded } = usePrograms();
+  // Home shows only items of kind=program (events live on /events)
+  const homePrograms = dbPrograms.filter((p) => (p.kind || 'program') === 'program');
+  const pastPrograms = homePrograms.filter(isPast);
+  const upcomingPrograms = homePrograms.filter(isUpcoming);
   const heroRef = useRef(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] });
   const heroY = useTransform(scrollYProgress, [0, 1], ['0%', '30%']);
@@ -834,45 +830,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ═══ TESTIMONIALS ═══ */}
-      <section className="py-16 sm:py-20 md:py-28 bg-white relative">
-        <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-10">
-          <SectionWrapper className="text-center mb-14">
-            <div className="section-tag mx-auto mb-5">
-              <Star className="w-3.5 h-3.5" /> Global Community
-            </div>
-            <h2 className="section-heading mb-4">Voices from <span className="gradient-text">Around the World</span></h2>
-            <p className="section-subheading mx-auto">
-              Students, parents, researchers, and school leaders share their ScholarlyEcho experience.
-            </p>
-          </SectionWrapper>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            <TestimonialCard
-              quote="My son joined at 11, zero coding knowledge. Two years later he's built an app for our community's farm market and is teaching other kids in our village. ScholarlyEcho changed what we thought was possible."
-              name="Amina Diallo"
-              role="Parent · Dakar, Senegal"
-              flag="🇸🇳"
-              delay={0}
-            />
-            <TestimonialCard
-              quote="The AI Foundations track is exactly what was missing in our school district. I enrolled three of my students and within months they were building machine learning projects. Absolutely world-class content."
-              name="Ms. Rachel Thompson"
-              role="STEM Teacher · Atlanta, USA"
-              flag="🇺🇸"
-              delay={0.1}
-            />
-            <TestimonialCard
-              quote="Presenting at the Thesis Spotlight gave my PhD research the visibility it deserved. Within two weeks I had five partnership requests from education NGOs across West Africa. The platform is genuinely transformative."
-              name="Dr. Kwame Asante"
-              role="Researcher · University of Ghana"
-              flag="🇬🇭"
-              delay={0.2}
-            />
-          </div>
-        </div>
-      </section>
-
       {/* ═══ PROGRAMS ═══ */}
       <section className="py-16 sm:py-20 md:py-28 bg-slate-50/80">
         <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-10">
@@ -891,21 +848,21 @@ export default function HomePage() {
                 <span className="w-2 h-2 rounded-full bg-emerald-500" /> Completed
               </h3>
               <div className="space-y-3">
-                {[
-                  { title: 'Summer of Code 2025', date: 'Jun–Aug 2025', tag: 'Learning Hub', tagColor: 'bg-brand-50 text-brand-600', desc: 'Intensive summer coding bootcamp across 3 continents: 500+ students graduated.' },
-                  { title: 'Build for Ramadan 2026', date: 'Mar 2026', tag: 'Community', tagColor: 'bg-emerald-50 text-emerald-600', desc: 'Special program blending tech education with community service during Ramadan.' },
-                  { title: 'AI Track Launch 2025', date: 'Sep 2025', tag: 'AI Developer', tagColor: 'bg-purple-50 text-purple-600', desc: 'Launch of AI Developer and Product Builder tracks with first cohort of 120 students.' },
-                ].map((p, i) => (
-                  <motion.div key={p.title} initial={{ opacity: 0, x: -12 }} whileInView={{ opacity: 1, x: 0 }}
+                {!programsLoaded ? (
+                  <div className="premium-card text-slate-400 text-sm">Loading…</div>
+                ) : pastPrograms.length === 0 ? (
+                  <div className="premium-card text-slate-400 text-sm">No past programs to display yet.</div>
+                ) : pastPrograms.map((p, i) => (
+                  <motion.div key={p.id} initial={{ opacity: 0, x: -12 }} whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }} transition={{ delay: i * 0.08 }}
                     className="premium-card group relative overflow-hidden">
                     <div className="absolute top-0 left-0 bottom-0 w-[3px] bg-emerald-400 rounded-l-2xl" />
                     <div className="flex items-start justify-between gap-3 mb-2">
-                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${p.tagColor}`}>{p.tag}</span>
-                      <span className="text-[11px] text-slate-400 flex-shrink-0">{p.date}</span>
+                      {p.category && <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${tagColorFor(p.category)}`}>{p.category}</span>}
+                      {p.startDate && <span className="text-[11px] text-slate-400 flex-shrink-0">{formatProgramDate(p.startDate)}</span>}
                     </div>
-                    <h4 className="text-[15px] font-bold text-slate-900 mb-1.5 group-hover:text-brand-600 transition-colors" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>{p.title}</h4>
-                    <p className="text-slate-500 text-[13px] leading-relaxed">{p.desc}</p>
+                    <h4 className="text-[15px] font-bold text-slate-900 mb-1.5 group-hover:text-brand-600 transition-colors" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>{p.name}</h4>
+                    {p.description && <p className="text-slate-500 text-[13px] leading-relaxed">{p.description}</p>}
                   </motion.div>
                 ))}
               </div>
@@ -921,23 +878,40 @@ export default function HomePage() {
                 Upcoming
               </h3>
               <div className="space-y-3">
-                {[
-                  { title: 'Summer of Code 2026', date: 'Jun–Aug 2026', tag: 'Learning Hub', tagColor: 'bg-brand-50 text-brand-600', desc: 'Our biggest summer bootcamp yet: online + physical in 5 cities globally. Early registration open.' },
-                  { title: 'Millionaire Game Show: Continental Tour', date: 'Apr 2026', tag: 'Edutainment', tagColor: 'bg-amber-50 text-amber-600', desc: 'Multi-city educational game show across Lagos, Accra, London, and more.' },
-                  { title: 'Research-to-Impact Summit', date: 'May 2026', tag: 'Spotlight Media', tagColor: 'bg-amber-50 text-amber-600', desc: 'Global virtual summit connecting PhD researchers with communities for real-world impact.' },
-                ].map((p, i) => (
-                  <motion.div key={p.title} initial={{ opacity: 0, x: 12 }} whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }} transition={{ delay: i * 0.08 }}
-                    className="premium-card group relative overflow-hidden">
-                    <div className="absolute top-0 left-0 bottom-0 w-[3px] bg-gradient-to-b from-brand-400 to-purple-500 rounded-l-2xl" />
-                    <div className="flex items-start justify-between gap-3 mb-2">
-                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${p.tagColor}`}>{p.tag}</span>
-                      <span className="text-[11px] text-brand-500 font-semibold flex-shrink-0">{p.date}</span>
-                    </div>
-                    <h4 className="text-[15px] font-bold text-slate-900 mb-1.5 group-hover:text-brand-600 transition-colors" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>{p.title}</h4>
-                    <p className="text-slate-500 text-[13px] leading-relaxed">{p.desc}</p>
-                  </motion.div>
-                ))}
+                {!programsLoaded ? (
+                  <div className="premium-card text-slate-400 text-sm">Loading…</div>
+                ) : upcomingPrograms.length === 0 ? (
+                  <div className="premium-card text-slate-400 text-sm">No upcoming programs announced yet.</div>
+                ) : upcomingPrograms.map((p, i) => {
+                  const isSummer = /summer\s*coding/i.test(p.name);
+                  return (
+                    <motion.div key={p.id} initial={{ opacity: 0, x: 12 }} whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }} transition={{ delay: i * 0.08 }}
+                      className="premium-card group relative overflow-hidden">
+                      <div className="absolute top-0 left-0 bottom-0 w-[3px] bg-gradient-to-b from-brand-400 to-purple-500 rounded-l-2xl" />
+                      <div className="flex items-start justify-between gap-3 mb-2">
+                        {p.category && <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${tagColorFor(p.category)}`}>{p.category}</span>}
+                        {p.startDate && <span className="text-[11px] text-brand-500 font-semibold flex-shrink-0">Starts {formatProgramDate(p.startDate)}</span>}
+                      </div>
+                      <h4 className="text-[15px] font-bold text-slate-900 mb-1.5 group-hover:text-brand-600 transition-colors" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>{p.name}</h4>
+                      {p.description && <p className="text-slate-500 text-[13px] leading-relaxed mb-3">{p.description}</p>}
+                      {(isSummer || p.ctaHref) && (
+                        <div className="flex flex-wrap items-center gap-2">
+                          {p.ctaHref && (
+                            <Link href={p.ctaHref} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-[11.5px] font-bold transition-all">
+                              {p.ctaLabel || 'Program details'} <ChevronRight className="w-3 h-3" />
+                            </Link>
+                          )}
+                          {isSummer && (
+                            <button onClick={() => setInfoSessionOpen(true)} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11.5px] font-bold transition-all">
+                              <Calendar className="w-3 h-3" /> Join Info Session · May 23
+                            </button>
+                          )}
+                        </div>
+                      )}
+                    </motion.div>
+                  );
+                })}
               </div>
             </SectionWrapper>
           </div>
@@ -1161,6 +1135,7 @@ export default function HomePage() {
       </section>
 
       <FreeTrialModal open={trialOpen} onClose={() => setTrialOpen(false)} />
+      <InfoSessionPopup open={infoSessionOpen} onClose={() => setInfoSessionOpen(false)} source="home-summer-2026" />
     </div>
   );
 }

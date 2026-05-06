@@ -8,75 +8,19 @@ import {
   Brain, Rocket, Building2, Star
 } from 'lucide-react';
 import SectionWrapper from '@/components/ui/SectionWrapper';
+import { usePrograms, gradientFor, tagColorFor, isPast } from '@/lib/programs';
+import type { ProgramDoc } from '@/lib/programs';
 
-const events = [
-  {
-    date: 'April 12, 2026', time: '9:00 AM – 5:00 PM UTC',
-    title: 'Global Holiday Coding Bootcamp: AI Edition',
-    type: 'Learning Hub', icon: BookOpen,
-    location: 'Online (Worldwide) + Lagos Hub',
-    seats: '120 seats', price: '$29 / Free on scholarship',
-    color: 'from-brand-500 to-purple-600',
-    tagColor: 'bg-brand-50 text-brand-600',
-    desc: '10-day Easter bootcamp: learners choose from Web Dev, AI Foundations, or Product Builder sprint tracks. Live sessions, mentors, final project demo.',
-    badge: 'Multi-track',
-  },
-  {
-    date: 'April 26, 2026', time: '10:00 AM – 3:00 PM (Local)',
-    title: 'Millionaire Game Show: Continental Tour 2026',
-    type: 'Edutainment', icon: Trophy,
-    location: 'Lagos · Accra · Nairobi · London (Livestreamed)',
-    seats: '500 per city', price: 'Free to attend',
-    color: 'from-emerald-400 to-teal-600',
-    tagColor: 'bg-emerald-50 text-emerald-600',
-    desc: 'Our flagship educational game show returns: now across 4 cities simultaneously with a live global leaderboard. Schools compete for the continental title.',
-    badge: 'Multi-city',
-  },
-  {
-    date: 'May 8–9, 2026', time: 'All Day (UTC)',
-    title: 'Research-to-Impact Global Summit',
-    type: 'Spotlight Media', icon: Mic2,
-    location: 'Virtual: Zoom (Global)',
-    seats: 'Unlimited virtual', price: 'Free',
-    color: 'from-amber-400 to-orange-500',
-    tagColor: 'bg-amber-50 text-amber-600',
-    desc: '2-day virtual event featuring 10 thesis spotlights, implementation workshops, panel discussions, and community matchmaking for researchers and NGOs.',
-    badge: '2-day Summit',
-  },
-  {
-    date: 'May 24–25, 2026', time: '48 Hours',
-    title: 'ScholarlyEcho AI Hackathon 2026',
-    type: 'Code Prodigy', icon: Brain,
-    location: 'Maryland, USA + Online (Global)',
-    seats: '80 teams globally', price: '$15/team',
-    color: 'from-purple-500 to-indigo-600',
-    tagColor: 'bg-purple-50 text-purple-600',
-    desc: '48-hour global hackathon for youth 13–25. Build AI-powered solutions for real community challenges. $5,000 in prizes + mentorship from industry leaders.',
-    badge: '$5K prizes',
-  },
-  {
-    date: 'June 14, 2026', time: '10:00 AM – 2:00 PM WAT',
-    title: 'World Flag Challenge: African Continental Finals',
-    type: 'Edutainment', icon: Globe,
-    location: 'Abuja, Nigeria + Livestream',
-    seats: '300 seats', price: 'Free',
-    color: 'from-teal-400 to-cyan-500',
-    tagColor: 'bg-teal-50 text-teal-600',
-    desc: 'Top school teams from 12 African countries compete in the Continental Finals of the World National Flag Challenge. Certificates, trophies, and scholarships on offer.',
-    badge: 'Continental',
-  },
-  {
-    date: 'July 5, 2026', time: '10:00 AM – 4:00 PM',
-    title: 'ScholarlyEcho Open Day: Global Edition',
-    type: 'Community', icon: Users,
-    location: 'Maryland, USA + Lagos, Nigeria + Virtual',
-    seats: 'Open registration', price: 'Free',
-    color: 'from-violet-400 to-purple-600',
-    tagColor: 'bg-violet-50 text-violet-600',
-    desc: 'Meet the team, watch live student project demos, attend free workshops in AI, coding, and product design, and learn everything about our programs for 2026–27.',
-    badge: 'Free',
-  },
-];
+const CATEGORY_ICON: Record<string, React.ElementType> = {
+  'Learning Hub': BookOpen,
+  'Spotlight Media': Mic2,
+  'Code Prodigy': Brain,
+  'Edutainment': Trophy,
+  'Community': Users,
+};
+function iconFor(category?: string): React.ElementType {
+  return (category && CATEGORY_ICON[category]) || Sparkles;
+}
 
 const pastHighlights = [
   { title: '2025 Youth Tech Hackathon', participants: '340', projects: '82', winner: 'AI Farm Monitor by Aisha N.', color: 'from-brand-400 to-purple-500' },
@@ -84,7 +28,25 @@ const pastHighlights = [
   { title: 'Research Summit 2025', researchers: '12', orgs: '35', partnerships: '8', color: 'from-amber-400 to-orange-500' },
 ];
 
+function parseEventDateLabel(p: ProgramDoc): { month: string; day: string; year: string } {
+  if (p.eventDate) {
+    const parts = p.eventDate.split(' ');
+    return { month: parts[0] || '', day: (parts[1] || '').replace(',', ''), year: parts[2] || '' };
+  }
+  if (p.startDate) {
+    const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(p.startDate);
+    if (m) {
+      const [, y, mo, d] = m;
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      return { month: months[parseInt(mo, 10) - 1] || '', day: String(parseInt(d, 10)), year: y };
+    }
+  }
+  return { month: '', day: '', year: '' };
+}
+
 export default function EventsPage() {
+  const { programs, loaded } = usePrograms();
+  const events = programs.filter((p) => (p.kind || 'program') === 'event' && !isPast(p));
   return (
     <div className="overflow-hidden">
 
@@ -128,10 +90,20 @@ export default function EventsPage() {
           </SectionWrapper>
 
           <div className="space-y-5">
-            {events.map((event, i) => {
-              const Icon = event.icon;
+            {!loaded ? (
+              <div className="premium-card text-slate-400 text-sm text-center py-10">Loading…</div>
+            ) : events.length === 0 ? (
+              <div className="premium-card text-slate-400 text-sm text-center py-10">No upcoming events announced yet. Check back soon.</div>
+            ) : events.map((event, i) => {
+              const Icon = iconFor(event.category);
+              const gradient = gradientFor(event.category);
+              const tag = tagColorFor(event.category);
+              const dateLabel = parseEventDateLabel(event);
+              const isFree = !event.price || /free/i.test(event.price);
+              const ctaHref = event.ctaHref || '/contact';
+              const ctaLabel = event.ctaLabel || 'Register';
               return (
-                <motion.div key={i}
+                <motion.div key={event.id}
                   initial={{ opacity: 0, y: 24 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
@@ -139,50 +111,54 @@ export default function EventsPage() {
                   className="premium-card overflow-hidden group hover:border-transparent hover:shadow-xl transition-all duration-300">
                   <div className="flex flex-col md:flex-row gap-5">
                     {/* Date panel */}
-                    <div className={`md:w-28 h-24 md:h-auto rounded-2xl bg-gradient-to-br ${event.color} flex flex-col items-center justify-center text-white flex-shrink-0 relative overflow-hidden`}>
+                    <div className={`md:w-28 h-24 md:h-auto rounded-2xl bg-gradient-to-br ${gradient} flex flex-col items-center justify-center text-white flex-shrink-0 relative overflow-hidden`}>
                       <div className="absolute inset-0 opacity-20"
                         style={{ backgroundImage: 'radial-gradient(circle at 80% 20%, white, transparent)' }} />
                       <div className="relative z-10 text-center px-2">
-                        <div className="text-[10px] font-bold uppercase tracking-wider opacity-80">{event.date.split(' ')[0]}</div>
-                        <div className="text-3xl font-extrabold">{event.date.split(' ')[1]?.replace(',', '')}</div>
-                        <div className="text-[10px] opacity-80">{event.date.split(' ')[2]}</div>
+                        <div className="text-[10px] font-bold uppercase tracking-wider opacity-80">{dateLabel.month}</div>
+                        <div className="text-3xl font-extrabold">{dateLabel.day}</div>
+                        <div className="text-[10px] opacity-80">{dateLabel.year}</div>
                       </div>
                     </div>
 
                     {/* Content */}
                     <div className="flex-1 min-w-0">
                       <div className="flex flex-wrap items-center gap-2 mb-2.5">
-                        <span className={`px-3 py-1 rounded-full text-[11px] font-bold flex items-center gap-1.5 ${event.tagColor}`}>
-                          <Icon className="w-3 h-3" /> {event.type}
-                        </span>
-                        <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${event.price.startsWith('$') || event.price === 'Free' || event.price.includes('Free') ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
-                          {event.price}
-                        </span>
-                        {(event as any).badge && (
+                        {event.category && (
+                          <span className={`px-3 py-1 rounded-full text-[11px] font-bold flex items-center gap-1.5 ${tag}`}>
+                            <Icon className="w-3 h-3" /> {event.category}
+                          </span>
+                        )}
+                        {event.price && (
+                          <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${isFree ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
+                            {event.price}
+                          </span>
+                        )}
+                        {event.badge && (
                           <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700">
-                            {(event as any).badge}
+                            {event.badge}
                           </span>
                         )}
                       </div>
 
                       <h3 className="text-[17px] font-bold text-slate-900 mb-2 group-hover:text-brand-600 transition-colors leading-snug"
                         style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
-                        {event.title}
+                        {event.name}
                       </h3>
-                      <p className="text-slate-500 text-[13px] mb-3.5 leading-relaxed">{event.desc}</p>
+                      {event.description && <p className="text-slate-500 text-[13px] mb-3.5 leading-relaxed">{event.description}</p>}
 
                       <div className="flex flex-wrap gap-4 text-[12px] text-slate-400">
-                        <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> {event.time}</span>
-                        <span className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" /> {event.location}</span>
-                        <span className="flex items-center gap-1.5"><Ticket className="w-3.5 h-3.5" /> {event.seats}</span>
+                        {event.time && <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> {event.time}</span>}
+                        {event.location && <span className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" /> {event.location}</span>}
+                        {event.seats && <span className="flex items-center gap-1.5"><Ticket className="w-3.5 h-3.5" /> {event.seats}</span>}
                       </div>
                     </div>
 
                     {/* CTA */}
                     <div className="flex items-center flex-shrink-0">
-                      <Link href="/contact"
-                        className={`px-6 py-3 rounded-xl font-bold text-[13px] whitespace-nowrap flex items-center gap-2 bg-gradient-to-r ${event.color} text-white hover:opacity-90 hover:-translate-y-0.5 transition-all duration-200 shadow-md`}>
-                        Register <ArrowRight className="w-4 h-4" />
+                      <Link href={ctaHref}
+                        className={`px-6 py-3 rounded-xl font-bold text-[13px] whitespace-nowrap flex items-center gap-2 bg-gradient-to-r ${gradient} text-white hover:opacity-90 hover:-translate-y-0.5 transition-all duration-200 shadow-md`}>
+                        {ctaLabel} <ArrowRight className="w-4 h-4" />
                       </Link>
                     </div>
                   </div>

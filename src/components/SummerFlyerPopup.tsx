@@ -11,8 +11,16 @@ const STORAGE_KEY = 'se_summer_flyer_2026_dismissed';
 const INFO_SESSION_DATE_ISO = '2026-05-23';
 const INFO_SESSION_LABEL = 'May 23, 2026';
 
-export default function SummerFlyerPopup() {
-  const [open, setOpen] = useState(false);
+type Props = {
+  /** When true, popup is controlled externally (no auto-show, no localStorage dismissal). */
+  controlled?: boolean;
+  open?: boolean;
+  onClose?: () => void;
+};
+
+export default function SummerFlyerPopup({ controlled = false, open: openProp, onClose }: Props = {}) {
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = controlled ? !!openProp : internalOpen;
   const [rsvpName, setRsvpName] = useState('');
   const [rsvpEmail, setRsvpEmail] = useState('');
   const [rsvpStatus, setRsvpStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
@@ -38,6 +46,7 @@ export default function SummerFlyerPopup() {
   };
 
   useEffect(() => {
+    if (controlled) return;
     if (typeof window === 'undefined') return;
     try {
       const dismissed = window.localStorage.getItem(STORAGE_KEY);
@@ -45,12 +54,16 @@ export default function SummerFlyerPopup() {
     } catch { /* localStorage may be blocked: fall through */ }
 
     // Slight delay so it doesn't fight the page-load paint.
-    const t = window.setTimeout(() => setOpen(true), 1100);
+    const t = window.setTimeout(() => setInternalOpen(true), 1100);
     return () => window.clearTimeout(t);
-  }, []);
+  }, [controlled]);
 
   const close = () => {
-    setOpen(false);
+    if (controlled) {
+      onClose?.();
+      return;
+    }
+    setInternalOpen(false);
     try { window.localStorage.setItem(STORAGE_KEY, '1'); } catch { /* noop */ }
   };
 

@@ -1,0 +1,92 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
+import { db } from './firebase';
+
+export type ProgramDoc = {
+  id: string;
+  name: string;
+  description?: string;
+  startDate?: string;
+  status?: 'upcoming' | 'active' | 'completed' | string;
+  category?: string;
+  kind?: 'program' | 'event' | string;
+  // Optional display fields (events page mostly)
+  eventDate?: string;
+  time?: string;
+  location?: string;
+  seats?: string;
+  price?: string;
+  badge?: string;
+  ctaHref?: string;
+  ctaLabel?: string;
+  createdAt?: { toDate?: () => Date } | Date | null;
+};
+
+const CATEGORY_TAG_COLOR: Record<string, string> = {
+  'Learning Hub': 'bg-brand-50 text-brand-600',
+  'Spotlight Media': 'bg-amber-50 text-amber-600',
+  'Code Prodigy': 'bg-purple-50 text-purple-600',
+  'Edutainment': 'bg-emerald-50 text-emerald-600',
+  'Community': 'bg-emerald-50 text-emerald-600',
+};
+const CATEGORY_GRADIENT: Record<string, string> = {
+  'Learning Hub': 'from-brand-500 to-purple-600',
+  'Spotlight Media': 'from-amber-400 to-orange-500',
+  'Code Prodigy': 'from-purple-500 to-indigo-600',
+  'Edutainment': 'from-emerald-400 to-teal-600',
+  'Community': 'from-violet-400 to-purple-600',
+};
+const FALLBACK_TAG = 'bg-slate-100 text-slate-600';
+const FALLBACK_GRADIENT = 'from-slate-400 to-slate-600';
+
+export function tagColorFor(category?: string) {
+  return (category && CATEGORY_TAG_COLOR[category]) || FALLBACK_TAG;
+}
+export function gradientFor(category?: string) {
+  return (category && CATEGORY_GRADIENT[category]) || FALLBACK_GRADIENT;
+}
+
+function toMillis(value: ProgramDoc['createdAt']): number {
+  if (!value) return 0;
+  if (value instanceof Date) return value.getTime();
+  if (typeof (value as any).toDate === 'function') return (value as any).toDate().getTime();
+  return 0;
+}
+
+/**
+ * Subscribe to the `programs` collection. Sorts by startDate (asc) then createdAt (desc).
+ * `loaded` flips to true after the first snapshot — use it to render an empty state vs spinner.
+ */
+export function usePrograms() {
+  const [programs, setPrograms] = useState<ProgramDoc[]>([]);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    const q = query(collection(db, 'programs'), orderBy('createdAt', 'desc'));
+    const unsub = onSnapshot(q, (snap) => {
+      const docs = snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<ProgramDoc, 'id'>) }));
+      docs.sort((a, b) => {
+        const aD = a.startDate || '';
+        const bD = b.startDate || '';
+        if (aD && bD && aD !== bD) return aD.localeCompare(bD);
+        if (aD && !bD) return -1;
+        if (bD && !aD) return 1;
+        return toMillis(b.createdAt) - toMillis(a.createdAt);
+      });
+      setPrograms(docs);
+      setLoaded(true);
+    });
+    return () => unsub();
+  }, []);
+
+  return { programs, loaded };
+}
+
+export function isPast(p: ProgramDoc) {
+  return (p.status || '').toLowerCase() === 'completed';
+}
+export function isUpcoming(p: ProgramDoc) {
+  return !isPast(p);
+}
