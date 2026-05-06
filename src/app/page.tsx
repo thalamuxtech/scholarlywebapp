@@ -790,43 +790,23 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ═══ GLOBAL IMPACT MAP ═══ */}
+      {/* ═══ GLOBAL VIRTUAL CLASSES ═══ */}
       <section className="py-16 sm:py-20 md:py-28 relative overflow-hidden noise-overlay"
         style={{ background: 'linear-gradient(165deg, #070c1b 0%, #0d1333 50%, #0c1a2e 100%)' }}>
-        <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-10 relative z-10">
-          <SectionWrapper className="text-center mb-14">
+        <div className="max-w-4xl mx-auto px-5 sm:px-8 lg:px-10 relative z-10 text-center">
+          <SectionWrapper>
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.06] border border-white/[0.08] text-white/60 text-[13px] font-medium mb-5">
-              <Globe className="w-3.5 h-3.5 text-emerald-400" /> Global Reach
+              <Globe className="w-3.5 h-3.5 text-emerald-400" /> Live Online · Anywhere
             </div>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white mb-5 leading-tight tracking-[-0.02em]" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
               Learning Knows <span className="gradient-text-animated">No Borders</span>
             </h2>
-            <p className="text-white/40 text-base sm:text-lg max-w-2xl mx-auto">
-              From Maryland to Nairobi, Lagos to London: ScholarlyEcho is where the world&apos;s youth come to level up.
+            <p className="text-white/55 text-base sm:text-lg leading-relaxed max-w-2xl mx-auto">
+              Every ScholarlyEcho cohort is delivered as live, instructor-led virtual classes:
+              wherever your child is, they can learn alongside peers across continents,
+              with mentors who treat distance as no obstacle at all.
             </p>
           </SectionWrapper>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-5 mb-14">
-            {[
-              { region: 'Sub-Saharan Africa', countries: 'Nigeria, Ghana, Kenya', flag: '🌍', learners: '120+ learners' },
-              { region: 'North America', countries: 'USA & Canada', flag: '🌎', learners: '40+ learners' },
-              { region: 'Europe', countries: 'United Kingdom', flag: '🌍', learners: '25+ learners' },
-              { region: 'Asia Pacific', countries: 'Growing reach', flag: '🌏', learners: '15+ learners' },
-            ].map(({ region, countries, flag, learners }, i) => (
-              <motion.div key={region}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="rounded-2xl p-5 border border-white/[0.06] text-center group hover:border-white/[0.12] transition-all duration-500"
-                style={{ background: 'rgba(255,255,255,0.03)' }}>
-                <div className="text-3xl mb-3">{flag}</div>
-                <div className="text-white font-bold text-[14px] sm:text-[15px] mb-1">{region}</div>
-                <div className="text-white/35 text-[12px] mb-2">{countries}</div>
-                <div className="text-emerald-400 text-[12px] font-semibold">{learners}</div>
-              </motion.div>
-            ))}
-          </div>
         </div>
       </section>
 
