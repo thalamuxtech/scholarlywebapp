@@ -9,7 +9,7 @@ import {
   TrendingUp, CheckCircle2, Play, ChevronRight, Sparkles,
   Code2, Globe, Trophy, Lightbulb, Brain, Zap,
   Layers, Target, BarChart3, Rocket, Heart, GraduationCap, Briefcase,
-  Home, Calendar, Eye, Shield
+  Home, Calendar, Eye, Shield, Ticket, DollarSign, Video
 } from 'lucide-react';
 import AnimatedCounter from '@/components/ui/AnimatedCounter';
 import SectionWrapper from '@/components/ui/SectionWrapper';
@@ -875,10 +875,22 @@ export default function HomePage() {
                       </div>
                       <h4 className="text-[15px] font-bold text-slate-900 mb-1.5 group-hover:text-brand-600 transition-colors" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>{p.name}</h4>
                       {p.description && <p className="text-slate-500 text-[13px] leading-relaxed mb-3">{p.description}</p>}
-                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[11px] text-slate-500 mb-3">
-                        {fee && <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md font-bold ${/free/i.test(fee) ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-700'}`}>💵 {fee}</span>}
-                        {p.seats && <span className="inline-flex items-center gap-1">🪑 {p.seats}</span>}
-                        {p.prizes && <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-50 text-amber-700 font-bold">🏆 {p.prizes}</span>}
+                      <div className="flex flex-wrap items-center gap-1.5 mb-3">
+                        {fee && (
+                          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold ${/free/i.test(fee) ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-700'}`}>
+                            <DollarSign className="w-3 h-3" /> Fee: {fee}
+                          </span>
+                        )}
+                        {p.prizes && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold bg-amber-50 text-amber-700">
+                            <Trophy className="w-3 h-3" /> Prize: {p.prizes}
+                          </span>
+                        )}
+                        {p.seats && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold bg-slate-50 text-slate-600 border border-slate-100">
+                            <Ticket className="w-3 h-3" /> Seats: {p.seats}
+                          </span>
+                        )}
                       </div>
                       {(p.ctaHref || hasInfoSession) && (
                         <div className="flex flex-wrap items-center gap-2">
@@ -888,8 +900,8 @@ export default function HomePage() {
                             </Link>
                           )}
                           {hasInfoSession && (
-                            <button onClick={() => setInfoSessionEvent(p)} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11.5px] font-bold transition-all">
-                              <Calendar className="w-3 h-3" /> Join Info Session · {formatProgramDate(p.infoSessionDate!)}
+                            <button onClick={() => setInfoSessionEvent(p)} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-brand-500 to-purple-600 hover:from-brand-600 hover:to-purple-700 text-white text-[11.5px] font-bold transition-all shadow-sm">
+                              <Video className="w-3.5 h-3.5" /> Join the Info Session for this event!
                             </button>
                           )}
                         </div>
