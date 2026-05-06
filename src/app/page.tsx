@@ -16,7 +16,7 @@ import SectionWrapper from '@/components/ui/SectionWrapper';
 import FreeTrialForm, { FreeTrialModal } from '@/components/FreeTrialForm';
 import InfoSessionPopup from '@/components/InfoSessionPopup';
 import { CourseStack } from '@/components/TechLogos';
-import { usePrograms, tagColorFor, isPast, isUpcoming } from '@/lib/programs';
+import { useEvents, tagColorFor, isPast, isUpcoming } from '@/lib/events';
 
 /* ─────────────────── Sub-components ─────────────────── */
 
@@ -111,9 +111,9 @@ function formatProgramDate(iso: string): string {
 export default function HomePage() {
   const [trialOpen, setTrialOpen] = useState(false);
   const [infoSessionOpen, setInfoSessionOpen] = useState(false);
-  const { programs: dbPrograms, loaded: programsLoaded } = usePrograms();
+  const { events: dbEvents, loaded: programsLoaded } = useEvents();
   // Home shows only items of kind=program (events live on /events)
-  const homePrograms = dbPrograms.filter((p) => (p.kind || 'program') === 'program');
+  const homePrograms = dbEvents.filter((p) => (p.kind || 'program') === 'program');
   const pastPrograms = homePrograms.filter(isPast);
   const upcomingPrograms = homePrograms.filter(isUpcoming);
   const heroRef = useRef(null);

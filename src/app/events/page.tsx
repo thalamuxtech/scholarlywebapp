@@ -8,8 +8,8 @@ import {
   Brain, Rocket, Building2, Star
 } from 'lucide-react';
 import SectionWrapper from '@/components/ui/SectionWrapper';
-import { usePrograms, gradientFor, tagColorFor, isPast } from '@/lib/programs';
-import type { ProgramDoc } from '@/lib/programs';
+import { useEvents, gradientFor, tagColorFor, isPast } from '@/lib/events';
+import type { EventDoc } from '@/lib/events';
 
 const CATEGORY_ICON: Record<string, React.ElementType> = {
   'Learning Hub': BookOpen,
@@ -28,7 +28,7 @@ const pastHighlights = [
   { title: 'Research Summit 2025', researchers: '12', orgs: '35', partnerships: '8', color: 'from-amber-400 to-orange-500' },
 ];
 
-function parseEventDateLabel(p: ProgramDoc): { month: string; day: string; year: string } {
+function parseEventDateLabel(p: EventDoc): { month: string; day: string; year: string } {
   if (p.eventDate) {
     const parts = p.eventDate.split(' ');
     return { month: parts[0] || '', day: (parts[1] || '').replace(',', ''), year: parts[2] || '' };
@@ -45,8 +45,8 @@ function parseEventDateLabel(p: ProgramDoc): { month: string; day: string; year:
 }
 
 export default function EventsPage() {
-  const { programs, loaded } = usePrograms();
-  const events = programs.filter((p) => (p.kind || 'program') === 'event' && !isPast(p));
+  const { events: allEvents, loaded } = useEvents();
+  const events = allEvents.filter((p) => (p.kind || 'program') === 'event' && !isPast(p));
   return (
     <div className="overflow-hidden">
 

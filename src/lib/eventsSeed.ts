@@ -1,10 +1,9 @@
 /**
- * Initial programs & events. Used by the admin "Seed initial data" button to populate
- * the Firestore `programs` collection on first run. Only creates docs whose `name` is
- * not already present.
+ * Initial events. Auto-imported on first admin Events page load when the
+ * `events` collection is empty. Skips any name that already exists.
  */
 
-export type SeedProgram = {
+export type SeedEvent = {
   name: string;
   description: string;
   startDate: string;
@@ -21,7 +20,7 @@ export type SeedProgram = {
   ctaLabel?: string;
 };
 
-export const SEED_PROGRAMS: SeedProgram[] = [
+export const SEED_EVENTS: SeedEvent[] = [
   // ── Past programs (home: Completed column) ──
   {
     name: 'Summer of Code 2025',

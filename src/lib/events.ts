@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 import { db } from './firebase';
 
-export type ProgramDoc = {
+export type EventDoc = {
   id: string;
   name: string;
   description?: string;
@@ -12,7 +12,7 @@ export type ProgramDoc = {
   status?: 'upcoming' | 'active' | 'completed' | string;
   category?: string;
   kind?: 'program' | 'event' | string;
-  // Optional display fields (events page mostly)
+  // Optional display fields
   eventDate?: string;
   time?: string;
   location?: string;
@@ -48,7 +48,7 @@ export function gradientFor(category?: string) {
   return (category && CATEGORY_GRADIENT[category]) || FALLBACK_GRADIENT;
 }
 
-function toMillis(value: ProgramDoc['createdAt']): number {
+function toMillis(value: EventDoc['createdAt']): number {
   if (!value) return 0;
   if (value instanceof Date) return value.getTime();
   if (typeof (value as any).toDate === 'function') return (value as any).toDate().getTime();
@@ -56,17 +56,17 @@ function toMillis(value: ProgramDoc['createdAt']): number {
 }
 
 /**
- * Subscribe to the `programs` collection. Sorts by startDate (asc) then createdAt (desc).
- * `loaded` flips to true after the first snapshot — use it to render an empty state vs spinner.
+ * Subscribe to the `events` Firestore collection.
+ * `loaded` flips to true after the first snapshot.
  */
-export function usePrograms() {
-  const [programs, setPrograms] = useState<ProgramDoc[]>([]);
+export function useEvents() {
+  const [events, setEvents] = useState<EventDoc[]>([]);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    const q = query(collection(db, 'programs'), orderBy('createdAt', 'desc'));
+    const q = query(collection(db, 'events'), orderBy('createdAt', 'desc'));
     const unsub = onSnapshot(q, (snap) => {
-      const docs = snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<ProgramDoc, 'id'>) }));
+      const docs = snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<EventDoc, 'id'>) }));
       docs.sort((a, b) => {
         const aD = a.startDate || '';
         const bD = b.startDate || '';
@@ -75,18 +75,18 @@ export function usePrograms() {
         if (bD && !aD) return 1;
         return toMillis(b.createdAt) - toMillis(a.createdAt);
       });
-      setPrograms(docs);
+      setEvents(docs);
       setLoaded(true);
     });
     return () => unsub();
   }, []);
 
-  return { programs, loaded };
+  return { events, loaded };
 }
 
-export function isPast(p: ProgramDoc) {
+export function isPast(p: EventDoc) {
   return (p.status || '').toLowerCase() === 'completed';
 }
-export function isUpcoming(p: ProgramDoc) {
+export function isUpcoming(p: EventDoc) {
   return !isPast(p);
 }
