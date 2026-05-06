@@ -46,7 +46,8 @@ function parseEventDateLabel(p: EventDoc): { month: string; day: string; year: s
 
 export default function EventsPage() {
   const { events: allEvents, loaded } = useEvents();
-  const events = allEvents.filter((p) => (p.kind || 'program') === 'event' && !isPast(p));
+  // /events is the catch-all listing for everything happening — show both events and upcoming programs.
+  const events = allEvents.filter((p) => !isPast(p));
   return (
     <div className="overflow-hidden">
 
