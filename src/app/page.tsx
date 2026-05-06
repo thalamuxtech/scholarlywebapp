@@ -16,7 +16,8 @@ import SectionWrapper from '@/components/ui/SectionWrapper';
 import FreeTrialForm, { FreeTrialModal } from '@/components/FreeTrialForm';
 import InfoSessionPopup from '@/components/InfoSessionPopup';
 import { CourseStack } from '@/components/TechLogos';
-import { useEvents, tagColorFor, isPast, isUpcoming } from '@/lib/events';
+import { useEvents, tagColorFor, isPast, isUpcoming, feeLabel } from '@/lib/events';
+import type { EventDoc } from '@/lib/events';
 
 /* ─────────────────── Sub-components ─────────────────── */
 
@@ -110,12 +111,10 @@ function formatProgramDate(iso: string): string {
 /* ═══════════════════ PAGE ═══════════════════ */
 export default function HomePage() {
   const [trialOpen, setTrialOpen] = useState(false);
-  const [infoSessionOpen, setInfoSessionOpen] = useState(false);
+  const [infoSessionEvent, setInfoSessionEvent] = useState<EventDoc | null>(null);
   const { events: dbEvents, loaded: programsLoaded } = useEvents();
-  // Home shows only items of kind=program (events live on /events)
-  const homePrograms = dbEvents.filter((p) => (p.kind || 'program') === 'program');
-  const pastPrograms = homePrograms.filter(isPast);
-  const upcomingPrograms = homePrograms.filter(isUpcoming);
+  const pastPrograms = dbEvents.filter(isPast).slice(0, 3);
+  const upcomingPrograms = dbEvents.filter(isUpcoming).slice(0, 3);
   const heroRef = useRef(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] });
   const heroY = useTransform(scrollYProgress, [0, 1], ['0%', '30%']);
@@ -863,28 +862,34 @@ export default function HomePage() {
                 ) : upcomingPrograms.length === 0 ? (
                   <div className="premium-card text-slate-400 text-sm">No upcoming programs announced yet.</div>
                 ) : upcomingPrograms.map((p, i) => {
-                  const isSummer = /summer\s*coding/i.test(p.name);
+                  const fee = feeLabel(p);
+                  const hasInfoSession = !!(p.infoSessionEnabled && p.infoSessionDate);
                   return (
                     <motion.div key={p.id} initial={{ opacity: 0, x: 12 }} whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true }} transition={{ delay: i * 0.08 }}
                       className="premium-card group relative overflow-hidden">
                       <div className="absolute top-0 left-0 bottom-0 w-[3px] bg-gradient-to-b from-brand-400 to-purple-500 rounded-l-2xl" />
-                      <div className="flex items-start justify-between gap-3 mb-2">
+                      <div className="flex items-start justify-between gap-3 mb-2 flex-wrap">
                         {p.category && <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${tagColorFor(p.category)}`}>{p.category}</span>}
-                        {p.startDate && <span className="text-[11px] text-brand-500 font-semibold flex-shrink-0">Starts {formatProgramDate(p.startDate)}</span>}
+                        {(p.eventDate || p.startDate) && <span className="text-[11px] text-brand-500 font-semibold flex-shrink-0">{p.eventDate ? p.eventDate : `Starts ${formatProgramDate(p.startDate!)}`}</span>}
                       </div>
                       <h4 className="text-[15px] font-bold text-slate-900 mb-1.5 group-hover:text-brand-600 transition-colors" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>{p.name}</h4>
                       {p.description && <p className="text-slate-500 text-[13px] leading-relaxed mb-3">{p.description}</p>}
-                      {(isSummer || p.ctaHref) && (
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[11px] text-slate-500 mb-3">
+                        {fee && <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md font-bold ${/free/i.test(fee) ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-700'}`}>💵 {fee}</span>}
+                        {p.seats && <span className="inline-flex items-center gap-1">🪑 {p.seats}</span>}
+                        {p.prizes && <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-50 text-amber-700 font-bold">🏆 {p.prizes}</span>}
+                      </div>
+                      {(p.ctaHref || hasInfoSession) && (
                         <div className="flex flex-wrap items-center gap-2">
                           {p.ctaHref && (
                             <Link href={p.ctaHref} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-700 text-white text-[11.5px] font-bold transition-all">
-                              {p.ctaLabel || 'Program details'} <ChevronRight className="w-3 h-3" />
+                              {p.ctaLabel || 'Learn more'} <ChevronRight className="w-3 h-3" />
                             </Link>
                           )}
-                          {isSummer && (
-                            <button onClick={() => setInfoSessionOpen(true)} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11.5px] font-bold transition-all">
-                              <Calendar className="w-3 h-3" /> Join Info Session · May 23
+                          {hasInfoSession && (
+                            <button onClick={() => setInfoSessionEvent(p)} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11.5px] font-bold transition-all">
+                              <Calendar className="w-3 h-3" /> Join Info Session · {formatProgramDate(p.infoSessionDate!)}
                             </button>
                           )}
                         </div>
@@ -1115,7 +1120,14 @@ export default function HomePage() {
       </section>
 
       <FreeTrialModal open={trialOpen} onClose={() => setTrialOpen(false)} />
-      <InfoSessionPopup open={infoSessionOpen} onClose={() => setInfoSessionOpen(false)} source="home-summer-2026" />
+      <InfoSessionPopup
+        open={!!infoSessionEvent}
+        onClose={() => setInfoSessionEvent(null)}
+        source={`home-${infoSessionEvent?.id || 'unknown'}`}
+        dateIso={infoSessionEvent?.infoSessionDate}
+        timeLabel={infoSessionEvent?.infoSessionTime}
+        eventName={infoSessionEvent?.name}
+      />
     </div>
   );
 }

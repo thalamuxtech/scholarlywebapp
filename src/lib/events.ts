@@ -21,6 +21,15 @@ export type EventDoc = {
   badge?: string;
   ctaHref?: string;
   ctaLabel?: string;
+  // Registration fee (preferred over the legacy `price` text field)
+  registrationFeeType?: 'free' | 'paid' | string;
+  registrationFeeAmount?: string;
+  // Prizes shown on the card, e.g. "$5,000 in prizes" or "Trophy + Scholarship"
+  prizes?: string;
+  // Per-event info session add-on
+  infoSessionEnabled?: boolean;
+  infoSessionDate?: string;
+  infoSessionTime?: string;
   createdAt?: { toDate?: () => Date } | Date | null;
 };
 
@@ -89,4 +98,17 @@ export function isPast(p: EventDoc) {
 }
 export function isUpcoming(p: EventDoc) {
   return !isPast(p);
+}
+
+/** Resolves the registration fee to a display label. Prefers structured fields, falls back to legacy `price`. */
+export function feeLabel(p: EventDoc): string | null {
+  if (p.registrationFeeType === 'free') return 'Free';
+  if (p.registrationFeeType === 'paid' && p.registrationFeeAmount) return p.registrationFeeAmount;
+  if (p.price) return p.price;
+  return null;
+}
+export function isFree(p: EventDoc): boolean {
+  if (p.registrationFeeType === 'free') return true;
+  if (p.registrationFeeType === 'paid') return false;
+  return !!(p.price && /free/i.test(p.price));
 }

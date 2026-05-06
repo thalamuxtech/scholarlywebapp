@@ -5,17 +5,32 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Video, Loader2, CheckCircle2, Mail, Calendar, Clock } from 'lucide-react';
 import { submitForm } from '@/lib/formSubmit';
 
-const INFO_SESSION_DATE_ISO = '2026-05-23';
-const INFO_SESSION_LABEL = 'May 23, 2026';
-const INFO_SESSION_TIME = '4:00 PM WAT · 11:00 AM EST';
+const DEFAULT_DATE_ISO = '2026-05-23';
+
+function formatDateLabel(iso: string): string {
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso);
+  if (!m) return iso;
+  const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  const idx = parseInt(m[2], 10) - 1;
+  return `${months[idx] || m[2]} ${parseInt(m[3], 10)}, ${m[1]}`;
+}
 
 type Props = {
   open: boolean;
   onClose: () => void;
   source?: string;
+  /** ISO date (YYYY-MM-DD). Defaults to 2026-05-23 (the original Summer Coding info session). */
+  dateIso?: string;
+  /** Free-text time label, e.g. '4:00 PM WAT · 11:00 AM EST'. */
+  timeLabel?: string;
+  /** Event name to mention in the popup body. Defaults to a generic line. */
+  eventName?: string;
 };
 
-export default function InfoSessionPopup({ open, onClose, source = 'info-session-popup' }: Props) {
+export default function InfoSessionPopup({ open, onClose, source = 'info-session-popup', dateIso, timeLabel, eventName }: Props) {
+  const effectiveDateIso = dateIso || DEFAULT_DATE_ISO;
+  const dateLabel = formatDateLabel(effectiveDateIso);
+  const showTime = !!timeLabel;
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
@@ -40,7 +55,8 @@ export default function InfoSessionPopup({ open, onClose, source = 'info-session
     const result = await submitForm('info-session', {
       name: name.trim(),
       email: email.trim(),
-      infoSessionDate: INFO_SESSION_DATE_ISO,
+      infoSessionDate: effectiveDateIso,
+      ...(eventName ? { eventName } : {}),
       source,
     });
     if (result.success) {
@@ -93,16 +109,20 @@ export default function InfoSessionPopup({ open, onClose, source = 'info-session
                 Free Info Session
               </h3>
               <p className="text-slate-500 text-sm leading-relaxed mb-4">
-                Meet the instructors, see the curriculum, and ask anything about Summer Coding 2026.
+                {eventName
+                  ? `Meet the team, see what's in store, and ask anything about ${eventName}.`
+                  : 'Meet the team, see what’s in store, and ask any questions before you commit.'}
               </p>
 
               <div className="flex flex-wrap gap-2 mb-5">
                 <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand-50 text-brand-700 text-[11.5px] font-bold">
-                  <Calendar className="w-3.5 h-3.5" /> {INFO_SESSION_LABEL}
+                  <Calendar className="w-3.5 h-3.5" /> {dateLabel}
                 </span>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-50 text-slate-600 text-[11.5px] font-semibold">
-                  <Clock className="w-3.5 h-3.5" /> {INFO_SESSION_TIME}
-                </span>
+                {showTime && (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-50 text-slate-600 text-[11.5px] font-semibold">
+                    <Clock className="w-3.5 h-3.5" /> {timeLabel}
+                  </span>
+                )}
               </div>
 
               {status === 'success' ? (

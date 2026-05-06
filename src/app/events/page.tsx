@@ -1,15 +1,17 @@
 ﻿'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
   Calendar, MapPin, Clock, Users, ArrowRight, Sparkles,
   Trophy, Mic2, BookOpen, Gamepad2, Ticket, Globe,
-  Brain, Rocket, Building2, Star
+  Brain, Rocket, Building2, Star, Video, DollarSign
 } from 'lucide-react';
 import SectionWrapper from '@/components/ui/SectionWrapper';
-import { useEvents, gradientFor, tagColorFor, isPast } from '@/lib/events';
+import { useEvents, gradientFor, tagColorFor, isPast, feeLabel, isFree } from '@/lib/events';
 import type { EventDoc } from '@/lib/events';
+import InfoSessionPopup from '@/components/InfoSessionPopup';
 
 const CATEGORY_ICON: Record<string, React.ElementType> = {
   'Learning Hub': BookOpen,
@@ -48,8 +50,17 @@ export default function EventsPage() {
   const { events: allEvents, loaded } = useEvents();
   // /events is the catch-all listing for everything happening — show both events and upcoming programs.
   const events = allEvents.filter((p) => !isPast(p));
+  const [infoSessionEvent, setInfoSessionEvent] = useState<EventDoc | null>(null);
   return (
     <div className="overflow-hidden">
+      <InfoSessionPopup
+        open={!!infoSessionEvent}
+        onClose={() => setInfoSessionEvent(null)}
+        source={`events-${infoSessionEvent?.id || 'unknown'}`}
+        dateIso={infoSessionEvent?.infoSessionDate}
+        timeLabel={infoSessionEvent?.infoSessionTime}
+        eventName={infoSessionEvent?.name}
+      />
 
       {/* ── Hero ── */}
       <section className="relative pt-24 pb-16 sm:pt-28 sm:pb-20 md:pt-32 md:pb-28 noise-overlay text-center overflow-hidden" style={{ background: 'linear-gradient(165deg, #070c1b 0%, #0d1333 25%, #13103a 50%, #0c1a2e 75%, #070c1b 100%)' }}>
@@ -100,9 +111,9 @@ export default function EventsPage() {
               const gradient = gradientFor(event.category);
               const tag = tagColorFor(event.category);
               const dateLabel = parseEventDateLabel(event);
-              const isFree = !event.price || /free/i.test(event.price);
-              const ctaHref = event.ctaHref || '/contact';
-              const ctaLabel = event.ctaLabel || 'Register';
+              const fee = feeLabel(event);
+              const free = isFree(event);
+              const hasInfoSession = !!(event.infoSessionEnabled && event.infoSessionDate);
               return (
                 <motion.div key={event.id}
                   initial={{ opacity: 0, y: 24 }}
@@ -130,13 +141,18 @@ export default function EventsPage() {
                             <Icon className="w-3 h-3" /> {event.category}
                           </span>
                         )}
-                        {event.price && (
-                          <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${isFree ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
-                            {event.price}
+                        {fee && (
+                          <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${free ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-700'}`}>
+                            {fee}
+                          </span>
+                        )}
+                        {event.prizes && (
+                          <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 flex items-center gap-1">
+                            <Trophy className="w-3 h-3" /> {event.prizes}
                           </span>
                         )}
                         {event.badge && (
-                          <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700">
+                          <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-50 text-slate-600 border border-slate-100">
                             {event.badge}
                           </span>
                         )}
@@ -156,11 +172,19 @@ export default function EventsPage() {
                     </div>
 
                     {/* CTA */}
-                    <div className="flex items-center flex-shrink-0">
-                      <Link href={ctaHref}
-                        className={`px-6 py-3 rounded-xl font-bold text-[13px] whitespace-nowrap flex items-center gap-2 bg-gradient-to-r ${gradient} text-white hover:opacity-90 hover:-translate-y-0.5 transition-all duration-200 shadow-md`}>
-                        {ctaLabel} <ArrowRight className="w-4 h-4" />
-                      </Link>
+                    <div className="flex flex-col items-stretch md:items-end justify-center gap-2 flex-shrink-0">
+                      {event.ctaHref ? (
+                        <Link href={event.ctaHref}
+                          className={`px-6 py-3 rounded-xl font-bold text-[13px] whitespace-nowrap flex items-center justify-center gap-2 bg-gradient-to-r ${gradient} text-white hover:opacity-90 hover:-translate-y-0.5 transition-all duration-200 shadow-md`}>
+                          {event.ctaLabel || 'Register'} <ArrowRight className="w-4 h-4" />
+                        </Link>
+                      ) : null}
+                      {hasInfoSession && (
+                        <button type="button" onClick={() => setInfoSessionEvent(event)}
+                          className="px-4 py-2.5 rounded-xl font-bold text-[12px] whitespace-nowrap flex items-center justify-center gap-1.5 bg-white border border-slate-200 text-slate-700 hover:border-brand-300 hover:text-brand-700 transition-all">
+                          <Video className="w-3.5 h-3.5" /> Info Session
+                        </button>
+                      )}
                     </div>
                   </div>
                 </motion.div>

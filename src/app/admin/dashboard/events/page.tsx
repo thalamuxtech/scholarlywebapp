@@ -29,16 +29,38 @@ type EventDoc = {
   badge?: string;
   ctaHref?: string;
   ctaLabel?: string;
+  registrationFeeType?: string;
+  registrationFeeAmount?: string;
+  prizes?: string;
+  infoSessionEnabled?: boolean;
+  infoSessionDate?: string;
+  infoSessionTime?: string;
   createdAt?: any;
 };
 
-const CATEGORIES = ['Learning Hub', 'Spotlight Media', 'Code Prodigy', 'Edutainment', 'Community'];
+const CATEGORIES = [
+  'Learning Hub',
+  'Spotlight Media',
+  'Code Prodigy',
+  'Edutainment',
+  'Community',
+  'Hackathon',
+  'Competition',
+  'Workshop',
+  'Bootcamp',
+  'Conference',
+];
 const KINDS = [
   { value: 'program', label: 'Program' },
   { value: 'event', label: 'Event' },
 ];
 
-const EMPTY = { name: '', description: '', startDate: '', status: 'upcoming', category: 'Learning Hub', kind: 'event', eventDate: '', time: '', location: '', seats: '', price: '', badge: '', ctaHref: '', ctaLabel: '' };
+const EMPTY = {
+  name: '', description: '', startDate: '', status: 'upcoming', category: 'Learning Hub', kind: 'event',
+  eventDate: '', time: '', location: '', seats: '', price: '', badge: '', ctaHref: '', ctaLabel: '',
+  registrationFeeType: 'free', registrationFeeAmount: '', prizes: '',
+  infoSessionEnabled: false, infoSessionDate: '', infoSessionTime: '',
+};
 
 export default function EventsAdminPage() {
   const [events, setEvents] = useState<EventDoc[]>([]);
@@ -98,8 +120,14 @@ export default function EventsAdminPage() {
       badge: e.badge || '',
       ctaHref: e.ctaHref || '',
       ctaLabel: e.ctaLabel || '',
+      registrationFeeType: e.registrationFeeType || 'free',
+      registrationFeeAmount: e.registrationFeeAmount || '',
+      prizes: e.prizes || '',
+      infoSessionEnabled: !!e.infoSessionEnabled,
+      infoSessionDate: e.infoSessionDate || '',
+      infoSessionTime: e.infoSessionTime || '',
     });
-    const hasOptional = !!(e.eventDate || e.time || e.location || e.seats || e.price || e.badge || e.ctaHref || e.ctaLabel);
+    const hasOptional = !!(e.eventDate || e.time || e.location || e.seats || e.price || e.badge || e.ctaHref || e.ctaLabel || e.registrationFeeType === 'paid' || e.prizes || e.infoSessionEnabled);
     setShowOptional(hasOptional);
     setShowCreate(true);
   };
@@ -178,21 +206,60 @@ export default function EventsAdminPage() {
                     </button>
                     <AnimatePresence>{showOptional && (
                       <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-                        <div className="px-4 pb-4 pt-1 space-y-3">
+                        <div className="px-4 pb-4 pt-1 space-y-4">
                           <p className="text-[11px] text-slate-400 leading-relaxed">All optional. Add or update them after the event has passed (e.g. switch CTA to a recap link).</p>
+
+                          {/* When + where */}
                           <div className="grid grid-cols-2 gap-3">
                             <div><label className="text-[11px] font-bold text-slate-600 mb-1 block">Display date</label><input value={form.eventDate} onChange={(e) => setForm({ ...form, eventDate: e.target.value })} placeholder="e.g. June 14, 2026" className="w-full px-3 py-2.5 rounded-lg border-2 border-slate-200 text-xs focus:outline-none focus:border-brand-400" /></div>
                             <div><label className="text-[11px] font-bold text-slate-600 mb-1 block">Time</label><input value={form.time} onChange={(e) => setForm({ ...form, time: e.target.value })} placeholder="e.g. 10:00 AM – 2:00 PM WAT" className="w-full px-3 py-2.5 rounded-lg border-2 border-slate-200 text-xs focus:outline-none focus:border-brand-400" /></div>
                           </div>
                           <div><label className="text-[11px] font-bold text-slate-600 mb-1 block">Location</label><input value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} placeholder="e.g. Abuja, Nigeria + Livestream" className="w-full px-3 py-2.5 rounded-lg border-2 border-slate-200 text-xs focus:outline-none focus:border-brand-400" /></div>
-                          <div className="grid grid-cols-3 gap-3">
-                            <div><label className="text-[11px] font-bold text-slate-600 mb-1 block">Seats</label><input value={form.seats} onChange={(e) => setForm({ ...form, seats: e.target.value })} placeholder="300 seats" className="w-full px-3 py-2.5 rounded-lg border-2 border-slate-200 text-xs focus:outline-none focus:border-brand-400" /></div>
-                            <div><label className="text-[11px] font-bold text-slate-600 mb-1 block">Price</label><input value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} placeholder="Free / $29" className="w-full px-3 py-2.5 rounded-lg border-2 border-slate-200 text-xs focus:outline-none focus:border-brand-400" /></div>
-                            <div><label className="text-[11px] font-bold text-slate-600 mb-1 block">Badge</label><input value={form.badge} onChange={(e) => setForm({ ...form, badge: e.target.value })} placeholder="$5K prizes / Past event" className="w-full px-3 py-2.5 rounded-lg border-2 border-slate-200 text-xs focus:outline-none focus:border-brand-400" /></div>
+
+                          {/* Registration fee */}
+                          <div className="rounded-lg border border-slate-100 bg-white p-3">
+                            <div className="text-[11px] font-bold text-slate-600 mb-2">Registration fee</div>
+                            <div className="flex gap-2 mb-2">
+                              {[{ v: 'free', l: 'Free' }, { v: 'paid', l: 'Paid' }].map((opt) => (
+                                <button key={opt.v} type="button" onClick={() => setForm({ ...form, registrationFeeType: opt.v })}
+                                  className={`px-3 py-1.5 rounded-md text-[11px] font-bold transition-all ${form.registrationFeeType === opt.v ? 'bg-brand-600 text-white' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}>
+                                  {opt.l}
+                                </button>
+                              ))}
+                            </div>
+                            {form.registrationFeeType === 'paid' && (
+                              <input value={form.registrationFeeAmount} onChange={(e) => setForm({ ...form, registrationFeeAmount: e.target.value })} placeholder="e.g. $29 / $15 per team" className="w-full px-3 py-2.5 rounded-lg border-2 border-slate-200 text-xs focus:outline-none focus:border-brand-400" />
+                            )}
                           </div>
+
+                          {/* Capacity & prizes */}
+                          <div className="grid grid-cols-2 gap-3">
+                            <div><label className="text-[11px] font-bold text-slate-600 mb-1 block">Available seats</label><input value={form.seats} onChange={(e) => setForm({ ...form, seats: e.target.value })} placeholder="e.g. 300 seats" className="w-full px-3 py-2.5 rounded-lg border-2 border-slate-200 text-xs focus:outline-none focus:border-brand-400" /></div>
+                            <div><label className="text-[11px] font-bold text-slate-600 mb-1 block">Prizes</label><input value={form.prizes} onChange={(e) => setForm({ ...form, prizes: e.target.value })} placeholder="e.g. $5,000 grand prize" className="w-full px-3 py-2.5 rounded-lg border-2 border-slate-200 text-xs focus:outline-none focus:border-brand-400" /></div>
+                          </div>
+                          <div><label className="text-[11px] font-bold text-slate-600 mb-1 block">Badge</label><input value={form.badge} onChange={(e) => setForm({ ...form, badge: e.target.value })} placeholder="Multi-city / Continental / Past event" className="w-full px-3 py-2.5 rounded-lg border-2 border-slate-200 text-xs focus:outline-none focus:border-brand-400" /></div>
+
+                          {/* CTA */}
                           <div className="grid grid-cols-2 gap-3">
                             <div><label className="text-[11px] font-bold text-slate-600 mb-1 block">CTA link</label><input value={form.ctaHref} onChange={(e) => setForm({ ...form, ctaHref: e.target.value })} placeholder="/summer-coding-2026 or https://…" className="w-full px-3 py-2.5 rounded-lg border-2 border-slate-200 text-xs focus:outline-none focus:border-brand-400" /></div>
                             <div><label className="text-[11px] font-bold text-slate-600 mb-1 block">CTA label</label><input value={form.ctaLabel} onChange={(e) => setForm({ ...form, ctaLabel: e.target.value })} placeholder="Register / Watch recap" className="w-full px-3 py-2.5 rounded-lg border-2 border-slate-200 text-xs focus:outline-none focus:border-brand-400" /></div>
+                          </div>
+                          <p className="text-[10.5px] text-slate-400 leading-relaxed">Leave both blank if there&apos;s no page to link to yet — the card will hide its CTA button.</p>
+
+                          {/* Info Session add-on */}
+                          <div className="rounded-lg border border-slate-100 bg-white p-3">
+                            <label className="flex items-center gap-2 cursor-pointer select-none">
+                              <input type="checkbox" checked={!!form.infoSessionEnabled}
+                                onChange={(e) => setForm({ ...form, infoSessionEnabled: e.target.checked })}
+                                className="w-4 h-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500" />
+                              <span className="text-[11px] font-bold text-slate-700 flex items-center gap-1.5"><Sparkles className="w-3 h-3 text-purple-500" /> Add an info session for this event</span>
+                            </label>
+                            {form.infoSessionEnabled && (
+                              <div className="grid grid-cols-2 gap-3 mt-3">
+                                <div><label className="text-[11px] font-bold text-slate-600 mb-1 block">Info session date</label><input type="date" value={form.infoSessionDate} onChange={(e) => setForm({ ...form, infoSessionDate: e.target.value })} className="w-full px-3 py-2.5 rounded-lg border-2 border-slate-200 text-xs focus:outline-none focus:border-brand-400" /></div>
+                                <div><label className="text-[11px] font-bold text-slate-600 mb-1 block">Info session time</label><input value={form.infoSessionTime} onChange={(e) => setForm({ ...form, infoSessionTime: e.target.value })} placeholder="e.g. 4:00 PM WAT" className="w-full px-3 py-2.5 rounded-lg border-2 border-slate-200 text-xs focus:outline-none focus:border-brand-400" /></div>
+                              </div>
+                            )}
                           </div>
                         </div>
                       </motion.div>
@@ -267,7 +334,14 @@ export default function EventsAdminPage() {
                     {(e.eventDate || e.startDate) && <span>📅 {e.eventDate || e.startDate}</span>}
                     {e.time && <span>⏰ {e.time}</span>}
                     {e.location && <span>📍 {e.location}</span>}
-                    {e.price && <span>💵 {e.price}</span>}
+                    {e.seats && <span>🪑 {e.seats}</span>}
+                    {(e.registrationFeeType === 'paid' && e.registrationFeeAmount)
+                      ? <span>💵 {e.registrationFeeAmount}</span>
+                      : e.registrationFeeType === 'free'
+                        ? <span>💵 Free</span>
+                        : e.price && <span>💵 {e.price}</span>}
+                    {e.prizes && <span>🏆 {e.prizes}</span>}
+                    {e.infoSessionEnabled && e.infoSessionDate && <span>🎥 Info session {e.infoSessionDate}</span>}
                     {e.badge && <span className="px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 font-bold">{e.badge}</span>}
                   </div>
                 </div>
