@@ -9,7 +9,7 @@ import {
   Brain, Building2, Video, DollarSign, Filter
 } from 'lucide-react';
 import SectionWrapper from '@/components/ui/SectionWrapper';
-import { useEvents, gradientFor, isPast, feeLabel, isFree } from '@/lib/events';
+import { useEvents, isPast, feeLabel, isFree } from '@/lib/events';
 import type { EventDoc } from '@/lib/events';
 import InfoSessionPopup from '@/components/InfoSessionPopup';
 
@@ -324,9 +324,16 @@ type EventCardProps = {
   onOpenInfoSession: () => void;
 };
 
+/** Shared animated aurora used by Info Session button — also drives the date panel and Register button. */
+const AURORA_BG = 'linear-gradient(135deg, #6e42ff, #a855f7, #ec4899)';
+const AURORA_BG_ANIMATED: React.CSSProperties = {
+  background: 'linear-gradient(135deg, #6e42ff, #a855f7, #ec4899, #3b82f6, #6e42ff)',
+  backgroundSize: '300% 300%',
+  animation: 'aurora 6s ease infinite',
+};
+
 function EventCard({ event, index, onOpenInfoSession }: EventCardProps) {
   const Icon = iconFor(event.category);
-  const gradient = gradientFor(event.category);
   const dateLabel = parseEventDateLabel(event);
   const fee = feeLabel(event);
   const free = isFree(event);
@@ -353,13 +360,15 @@ function EventCard({ event, index, onOpenInfoSession }: EventCardProps) {
 
       <div className="relative bg-white rounded-3xl border border-slate-100 p-5 sm:p-6 shadow-[0_2px_8px_rgba(15,23,42,0.04)] group-hover:shadow-[0_24px_48px_rgba(110,66,255,0.12)] transition-shadow duration-500 overflow-hidden">
 
-        {/* Category-tinted ambient glow */}
+        {/* Aurora ambient glow */}
         <div aria-hidden
-          className={`absolute -top-32 -right-32 w-64 h-64 rounded-full opacity-0 group-hover:opacity-30 transition-opacity duration-700 pointer-events-none bg-gradient-to-br ${gradient} blur-3xl`} />
+          className="absolute -top-32 -right-32 w-64 h-64 rounded-full opacity-0 group-hover:opacity-30 transition-opacity duration-700 pointer-events-none blur-3xl"
+          style={{ background: AURORA_BG }} />
 
         <div className="flex flex-col md:flex-row gap-5 relative">
           {/* Date panel */}
-          <div className={`relative md:w-32 h-28 md:h-auto rounded-2xl bg-gradient-to-br ${gradient} flex flex-col items-center justify-center text-white flex-shrink-0 overflow-hidden shadow-md`}>
+          <div className="relative md:w-32 h-28 md:h-auto rounded-2xl flex flex-col items-center justify-center text-white flex-shrink-0 overflow-hidden shadow-md"
+            style={AURORA_BG_ANIMATED}>
             {/* Animated radial sparkle */}
             <motion.div aria-hidden
               animate={{ opacity: [0.15, 0.3, 0.15], scale: [1, 1.2, 1] }}
@@ -436,7 +445,8 @@ function EventCard({ event, index, onOpenInfoSession }: EventCardProps) {
           <div className="flex flex-col items-stretch md:items-end justify-center gap-2 flex-shrink-0 md:min-w-[180px]">
             {event.ctaHref && (
               <Link href={event.ctaHref}
-                className={`group/btn relative px-5 py-3 rounded-xl font-extrabold text-[13px] whitespace-nowrap flex items-center justify-center gap-2 bg-gradient-to-r ${gradient} text-white shadow-md hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 overflow-hidden`}>
+                className="group/btn relative px-5 py-3 rounded-xl font-extrabold text-[13px] whitespace-nowrap flex items-center justify-center gap-2 text-white shadow-md hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 overflow-hidden"
+                style={AURORA_BG_ANIMATED}>
                 <span aria-hidden className="absolute inset-0 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 ease-out"
                   style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)' }} />
                 <span className="relative">{event.ctaLabel || 'Register'}</span>
@@ -445,8 +455,8 @@ function EventCard({ event, index, onOpenInfoSession }: EventCardProps) {
             )}
             {hasInfoSession && (
               <button type="button" onClick={onOpenInfoSession}
-                className="group/btn relative px-4 py-2.5 rounded-xl font-bold text-[12px] whitespace-normal text-center flex items-center justify-center gap-1.5 text-white transition-all hover:-translate-y-0.5 overflow-hidden shadow-sm"
-                style={{ background: 'linear-gradient(135deg, #6e42ff, #a855f7, #ec4899)', backgroundSize: '200% 200%', animation: 'aurora 6s ease infinite' }}>
+                className="group/btn relative px-4 py-2.5 rounded-xl font-bold text-[12px] whitespace-normal text-center flex items-center justify-center gap-1.5 text-white transition-all hover:-translate-y-0.5 overflow-hidden shadow-sm border border-white/30"
+                style={AURORA_BG_ANIMATED}>
                 <span aria-hidden className="absolute inset-0 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 ease-out"
                   style={{ background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent)' }} />
                 <Video className="w-3.5 h-3.5 flex-shrink-0 relative" />
