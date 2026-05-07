@@ -9,7 +9,7 @@ import {
   Brain, Building2, Video, DollarSign, Filter
 } from 'lucide-react';
 import SectionWrapper from '@/components/ui/SectionWrapper';
-import { useEvents, isPast, feeLabel, isFree } from '@/lib/events';
+import { useEvents, isPast, feeLabel, isFree, isVisible } from '@/lib/events';
 import type { EventDoc } from '@/lib/events';
 import InfoSessionPopup from '@/components/InfoSessionPopup';
 
@@ -53,7 +53,7 @@ function parseEventDateLabel(p: EventDoc): { month: string; day: string; year: s
 
 export default function EventsPage() {
   const { events: allEvents, loaded } = useEvents();
-  const upcoming = useMemo(() => allEvents.filter((p) => !isPast(p)), [allEvents]);
+  const upcoming = useMemo(() => allEvents.filter((p) => isVisible(p) && !isPast(p)), [allEvents]);
   const [infoSessionEvent, setInfoSessionEvent] = useState<EventDoc | null>(null);
   const [activeCategory, setActiveCategory] = useState<string>('All');
 

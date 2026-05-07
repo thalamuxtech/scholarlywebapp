@@ -30,6 +30,8 @@ export type EventDoc = {
   infoSessionEnabled?: boolean;
   infoSessionDate?: string;
   infoSessionTime?: string;
+  // Visibility: when true the event is hidden from the public site (admin-only)
+  hidden?: boolean;
   createdAt?: { toDate?: () => Date } | Date | null;
 };
 
@@ -98,6 +100,10 @@ export function isPast(p: EventDoc) {
 }
 export function isUpcoming(p: EventDoc) {
   return !isPast(p);
+}
+/** Public pages should hide events flagged as hidden by admin. */
+export function isVisible(p: EventDoc) {
+  return !p.hidden;
 }
 
 /** Resolves the registration fee to a display label. Prefers structured fields, falls back to legacy `price`. */

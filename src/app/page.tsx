@@ -16,7 +16,7 @@ import SectionWrapper from '@/components/ui/SectionWrapper';
 import FreeTrialForm, { FreeTrialModal } from '@/components/FreeTrialForm';
 import InfoSessionPopup from '@/components/InfoSessionPopup';
 import { CourseStack } from '@/components/TechLogos';
-import { useEvents, tagColorFor, isPast, isUpcoming, feeLabel } from '@/lib/events';
+import { useEvents, tagColorFor, isPast, isUpcoming, feeLabel, isVisible } from '@/lib/events';
 import type { EventDoc } from '@/lib/events';
 
 /* ─────────────────── Sub-components ─────────────────── */
@@ -113,8 +113,9 @@ export default function HomePage() {
   const [trialOpen, setTrialOpen] = useState(false);
   const [infoSessionEvent, setInfoSessionEvent] = useState<EventDoc | null>(null);
   const { events: dbEvents, loaded: programsLoaded } = useEvents();
-  const pastPrograms = dbEvents.filter(isPast).slice(0, 3);
-  const upcomingPrograms = dbEvents.filter(isUpcoming).slice(0, 3);
+  const visibleEvents = dbEvents.filter(isVisible);
+  const pastPrograms = visibleEvents.filter(isPast).slice(0, 3);
+  const upcomingPrograms = visibleEvents.filter(isUpcoming).slice(0, 3);
   const heroRef = useRef(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] });
   const heroY = useTransform(scrollYProgress, [0, 1], ['0%', '30%']);

@@ -7,7 +7,7 @@ import { db } from '@/lib/firebase';
 import { useRole } from '@/lib/useRole';
 import {
   Calendar, Plus, X, Trash2, ArrowRight, Loader2, Pencil,
-  ChevronDown, ChevronUp, Sparkles
+  ChevronDown, ChevronUp, Sparkles, Eye, EyeOff
 } from 'lucide-react';
 import { useToast } from '@/components/Toast';
 import { useConfirm } from '@/components/ConfirmDialog';
@@ -35,6 +35,7 @@ type EventDoc = {
   infoSessionEnabled?: boolean;
   infoSessionDate?: string;
   infoSessionTime?: string;
+  hidden?: boolean;
   createdAt?: any;
 };
 
@@ -60,6 +61,7 @@ const EMPTY = {
   eventDate: '', time: '', location: '', seats: '', price: '', badge: '', ctaHref: '', ctaLabel: '',
   registrationFeeType: 'free', registrationFeeAmount: '', prizes: '',
   infoSessionEnabled: false, infoSessionDate: '', infoSessionTime: '',
+  hidden: false,
 };
 
 export default function EventsAdminPage() {
@@ -73,6 +75,7 @@ export default function EventsAdminPage() {
   const [filterKind, setFilterKind] = useState<'all' | 'program' | 'event'>('all');
   const [filterStatus, setFilterStatus] = useState<'all' | 'upcoming' | 'active' | 'completed'>('all');
   const [filterCategory, setFilterCategory] = useState<string>('all');
+  const [filterVisibility, setFilterVisibility] = useState<'all' | 'visible' | 'hidden'>('all');
   const { isAdmin } = useRole();
   const { showToast } = useToast();
   const { confirm } = useConfirm();
@@ -126,6 +129,7 @@ export default function EventsAdminPage() {
       infoSessionEnabled: !!e.infoSessionEnabled,
       infoSessionDate: e.infoSessionDate || '',
       infoSessionTime: e.infoSessionTime || '',
+      hidden: !!e.hidden,
     });
     const hasOptional = !!(e.eventDate || e.time || e.location || e.seats || e.price || e.badge || e.ctaHref || e.ctaLabel || e.registrationFeeType === 'paid' || e.prizes || e.infoSessionEnabled);
     setShowOptional(hasOptional);
@@ -141,6 +145,12 @@ export default function EventsAdminPage() {
     setSaving(false);
     closeModal();
     showToast('success', editing ? 'Event updated.' : 'Event created.');
+  };
+
+  const toggleHidden = async (e: EventDoc) => {
+    const next = !e.hidden;
+    await updateDoc(doc(db, 'events', e.id), { hidden: next });
+    showToast('success', next ? 'Hidden from public site.' : 'Now visible on public site.');
   };
 
   const remove = async (e: EventDoc) => {
@@ -160,6 +170,8 @@ export default function EventsAdminPage() {
     if (filterKind !== 'all' && (e.kind || 'event') !== filterKind) return false;
     if (filterStatus !== 'all' && (e.status || 'upcoming') !== filterStatus) return false;
     if (filterCategory !== 'all' && (e.category || '') !== filterCategory) return false;
+    if (filterVisibility === 'visible' && e.hidden) return false;
+    if (filterVisibility === 'hidden' && !e.hidden) return false;
     return true;
   });
 
@@ -196,6 +208,27 @@ export default function EventsAdminPage() {
                     <div><label className="text-xs font-bold text-slate-700 mb-1.5 block">Start Date</label><input type="date" value={form.startDate} onChange={(e) => setForm({ ...form, startDate: e.target.value })} className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 text-sm focus:outline-none focus:border-brand-400" /></div>
                     <div><label className="text-xs font-bold text-slate-700 mb-1.5 block">Status</label><select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })} className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 text-sm focus:outline-none focus:border-brand-400 bg-white"><option value="upcoming">Upcoming</option><option value="active">Active</option><option value="completed">Completed (Past)</option></select></div>
                   </div>
+
+                  {/* Visibility */}
+                  <label className={`flex items-start gap-3 p-3.5 rounded-xl border-2 cursor-pointer select-none transition-colors ${form.hidden ? 'border-amber-200 bg-amber-50/50' : 'border-slate-200 bg-white'}`}>
+                    <input type="checkbox" checked={!!form.hidden}
+                      onChange={(e) => setForm({ ...form, hidden: e.target.checked })}
+                      className="sr-only" />
+                    <span className={`mt-0.5 w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition-all ${form.hidden ? 'bg-amber-500 border-amber-500' : 'border-slate-300 bg-white'}`}>
+                      {form.hidden && <EyeOff className="w-3 h-3 text-white" strokeWidth={3} />}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-0.5">
+                        {form.hidden ? <EyeOff className="w-3.5 h-3.5 text-amber-600" /> : <Eye className="w-3.5 h-3.5 text-emerald-500" />}
+                        <span className="font-bold text-slate-800 text-[12.5px]">{form.hidden ? 'Hidden from public site' : 'Visible on public site'}</span>
+                      </div>
+                      <p className="text-[11px] text-slate-500 leading-relaxed">
+                        {form.hidden
+                          ? 'This entry will not appear on the home page or /events. Toggle off to publish.'
+                          : 'Tick to hide while you’re editing or to retire an event without deleting it.'}
+                      </p>
+                    </div>
+                  </label>
 
                   {/* Optional display details */}
                   <div className="rounded-xl border border-slate-100 bg-slate-50/40">
@@ -289,6 +322,16 @@ export default function EventsAdminPage() {
         </div>
         <div className="w-px h-5 bg-slate-200" />
         <div className="flex items-center gap-1 px-2">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Visibility:</span>
+          {(['all', 'visible', 'hidden'] as const).map((v) => (
+            <button key={v} onClick={() => setFilterVisibility(v)}
+              className={`px-2.5 py-1 rounded-md text-[11px] font-bold capitalize ${filterVisibility === v ? 'bg-brand-600 text-white' : 'bg-slate-50 text-slate-500 hover:bg-slate-100'}`}>
+              {v}
+            </button>
+          ))}
+        </div>
+        <div className="w-px h-5 bg-slate-200" />
+        <div className="flex items-center gap-1 px-2">
           <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Status:</span>
           {(['all', 'upcoming', 'active', 'completed'] as const).map((s) => (
             <button key={s} onClick={() => setFilterStatus(s)}
@@ -317,13 +360,18 @@ export default function EventsAdminPage() {
           <div className="bg-white rounded-2xl border border-slate-100 py-16 text-center"><Calendar className="w-10 h-10 mx-auto text-slate-200 mb-3" /><p className="text-slate-400 text-sm">{events.length === 0 ? 'No events yet.' : 'No items match the current filters.'}</p></div>
         ) : filtered.map((e, i) => (
           <motion.div key={e.id} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
-            className="bg-white rounded-2xl border border-slate-100 overflow-hidden hover:shadow-md transition-shadow">
+            className={`bg-white rounded-2xl border overflow-hidden hover:shadow-md transition-shadow ${e.hidden ? 'border-amber-200 bg-amber-50/30' : 'border-slate-100'}`}>
             <div className={`h-[3px] ${e.status === 'active' ? 'bg-emerald-500' : e.status === 'completed' ? 'bg-slate-300' : 'bg-brand-500'}`} />
-            <div className="p-5">
+            <div className={`p-5 ${e.hidden ? 'opacity-70' : ''}`}>
               <div className="flex items-start justify-between mb-2">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1 flex-wrap">
                     <h4 className="font-bold text-slate-900 text-[16px]" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>{e.name}</h4>
+                    {e.hidden && (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-100 text-amber-700 border border-amber-200">
+                        <EyeOff className="w-2.5 h-2.5" /> Hidden
+                      </span>
+                    )}
                     <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${e.status === 'active' ? 'bg-emerald-50 text-emerald-600' : e.status === 'completed' ? 'bg-slate-100 text-slate-500' : 'bg-brand-50 text-brand-600'}`}>{e.status === 'completed' ? 'past' : (e.status || 'upcoming')}</span>
                     {e.kind === 'event' && <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-50 text-purple-600">Event</span>}
                     {e.kind === 'program' && <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-50 text-slate-500">Program</span>}
@@ -346,6 +394,13 @@ export default function EventsAdminPage() {
                   </div>
                 </div>
                 <div className="flex gap-1 flex-shrink-0">
+                  {isAdmin && (
+                    <button onClick={() => toggleHidden(e)}
+                      title={e.hidden ? 'Unhide (publish to public site)' : 'Hide from public site'}
+                      className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${e.hidden ? 'text-amber-500 hover:text-amber-600 hover:bg-amber-50' : 'text-slate-300 hover:text-amber-500 hover:bg-amber-50'}`}>
+                      {e.hidden ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                    </button>
+                  )}
                   {isAdmin && <button onClick={() => startEdit(e)} className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-300 hover:text-brand-500 hover:bg-brand-50 transition-all"><Pencil className="w-3.5 h-3.5" /></button>}
                   {isAdmin && <button onClick={() => remove(e)} className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-300 hover:text-red-500 hover:bg-red-50 transition-all"><Trash2 className="w-3.5 h-3.5" /></button>}
                 </div>
