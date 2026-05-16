@@ -11,6 +11,7 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
   const pathname = usePathname();
   const isAdmin = pathname.startsWith('/admin');
   const isSummerPage = pathname.startsWith('/summer-coding-2026');
+  const isIdea2MVPPage = pathname.startsWith('/idea2mvp-2026');
 
   if (isAdmin) {
     return <>{children}</>;
@@ -24,7 +25,7 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
       </main>
       <Footer />
       <ScrollToTop />
-      {!isSummerPage && <SummerFlyerPopup />}
+      {!isSummerPage && !isIdea2MVPPage && <SummerFlyerPopup />}
     </>
   );
 }

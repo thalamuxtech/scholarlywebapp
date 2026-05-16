@@ -15,6 +15,7 @@ const footerLinks = {
     { label: 'AI & Product Tracks', href: '/learning-hub#ai-tracks' },
     { label: 'Code Prodigy', href: '/learning-hub/code-prodigy' },
     { label: 'Summer 2026', href: '/summer-coding-2026' },
+    { label: 'Idea2MVP Course', href: '/idea2mvp-2026' },
     { label: 'Pricing', href: '/pricing' },
     { label: 'Scholarship & Discount', href: '/scholarship-discount' },
   ],

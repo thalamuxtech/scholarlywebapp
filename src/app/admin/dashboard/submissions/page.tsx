@@ -8,7 +8,7 @@ import { useRole } from '@/lib/useRole';
 import { useConfirm } from '@/components/ConfirmDialog';
 import {
   Mail, MessageSquare, Users, Gamepad2, Trash2, CheckCircle2, Search,
-  Inbox, Clock, X, ExternalLink, Eye, Download, Sun, Sparkles, HandHeart, Video
+  Inbox, Clock, X, ExternalLink, Eye, Download, Sun, Sparkles, HandHeart, Video, Rocket
 } from 'lucide-react';
 
 type Submission = { id: string; formType: string; [key: string]: any; createdAt: any; read: boolean };
@@ -20,6 +20,7 @@ const formMeta: Record<string, { label: string; icon: React.ElementType; color: 
   enrollment: { label: 'Enrollment', icon: Users, color: 'bg-purple-50 text-purple-600', gradient: 'from-purple-500 to-brand-500' },
   'free-trial': { label: 'Free Trial', icon: Sparkles, color: 'bg-rose-50 text-rose-600', gradient: 'from-rose-500 to-pink-600' },
   'summer-coding': { label: 'Summer 2026', icon: Sun, color: 'bg-orange-50 text-orange-600', gradient: 'from-orange-500 to-amber-500' },
+  'idea2mvp': { label: 'Idea2MVP', icon: Rocket, color: 'bg-violet-50 text-violet-600', gradient: 'from-brand-500 to-pink-500' },
   'scholarship-discount': { label: 'Scholarship', icon: HandHeart, color: 'bg-rose-50 text-rose-600', gradient: 'from-rose-500 to-pink-600' },
   'info-session': { label: 'Info Session', icon: Video, color: 'bg-indigo-50 text-indigo-600', gradient: 'from-indigo-500 to-purple-600' },
 };
@@ -120,7 +121,7 @@ export default function SubmissionsPage() {
       {/* Filters + Export */}
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
         <div className="flex gap-2 overflow-x-auto pb-1 flex-1">
-          {['all', 'newsletter', 'contact', 'waitlist', 'enrollment', 'free-trial', 'summer-coding', 'scholarship-discount', 'info-session'].map((f) => (
+          {['all', 'newsletter', 'contact', 'waitlist', 'enrollment', 'free-trial', 'summer-coding', 'idea2mvp', 'scholarship-discount', 'info-session'].map((f) => (
             <button key={f} onClick={() => { setFilter(f); setChecked(new Set()); }}
               className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all duration-200 ${
                 filter === f ? 'bg-brand-600 text-white shadow-md' : 'bg-white text-slate-500 border border-slate-200 hover:border-brand-200'

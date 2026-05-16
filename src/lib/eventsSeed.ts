@@ -48,6 +48,16 @@ export const SEED_EVENTS: SeedEvent[] = [
   },
   // ── Upcoming program (home: Upcoming column) ──
   {
+    name: 'Idea2MVP — From Spark to Shipped Product',
+    description: '10-week AI-native course (+ public Capstone Demo Day) for ages 11–22. No coding background needed — ship a real MVP with users using free-tier AI builders. Capstone, certificate, prizes.',
+    startDate: '2026-05-31',
+    status: 'upcoming',
+    category: 'Learning Hub',
+    kind: 'program',
+    ctaHref: '/idea2mvp-2026',
+    ctaLabel: 'Program details',
+  },
+  {
     name: 'Summer Coding Bootcamp 2026',
     description: '6-week live bootcamp for ages 5+ and 9+. Two tracks: Logic Builders and Code Masters. Capstone project, certificate, and Demo Day. Early-bird registration open.',
     startDate: '2026-06-29',
