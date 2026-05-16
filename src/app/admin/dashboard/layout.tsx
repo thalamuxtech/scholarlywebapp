@@ -9,7 +9,7 @@ import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import {
   LayoutDashboard, Inbox, FolderKanban, BarChart3, Settings, Calendar,
-  LogOut, Bell, ChevronLeft, Menu, X, ExternalLink, Tag
+  LogOut, Bell, ChevronLeft, Menu, X, ExternalLink, Tag, BookOpen
 } from 'lucide-react';
 
 const sidebarLinks = [
@@ -17,6 +17,7 @@ const sidebarLinks = [
   { label: 'Submissions', href: '/admin/dashboard/submissions', icon: Inbox },
   { label: 'Course', href: '/admin/dashboard/programs', icon: FolderKanban },
   { label: 'Events', href: '/admin/dashboard/events', icon: Calendar },
+  { label: 'Blog', href: '/admin/dashboard/blog', icon: BookOpen },
   { label: 'Coupons', href: '/admin/dashboard/coupons', icon: Tag },
   { label: 'Analytics', href: '/admin/dashboard/analytics', icon: BarChart3 },
   { label: 'Settings', href: '/admin/dashboard/settings', icon: Settings },

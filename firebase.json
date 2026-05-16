@@ -2,6 +2,9 @@
   "firestore": {
     "rules": "firestore.rules"
   },
+  "storage": {
+    "rules": "storage.rules"
+  },
   "hosting": {
     "public": "out",
     "ignore": [
@@ -12,6 +15,18 @@
     "cleanUrls": true,
     "trailingSlash": false,
     "rewrites": [
+      {
+        "source": "/blog/!(post|index*).html",
+        "destination": "/blog/post.html"
+      },
+      {
+        "source": "/blog/!(post)/**",
+        "destination": "/blog/post.html"
+      },
+      {
+        "source": "/blog/!(post|index)",
+        "destination": "/blog/post.html"
+      },
       {
         "source": "**",
         "destination": "/404.html"

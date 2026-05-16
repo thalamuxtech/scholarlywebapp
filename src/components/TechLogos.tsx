@@ -71,8 +71,33 @@ const AI: Logo[] = [
   { name: 'Hugging Face', color: '#FFD21E', bg: 'rgba(255,210,30,0.18)', svg: '/logos/huggingface.svg' },
 ];
 
+/* ── Idea2MVP: free / open-source AI builders & models ─────── */
+const IDEA2MVP: Logo[] = [
+  // Free / open-weight LLMs & chat
+  { name: 'Qwen',         color: '#615CED', bg: 'rgba(97,92,237,0.10)' },
+  { name: 'DeepSeek',     color: '#4D6BFE', bg: 'rgba(77,107,254,0.10)' },
+  { name: 'Mistral',      color: '#FA520F', bg: 'rgba(250,82,15,0.10)' },
+  { name: 'Llama',        color: '#0866FF', bg: 'rgba(8,102,255,0.10)' },
+  { name: 'Hugging Face', color: '#FFD21E', bg: 'rgba(255,210,30,0.18)', svg: '/logos/huggingface.svg' },
+  { name: 'Ollama',       color: '#0F172A', bg: 'rgba(15,23,42,0.06)' },
+  { name: 'OpenRouter',   color: '#6366F1', bg: 'rgba(99,102,241,0.10)' },
+  { name: 'LMArena',      color: '#10B981', bg: 'rgba(16,185,129,0.10)' },
+  { name: 'Groq',         color: '#F55036', bg: 'rgba(245,80,54,0.10)' },
+  // AI builders (free tiers)
+  { name: 'Lovable',      color: '#FF4FA1', bg: 'rgba(255,79,161,0.10)' },
+  { name: 'Bolt.new',     color: '#0F172A', bg: 'rgba(15,23,42,0.06)' },
+  { name: 'v0',           color: '#0F172A', bg: 'rgba(15,23,42,0.06)' },
+  { name: 'Replit',       color: '#F26207', bg: 'rgba(242,98,7,0.10)' },
+  { name: 'Glide',        color: '#7B61FF', bg: 'rgba(123,97,255,0.10)' },
+  // Free backends, design, analytics
+  { name: 'Supabase',     color: '#3FCF8E', bg: 'rgba(63,207,142,0.10)' },
+  { name: 'Figma',        color: '#A259FF', bg: 'rgba(162,89,255,0.10)' },
+  { name: 'PostHog',      color: '#F54E00', bg: 'rgba(245,78,0,0.10)' },
+  { name: 'n8n',          color: '#EA4B71', bg: 'rgba(234,75,113,0.10)' },
+];
+
 /* ── Categorized groups for display on pages ───────────────── */
-export type CategoryKey = 'block' | 'web' | 'languages' | 'mobile' | 'desktop' | 'ai' | 'all';
+export type CategoryKey = 'block' | 'web' | 'languages' | 'mobile' | 'desktop' | 'ai' | 'idea2mvp' | 'all';
 
 export const CATEGORIES: Record<CategoryKey, { label: string; eyebrow?: string; logos: Logo[] }> = {
   block:     { label: 'Block & Visual Coding', eyebrow: 'Beginner-friendly', logos: BLOCK_CODING },
@@ -81,6 +106,7 @@ export const CATEGORIES: Record<CategoryKey, { label: string; eyebrow?: string; 
   mobile:    { label: 'Mobile Apps (Android & iOS)', eyebrow: 'Cross-platform & native', logos: MOBILE },
   desktop:   { label: 'Desktop & Intelligent Systems', eyebrow: 'GUI frameworks & desktop builds', logos: DESKTOP },
   ai:        { label: 'AI · ML · LLMs · Prompt Engineering', eyebrow: 'Frontier models & frameworks', logos: AI },
+  idea2mvp:  { label: 'Free & Open AI Builders / Models', eyebrow: 'Free-tier and open-source tools we ship with', logos: IDEA2MVP },
   all:       { label: 'Tools we teach with', logos: [...BLOCK_CODING, ...WEB, ...LANGUAGES, ...MOBILE, ...DESKTOP, ...AI] },
 };
 

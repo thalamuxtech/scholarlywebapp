@@ -1,73 +1,42 @@
-﻿'use client';
+'use client';
 
+import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
-  BookOpen, ArrowRight, Clock, Tag, TrendingUp,
-  Mic2, Brain, Globe, Sparkles, Search, Users
+  BookOpen, ArrowRight, Clock, Sparkles, Users, ImageIcon
 } from 'lucide-react';
 import SectionWrapper from '@/components/ui/SectionWrapper';
 import NewsletterForm from '@/components/NewsletterForm';
-
-const featured = {
-  tag: 'AI Education',
-  tagColor: 'bg-brand-50 text-brand-600',
-  title: 'How AI is Reshaping Youth Education Across Africa: And Why It Matters Now',
-  excerpt: 'From Lagos classrooms to London studios, a new generation of learners is building with artificial intelligence tools that didn\'t exist five years ago. We explore what this means for educators, parents, and policymakers.',
-  author: 'ScholarlyEcho Editorial',
-  date: 'March 20, 2026',
-  readTime: '8 min read',
-  color: 'from-brand-500 to-purple-600',
-};
-
-const posts = [
-  {
-    tag: 'Learning', tagColor: 'bg-emerald-50 text-emerald-600',
-    title: '5 Things to Know Before Enrolling Your Child in an Online Coding Program',
-    excerpt: 'Not all programs are equal. Here\'s what to look for: curriculum depth, tutor quality, project outcomes, and pricing transparency.',
-    author: 'Adaeze Obi', date: 'March 15, 2026', readTime: '5 min read',
-    icon: BookOpen, color: 'from-emerald-400 to-teal-500',
-  },
-  {
-    tag: 'Research', tagColor: 'bg-amber-50 text-amber-600',
-    title: 'Thesis to Impact: How Dr. Kwame\'s Research on Youth Mental Health Reached 30 Schools',
-    excerpt: 'A PhD that sat unpublished for two years found its audience through the ScholarlyEcho Thesis Spotlight: and changed 30 schools in Ghana.',
-    author: 'Spotlight Media Team', date: 'March 10, 2026', readTime: '6 min read',
-    icon: Mic2, color: 'from-amber-400 to-orange-500',
-  },
-  {
-    tag: 'AI', tagColor: 'bg-purple-50 text-purple-600',
-    title: 'What is Prompt Engineering: and Why Every Student Should Learn It',
-    excerpt: 'Prompt engineering is the most immediately marketable AI skill of 2026. Here\'s a beginner-friendly breakdown of what it is and how to start.',
-    author: 'ScholarlyEcho AI Team', date: 'March 5, 2026', readTime: '4 min read',
-    icon: Brain, color: 'from-purple-500 to-indigo-600',
-  },
-  {
-    tag: 'Impact', tagColor: 'bg-rose-50 text-rose-600',
-    title: 'From Scratch to SaaS: The Story of David M., 18, and SchoolSync',
-    excerpt: 'David started at Level 1 with no coding experience. Four years later, he launched a live SaaS product with 400+ users. This is his story.',
-    author: 'Kezia Amara', date: 'Feb 28, 2026', readTime: '7 min read',
-    icon: TrendingUp, color: 'from-rose-400 to-pink-500',
-  },
-  {
-    tag: 'Events', tagColor: 'bg-teal-50 text-teal-600',
-    title: 'What to Expect at the ScholarlyEcho AI Hackathon 2026',
-    excerpt: '80 teams, 48 hours, $5,000 in prizes. Here\'s everything you need to know to participate: and win.',
-    author: 'Events Team', date: 'Feb 22, 2026', readTime: '4 min read',
-    icon: Sparkles, color: 'from-teal-400 to-cyan-500',
-  },
-  {
-    tag: 'Community', tagColor: 'bg-blue-50 text-blue-600',
-    title: 'Building in Public: Why Transparency Is at the Heart of ScholarlyEcho',
-    excerpt: 'We publish our impact data, our challenges, and our decisions. Here\'s why we believe radical transparency is the right approach for an education platform.',
-    author: 'ScholarlyEcho Founders', date: 'Feb 18, 2026', readTime: '5 min read',
-    icon: Globe, color: 'from-blue-400 to-brand-500',
-  },
-];
-
-const categories = ['All', 'AI Education', 'Learning', 'Research', 'Impact Stories', 'Events', 'Community'];
+import {
+  usePosts, isPublished, gradientFor, tagColorFor, formatPostDate, type Post,
+} from '@/lib/posts';
 
 export default function BlogPage() {
+  const { posts, loaded } = usePosts();
+  const published = useMemo(() => posts.filter(isPublished), [posts]);
+
+  const featured: Post | null = useMemo(
+    () => published.find((p) => p.featured) || published[0] || null,
+    [published]
+  );
+  const others = useMemo(
+    () => (featured ? published.filter((p) => p.id !== featured.id) : published),
+    [published, featured]
+  );
+
+  const categories = useMemo(() => {
+    const set = new Set<string>();
+    published.forEach((p) => { if (p.category) set.add(p.category); });
+    return ['All', ...Array.from(set)];
+  }, [published]);
+
+  const [activeCategory, setActiveCategory] = useState<string>('All');
+  const filteredOthers = useMemo(() => {
+    if (activeCategory === 'All') return others;
+    return others.filter((p) => p.category === activeCategory);
+  }, [others, activeCategory]);
+
   return (
     <div className="overflow-hidden">
 
@@ -95,103 +64,150 @@ export default function BlogPage() {
       </section>
 
       {/* ── Category Filter ── */}
-      <section className="py-6 bg-white/90 backdrop-blur-xl border-b border-slate-100/60 sticky top-16 z-30 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
-        <div className="max-w-6xl mx-auto px-5 sm:px-8 lg:px-10">
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
-            {categories.map((cat, i) => (
-              <button key={cat}
-                className={`flex-shrink-0 px-4 py-1.5 rounded-full text-[12px] sm:text-[13px] font-semibold transition-all ${i === 0 ? 'bg-brand-600 text-white shadow-md' : 'bg-slate-100 text-slate-500 hover:bg-brand-50 hover:text-brand-600'}`}>
-                {cat}
-              </button>
-            ))}
+      {categories.length > 1 && (
+        <section className="py-6 bg-white/90 backdrop-blur-xl border-b border-slate-100/60 sticky top-16 z-30 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+          <div className="max-w-6xl mx-auto px-5 sm:px-8 lg:px-10">
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
+              {categories.map((cat) => (
+                <button key={cat} onClick={() => setActiveCategory(cat)}
+                  className={`flex-shrink-0 px-4 py-1.5 rounded-full text-[12px] sm:text-[13px] font-semibold transition-all ${activeCategory === cat ? 'bg-brand-600 text-white shadow-md' : 'bg-slate-100 text-slate-500 hover:bg-brand-50 hover:text-brand-600'}`}>
+                  {cat}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
+
+      {/* ── Empty / loading state ── */}
+      {!loaded && (
+        <section className="py-20 text-center bg-white">
+          <div className="text-slate-400 text-sm">Loading articles...</div>
+        </section>
+      )}
+
+      {loaded && published.length === 0 && (
+        <section className="py-20 text-center bg-white">
+          <BookOpen className="w-10 h-10 text-slate-200 mx-auto mb-3" />
+          <p className="text-slate-500 text-sm">No articles published yet. Check back soon.</p>
+        </section>
+      )}
 
       {/* ── Featured Post ── */}
-      <section className="py-12 sm:py-16 bg-slate-50">
-        <div className="max-w-6xl mx-auto px-5 sm:px-8 lg:px-10">
-          <SectionWrapper>
-            <motion.div
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="rounded-3xl overflow-hidden bg-white border border-slate-100 shadow-xl group hover:shadow-2xl transition-shadow duration-300">
-              <div className={`h-2 bg-gradient-to-r ${featured.color}`} />
-              <div className="p-6 sm:p-10 md:p-12">
-                <div className="flex flex-wrap items-center gap-3 mb-5">
-                  <span className="px-3 py-1 rounded-full text-[11px] font-bold bg-brand-50 text-brand-600">
-                    Featured
-                  </span>
-                  <span className="px-3 py-1 rounded-full text-[11px] font-bold bg-slate-100 text-slate-500">
-                    {featured.tag}
-                  </span>
-                </div>
-                <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 mb-4 leading-tight group-hover:text-brand-600 transition-colors"
-                  style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
-                  {featured.title}
-                </h2>
-                <p className="text-slate-500 text-[14px] sm:text-[15px] leading-relaxed mb-6 max-w-3xl">
-                  {featured.excerpt}
-                </p>
-                <div className="flex flex-wrap items-center justify-between gap-4">
-                  <div className="flex items-center gap-4 text-[12px] text-slate-400">
-                    <span className="flex items-center gap-1.5"><Users className="w-3.5 h-3.5" /> {featured.author}</span>
-                    <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> {featured.readTime}</span>
-                    <span>{featured.date}</span>
+      {loaded && featured && (
+        <section className="py-12 sm:py-16 bg-slate-50">
+          <div className="max-w-6xl mx-auto px-5 sm:px-8 lg:px-10">
+            <SectionWrapper>
+              <motion.div
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="rounded-3xl overflow-hidden bg-white border border-slate-100 shadow-xl group hover:shadow-2xl transition-shadow duration-300">
+                <div className={`h-2 bg-gradient-to-r ${gradientFor(featured.category)}`} />
+                <Link href={`/blog/${featured.slug}`} className="grid md:grid-cols-[minmax(0,1fr)_1.2fr] gap-0">
+                  <div className="relative aspect-[4/3] md:aspect-auto md:min-h-[320px] bg-slate-100 overflow-hidden">
+                    {featured.imageUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={featured.imageUrl} alt={featured.title} className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500" />
+                    ) : (
+                      <div className={`w-full h-full bg-gradient-to-br ${gradientFor(featured.category)} flex items-center justify-center`}>
+                        <Sparkles className="w-12 h-12 text-white/40" />
+                      </div>
+                    )}
                   </div>
-                  <Link href="#"
-                    className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-[13px] text-white bg-gradient-to-r ${featured.color} hover:opacity-90 transition-opacity`}>
-                    Read Article <ArrowRight className="w-4 h-4" />
-                  </Link>
-                </div>
-              </div>
-            </motion.div>
-          </SectionWrapper>
-        </div>
-      </section>
+                  <div className="p-6 sm:p-8 md:p-10">
+                    <div className="flex flex-wrap items-center gap-3 mb-5">
+                      <span className="px-3 py-1 rounded-full text-[11px] font-bold bg-brand-50 text-brand-600">
+                        Featured
+                      </span>
+                      {featured.category && (
+                        <span className={`px-3 py-1 rounded-full text-[11px] font-bold ${tagColorFor(featured.category)}`}>
+                          {featured.category}
+                        </span>
+                      )}
+                    </div>
+                    <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 mb-4 leading-tight group-hover:text-brand-600 transition-colors"
+                      style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+                      {featured.title}
+                    </h2>
+                    {featured.excerpt && (
+                      <p className="text-slate-500 text-[14px] sm:text-[15px] leading-relaxed mb-6 max-w-3xl">
+                        {featured.excerpt}
+                      </p>
+                    )}
+                    <div className="flex flex-wrap items-center justify-between gap-4">
+                      <div className="flex items-center gap-4 text-[12px] text-slate-400">
+                        {featured.author && <span className="flex items-center gap-1.5"><Users className="w-3.5 h-3.5" /> {featured.author}</span>}
+                        {featured.readMinutes && <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> {featured.readMinutes} min read</span>}
+                        {featured.publishedAt && <span>{formatPostDate(featured.publishedAt)}</span>}
+                      </div>
+                      <span className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-[13px] text-white bg-gradient-to-r ${gradientFor(featured.category)} group-hover:opacity-90 transition-opacity`}>
+                        Read Article <ArrowRight className="w-4 h-4" />
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              </motion.div>
+            </SectionWrapper>
+          </div>
+        </section>
+      )}
 
       {/* ── Post Grid ── */}
-      <section className="py-12 sm:py-16 md:py-20 bg-white">
-        <div className="max-w-6xl mx-auto px-5 sm:px-8 lg:px-10">
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
-            {posts.map((post, i) => {
-              const Icon = post.icon;
-              return (
-                <motion.article key={post.title}
+      {loaded && filteredOthers.length > 0 && (
+        <section className="py-12 sm:py-16 md:py-20 bg-white">
+          <div className="max-w-6xl mx-auto px-5 sm:px-8 lg:px-10">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+              {filteredOthers.map((post, i) => (
+                <motion.article key={post.id}
                   initial={{ opacity: 0, y: 28 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: i * 0.07 }}
-                  className="premium-card group hover:border-transparent hover:shadow-xl transition-all duration-300 flex flex-col cursor-pointer">
-                  <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${post.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                    <Icon className="w-4.5 h-4.5 text-white" />
-                  </div>
-                  <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold mb-3 ${post.tagColor}`}>
-                    {post.tag}
-                  </span>
-                  <h3 className="font-extrabold text-slate-900 text-[14px] sm:text-[15px] leading-snug mb-3 group-hover:text-brand-600 transition-colors flex-1"
-                    style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
-                    {post.title}
-                  </h3>
-                  <p className="text-slate-400 text-[12px] sm:text-[13px] leading-relaxed mb-4">{post.excerpt}</p>
-                  <div className="flex items-center justify-between pt-4 border-t border-slate-100 text-[11px] text-slate-400">
-                    <span className="flex items-center gap-1.5"><Clock className="w-3 h-3" /> {post.readTime}</span>
-                    <span>{post.date}</span>
-                  </div>
+                  transition={{ delay: Math.min(i * 0.05, 0.3) }}
+                  className="premium-card group hover:border-transparent hover:shadow-xl transition-all duration-300 overflow-hidden p-0 flex flex-col">
+                  <Link href={`/blog/${post.slug}`} className="block">
+                    <div className="flex sm:block">
+                      {/* Image on the left (mobile + small) / on top (desktop card) */}
+                      {post.imageUrl ? (
+                        <div className="w-1/3 sm:w-full aspect-square sm:aspect-[16/9] bg-slate-100 overflow-hidden flex-shrink-0">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={post.imageUrl} alt={post.title} className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-500" />
+                        </div>
+                      ) : (
+                        <div className={`w-1/3 sm:w-full aspect-square sm:aspect-[16/9] bg-gradient-to-br ${gradientFor(post.category)} flex items-center justify-center flex-shrink-0`}>
+                          <ImageIcon className="w-7 h-7 text-white/40" />
+                        </div>
+                      )}
+                      <div className="p-4 sm:p-5 flex-1 flex flex-col min-w-0">
+                        {post.category && (
+                          <span className={`inline-block w-fit px-2.5 py-0.5 rounded-full text-[10px] font-bold mb-2 ${tagColorFor(post.category)}`}>
+                            {post.category}
+                          </span>
+                        )}
+                        <h3 className="font-extrabold text-slate-900 text-[14px] sm:text-[15px] leading-snug mb-2 group-hover:text-brand-600 transition-colors flex-1"
+                          style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+                          {post.title}
+                        </h3>
+                        {post.excerpt && (
+                          <p className="text-slate-400 text-[12px] sm:text-[13px] leading-relaxed mb-3 line-clamp-2">
+                            {post.excerpt}
+                          </p>
+                        )}
+                        <div className="flex items-center justify-between pt-3 border-t border-slate-100 text-[11px] text-slate-400">
+                          {post.readMinutes ? (
+                            <span className="flex items-center gap-1.5"><Clock className="w-3 h-3" /> {post.readMinutes} min</span>
+                          ) : <span />}
+                          {post.publishedAt && <span>{formatPostDate(post.publishedAt)}</span>}
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
                 </motion.article>
-              );
-            })}
+              ))}
+            </div>
           </div>
-
-          {/* Load More */}
-          <div className="text-center mt-12">
-            <button className="btn-secondary px-8 py-3 text-[14px]">
-              Load More Articles
-            </button>
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* ── Newsletter CTA ── */}
       <section className="py-16 sm:py-20 noise-overlay relative overflow-hidden"

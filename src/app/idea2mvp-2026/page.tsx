@@ -163,7 +163,7 @@ export default function Idea2MVPPage() {
       {/* ═══ TOOLS ═══ */}
       <section className="py-10 sm:py-14 bg-white border-t border-slate-100">
         <div className="max-w-5xl mx-auto px-5 sm:px-8">
-          <TechLogos theme="light" eyebrow="Built with AI-native, free-tier tools" />
+          <TechLogos theme="light" category="idea2mvp" eyebrow="Built with free & open AI builders, models and platforms" />
         </div>
       </section>
 

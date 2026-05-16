@@ -90,17 +90,19 @@ export default function EventsAdminPage() {
     return () => unsub();
   }, []);
 
-  // Auto-seed on first load if collection is empty (one-shot, idempotent)
+  // Auto-seed missing entries on load (idempotent: matches existing docs by name).
   useEffect(() => {
     if (!loaded || seededRef.current) return;
     seededRef.current = true;
     (async () => {
       const snap = await getDocs(collection(db, 'events'));
-      if (!snap.empty) return; // already populated
-      for (const seed of SEED_EVENTS) {
+      const existingNames = new Set(snap.docs.map((d) => (d.data() as { name?: string }).name).filter(Boolean));
+      const missing = SEED_EVENTS.filter((s) => !existingNames.has(s.name));
+      if (missing.length === 0) return;
+      for (const seed of missing) {
         await addDoc(collection(db, 'events'), { ...seed, createdAt: serverTimestamp() });
       }
-      showToast('success', `Imported ${SEED_EVENTS.length} initial entries.`);
+      showToast('success', `Imported ${missing.length} new entr${missing.length === 1 ? 'y' : 'ies'}.`);
     })().catch((err) => console.error('Auto-seed failed:', err));
   }, [loaded, showToast]);
 
