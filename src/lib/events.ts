@@ -41,6 +41,7 @@ const CATEGORY_TAG_COLOR: Record<string, string> = {
   'Code Prodigy': 'bg-purple-50 text-purple-600',
   'Edutainment': 'bg-emerald-50 text-emerald-600',
   'Community': 'bg-emerald-50 text-emerald-600',
+  'Accelerator': 'bg-rose-50 text-rose-600',
 };
 const CATEGORY_GRADIENT: Record<string, string> = {
   'Learning Hub': 'from-brand-500 to-purple-600',
@@ -48,6 +49,7 @@ const CATEGORY_GRADIENT: Record<string, string> = {
   'Code Prodigy': 'from-purple-500 to-indigo-600',
   'Edutainment': 'from-emerald-400 to-teal-600',
   'Community': 'from-violet-400 to-purple-600',
+  'Accelerator': 'from-rose-500 to-pink-600',
 };
 const FALLBACK_TAG = 'bg-slate-100 text-slate-600';
 const FALLBACK_GRADIENT = 'from-slate-400 to-slate-600';

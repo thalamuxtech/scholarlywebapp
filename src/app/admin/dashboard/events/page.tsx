@@ -50,6 +50,7 @@ const CATEGORIES = [
   'Workshop',
   'Bootcamp',
   'Conference',
+  'Accelerator',
 ];
 const KINDS = [
   { value: 'program', label: 'Program' },

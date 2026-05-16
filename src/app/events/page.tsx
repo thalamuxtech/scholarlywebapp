@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Calendar, MapPin, Clock, Users, ArrowRight, Sparkles,
   Trophy, Mic2, BookOpen, Ticket,
-  Brain, Building2, Video, DollarSign, Filter
+  Brain, Building2, Video, DollarSign, Filter, Rocket
 } from 'lucide-react';
 import SectionWrapper from '@/components/ui/SectionWrapper';
 import { useEvents, isPast, feeLabel, isFree, isVisible } from '@/lib/events';
@@ -24,6 +24,7 @@ const CATEGORY_ICON: Record<string, React.ElementType> = {
   'Workshop': Sparkles,
   'Bootcamp': BookOpen,
   'Conference': Mic2,
+  'Accelerator': Rocket,
 };
 function iconFor(category?: string): React.ElementType {
   return (category && CATEGORY_ICON[category]) || Sparkles;
