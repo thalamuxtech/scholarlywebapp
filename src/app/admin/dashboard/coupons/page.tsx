@@ -12,11 +12,20 @@ import {
 } from 'lucide-react';
 import { PLAN_CATALOG, type Coupon } from '@/lib/coupons';
 
+// Keep these in sync with CATEGORIES in src/app/admin/dashboard/events/page.tsx.
+// Programs and event categories share this list so coupons can target either.
 const PROGRAMS = [
   { id: 'learning-hub', label: 'Learning Hub' },
+  { id: 'spotlight-media', label: 'Spotlight Media' },
   { id: 'code-prodigy', label: 'Code Prodigy' },
-  { id: 'inspire-media', label: 'Inspire Media' },
-  { id: 'ai-assessment', label: 'AI Assessment' },
+  { id: 'edutainment', label: 'Edutainment' },
+  { id: 'community', label: 'Community' },
+  { id: 'hackathon', label: 'Hackathon' },
+  { id: 'competition', label: 'Competition' },
+  { id: 'workshop', label: 'Workshop' },
+  { id: 'bootcamp', label: 'Bootcamp' },
+  { id: 'conference', label: 'Conference' },
+  { id: 'accelerator', label: 'Accelerator' },
 ];
 
 function genCode(len = 8) {
