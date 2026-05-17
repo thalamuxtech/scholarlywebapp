@@ -165,7 +165,7 @@ export default function Footer() {
         <div className="border-t border-slate-800 pt-8 mb-6">
           <div className="flex flex-wrap gap-4 mb-6">
             {[
-              { icon: BookOpen, label: 'Accredited Programs', color: 'text-brand-400' },
+              { icon: BookOpen, label: 'Ship-First Curriculum', color: 'text-brand-400' },
               { icon: Brain, label: 'AI-Ready Curriculum', color: 'text-purple-400' },
               { icon: Globe, label: 'Global Community', color: 'text-emerald-400' },
             ].map(({ icon: Icon, label, color }) => (
