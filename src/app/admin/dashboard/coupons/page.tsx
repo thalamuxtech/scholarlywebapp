@@ -12,9 +12,16 @@ import {
 } from 'lucide-react';
 import { PLAN_CATALOG, type Coupon } from '@/lib/coupons';
 
-// Keep these in sync with CATEGORIES in src/app/admin/dashboard/events/page.tsx.
-// Programs and event categories share this list so coupons can target either.
+// The 'id' must match exactly what the registration page passes to lookupCoupon().
+// Two groups below:
+//   1. Specific programs/cohorts. These are what the registration forms send.
+//   2. Event categories from admin/events. Useful for broader campaigns.
+// Keep group 2 in sync with CATEGORIES in src/app/admin/dashboard/events/page.tsx.
 const PROGRAMS = [
+  // Specific programs (match registration page IDs)
+  { id: 'summer-coding-2026', label: 'Summer Coding 2026' },
+  { id: 'idea2mvp-2026', label: 'Idea2MVP 2026' },
+  // Event categories
   { id: 'learning-hub', label: 'Learning Hub' },
   { id: 'spotlight-media', label: 'Spotlight Media' },
   { id: 'code-prodigy', label: 'Code Prodigy' },

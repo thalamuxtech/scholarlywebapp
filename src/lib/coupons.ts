@@ -110,6 +110,23 @@ export function computeFee(
   };
 }
 
+// Programs that belong to multiple equivalent IDs.
+// A coupon scoped to any one of these IDs is valid for any other ID in the same group.
+// Add new groupings here when new registration flows are added.
+const PROGRAM_ALIASES: Record<string, string[]> = {
+  'idea2mvp-2026': ['idea2mvp-2026', 'idea2mvp', 'accelerator'],
+  'summer-coding-2026': ['summer-coding-2026', 'summer-coding', 'bootcamp'],
+};
+
+function programMatches(couponPrograms: string[], programId: string): boolean {
+  if (!couponPrograms || couponPrograms.length === 0) return true;
+  if (couponPrograms.includes('all')) return true;
+  if (couponPrograms.includes(programId)) return true;
+  const aliases = PROGRAM_ALIASES[programId];
+  if (aliases && aliases.some((a) => couponPrograms.includes(a))) return true;
+  return false;
+}
+
 export async function lookupCoupon(code: string, programId: string, planLabel: string): Promise<{ ok: true; coupon: Coupon } | { ok: false; error: string }> {
   const trimmed = code.trim().toUpperCase();
   if (!trimmed) return { ok: false, error: 'Enter a coupon code.' };
@@ -120,7 +137,7 @@ export async function lookupCoupon(code: string, programId: string, planLabel: s
   if (!c.active) return { ok: false, error: 'This coupon is no longer active.' };
   if (c.expiresAt && new Date(c.expiresAt).getTime() < Date.now()) return { ok: false, error: 'This coupon has expired.' };
   if (c.maxUses && c.uses >= c.maxUses) return { ok: false, error: 'This coupon has reached its usage limit.' };
-  if (c.programs && c.programs.length && !c.programs.includes('all') && !c.programs.includes(programId)) {
+  if (!programMatches(c.programs || [], programId)) {
     return { ok: false, error: 'This coupon does not apply to the selected program.' };
   }
   const plan = findPlan(planLabel);
