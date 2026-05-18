@@ -119,7 +119,12 @@ export default function BlogAdminPage() {
       if (form.imagePath) {
         try { await deleteObject(sref(storage, form.imagePath)); } catch { /* ignore missing */ }
       }
-      const path = `blog/${Date.now()}-${slugify(file.name) || 'image'}`;
+      // Preserve the file extension so the storage object has a proper Content-Type hint.
+      const dot = file.name.lastIndexOf('.');
+      const ext = dot > -1 ? file.name.slice(dot + 1).toLowerCase().replace(/[^a-z0-9]/g, '') : '';
+      const baseName = dot > -1 ? file.name.slice(0, dot) : file.name;
+      const safeBase = slugify(baseName) || 'image';
+      const path = `blog/${Date.now()}-${safeBase}${ext ? `.${ext}` : ''}`;
       const r = sref(storage, path);
       await uploadBytes(r, file);
       const url = await getDownloadURL(r);

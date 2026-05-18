@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
+import { collection, onSnapshot, query, orderBy, where } from 'firebase/firestore';
 import { db } from './firebase';
 
 export type PostStatus = 'draft' | 'published';
@@ -103,13 +103,21 @@ export function formatPostDate(value?: string | Date | null): string {
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
-/** Subscribe to all posts ordered by publishedAt desc, fallback to createdAt. */
+/**
+ * Subscribe to PUBLISHED posts only, ordered by publishedAt desc (fallback to createdAt).
+ * Safe for the public /blog page: matches the Firestore rule that allows
+ * unauthenticated reads only when status == 'published'.
+ */
 export function usePosts() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    const q = query(collection(db, 'posts'), orderBy('createdAt', 'desc'));
+    const q = query(
+      collection(db, 'posts'),
+      where('status', '==', 'published'),
+      orderBy('createdAt', 'desc')
+    );
     const unsub = onSnapshot(q, (snap) => {
       const docs = snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Post, 'id'>) }));
       docs.sort((a, b) => {
@@ -121,6 +129,25 @@ export function usePosts() {
         return toMillis(b.createdAt) - toMillis(a.createdAt);
       });
       setPosts(docs);
+      setLoaded(true);
+    });
+    return () => unsub();
+  }, []);
+
+  return { posts, loaded };
+}
+
+/**
+ * Subscribe to ALL posts including drafts. Only safe for authenticated admin contexts.
+ */
+export function useAllPosts() {
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    const q = query(collection(db, 'posts'), orderBy('createdAt', 'desc'));
+    const unsub = onSnapshot(q, (snap) => {
+      setPosts(snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Post, 'id'>) })));
       setLoaded(true);
     });
     return () => unsub();
