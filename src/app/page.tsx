@@ -118,13 +118,13 @@ export default function HomePage() {
   const pastPrograms = visibleEvents.filter(isPast).slice(0, 3);
   const upcomingPrograms = visibleEvents.filter(isUpcoming).slice(0, 3);
 
-  // Featured published posts (max 3). Falls back to latest 3 if nothing is flagged featured.
+  // Home shows ONLY posts explicitly flagged Featured (max 3). Non-featured posts live on /blog.
+  // If no posts are flagged, the section auto-hides.
   const { posts: allPosts } = usePosts();
-  const featuredPosts = useMemo(() => {
-    const flagged = allPosts.filter((p) => p.featured).slice(0, 3);
-    if (flagged.length > 0) return flagged;
-    return allPosts.slice(0, 3);
-  }, [allPosts]);
+  const featuredPosts = useMemo(
+    () => allPosts.filter((p) => p.featured).slice(0, 3),
+    [allPosts]
+  );
   const heroRef = useRef(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] });
   const heroY = useTransform(scrollYProgress, [0, 1], ['0%', '30%']);
