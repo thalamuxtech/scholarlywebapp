@@ -106,6 +106,32 @@ export default function BlogAdminPage() {
     setForm((f) => ({ ...f, imageUrl: '', imagePath: '' }));
   };
 
+  // Detect common "wrong URL" mistakes and give the admin a useful warning.
+  // Returns null if the URL is fine, or a short hint string if it looks off.
+  const checkImageUrl = (url: string): string | null => {
+    const u = url.trim();
+    if (!u) return null;
+    if (!/^https?:\/\//i.test(u)) return 'URL must start with http:// or https://';
+    // ImgBB page (ibb.co/<id>) vs direct (i.ibb.co/<id>/<file>.ext)
+    if (/^https?:\/\/ibb\.co\//i.test(u)) {
+      return 'This looks like an ImgBB page URL. Open the image on ImgBB, scroll to "Embed codes" and copy the "Direct link" (it starts with https://i.ibb.co/ and ends in .jpg or .png).';
+    }
+    // Imgur gallery/page URL
+    if (/^https?:\/\/(www\.)?imgur\.com\//i.test(u) && !/\.(jpg|jpeg|png|gif|webp)$/i.test(u)) {
+      return 'This looks like an Imgur page URL. Right-click the image on Imgur and choose "Copy image address" so the link ends in .jpg, .png, etc.';
+    }
+    // Google Drive viewer URL
+    if (/drive\.google\.com\/file\/d\//i.test(u)) {
+      return 'Google Drive viewer URLs do not embed. Convert it to https://drive.google.com/uc?export=view&id=<FILE_ID> and make sure the file is shared as "Anyone with the link".';
+    }
+    // Looks fine; final sanity check that the path actually points to an image.
+    if (!/\.(jpg|jpeg|png|gif|webp|avif|svg)(\?.*)?$/i.test(u)) {
+      return 'The URL does not end in an image extension (.jpg, .png, .webp, etc.). It may still work, but most direct image links end in a file extension.';
+    }
+    return null;
+  };
+  const imageWarning = checkImageUrl(form.imageUrl || '');
+
   // Accept a single tag, OR multiple tags separated by commas.
   // E.g. "ai, learning,homeschool" -> ["ai", "learning", "homeschool"]
   const addTag = () => {
@@ -392,12 +418,29 @@ export default function BlogAdminPage() {
                       </button>
                     )}
                   </div>
+                  {/* Inline warning for known-bad URL shapes */}
+                  {imageWarning && (
+                    <div className="mt-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-[12px] text-amber-800 leading-relaxed">
+                      <strong className="font-bold">Check this URL:</strong> {imageWarning}
+                    </div>
+                  )}
                   {/* Live preview */}
                   {form.imageUrl ? (
                     <div className="mt-3 relative rounded-xl overflow-hidden border-2 border-slate-100 aspect-[16/9] bg-slate-100">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={form.imageUrl} alt="cover preview" className="w-full h-full object-cover"
-                        onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
+                        onError={(e) => {
+                          const el = e.currentTarget as HTMLImageElement;
+                          el.style.display = 'none';
+                          const parent = el.parentElement;
+                          if (parent && !parent.querySelector('[data-broken-image-msg]')) {
+                            const msg = document.createElement('div');
+                            msg.setAttribute('data-broken-image-msg', '1');
+                            msg.className = 'absolute inset-0 flex flex-col items-center justify-center gap-1 text-rose-500 text-xs font-semibold';
+                            msg.textContent = 'Image failed to load. The URL is not a direct image link.';
+                            parent.appendChild(msg);
+                          }
+                        }} />
                     </div>
                   ) : (
                     <div className="mt-3 w-full aspect-[16/9] rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 flex flex-col items-center justify-center gap-2 text-slate-400">
@@ -406,11 +449,10 @@ export default function BlogAdminPage() {
                     </div>
                   )}
                   <p className="text-[10px] text-slate-400 mt-1.5">
-                    Paste a public image URL. Recommended:{' '}
-                    <a href="https://imgbb.com/" target="_blank" rel="noreferrer" className="text-brand-600 hover:underline font-semibold">imgbb.com</a>{' '}
-                    (drag-and-drop, copy the &quot;Direct link&quot;). Also works:{' '}
-                    <a href="https://imgur.com/upload" target="_blank" rel="noreferrer" className="text-brand-600 hover:underline">imgur.com</a>,{' '}
-                    <a href="https://unsplash.com/" target="_blank" rel="noreferrer" className="text-brand-600 hover:underline">unsplash.com</a>.
+                    Paste a <strong>direct</strong> public image URL (must end in .jpg, .png, .webp, etc.). Recommended:{' '}
+                    <a href="https://imgbb.com/" target="_blank" rel="noreferrer" className="text-brand-600 hover:underline font-semibold">imgbb.com</a>.
+                    On ImgBB, click your uploaded image, then under <em>Embed codes</em> select &quot;Direct link&quot;. It looks like{' '}
+                    <code className="bg-slate-100 px-1 rounded text-[10px]">https://i.ibb.co/&lt;id&gt;/file.png</code>.
                   </p>
                 </div>
 

@@ -104,20 +104,21 @@ export function formatPostDate(value?: string | Date | null): string {
 }
 
 /**
- * Subscribe to PUBLISHED posts only, ordered by publishedAt desc (fallback to createdAt).
+ * Subscribe to PUBLISHED posts only.
  * Safe for the public /blog page: matches the Firestore rule that allows
  * unauthenticated reads only when status == 'published'.
+ *
+ * We deliberately do NOT use orderBy() in the query (which would require a
+ * composite index for the where+orderBy combo). Instead we sort the
+ * resulting documents on the client. Blog volume is small so the cost is
+ * negligible and it removes a deploy-time dependency.
  */
 export function usePosts() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    const q = query(
-      collection(db, 'posts'),
-      where('status', '==', 'published'),
-      orderBy('createdAt', 'desc')
-    );
+    const q = query(collection(db, 'posts'), where('status', '==', 'published'));
     const unsub = onSnapshot(q, (snap) => {
       const docs = snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Post, 'id'>) }));
       docs.sort((a, b) => {
