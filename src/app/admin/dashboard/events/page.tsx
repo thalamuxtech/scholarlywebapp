@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/components/Toast';
 import { useConfirm } from '@/components/ConfirmDialog';
+import ComboInput from '@/components/ComboInput';
 import { SEED_EVENTS } from '@/lib/eventsSeed';
 
 type EventDoc = {
@@ -205,7 +206,15 @@ export default function EventsAdminPage() {
                   <div><label className="text-xs font-bold text-slate-700 mb-1.5 block">Description</label><textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={3} placeholder="Brief description shown on the public page..." className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 text-sm focus:outline-none focus:border-brand-400 resize-none" /></div>
                   <div className="grid grid-cols-2 gap-3">
                     <div><label className="text-xs font-bold text-slate-700 mb-1.5 block">Type</label><select value={form.kind} onChange={(e) => setForm({ ...form, kind: e.target.value })} className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 text-sm focus:outline-none focus:border-brand-400 bg-white">{KINDS.map((k) => <option key={k.value} value={k.value}>{k.label}</option>)}</select></div>
-                    <div><label className="text-xs font-bold text-slate-700 mb-1.5 block">Category</label><select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 text-sm focus:outline-none focus:border-brand-400 bg-white">{CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}</select></div>
+                    <div>
+                      <label className="text-xs font-bold text-slate-700 mb-1.5 block">Category</label>
+                      <ComboInput
+                        value={form.category || ''}
+                        options={CATEGORIES}
+                        onChange={(v) => setForm({ ...form, category: v })}
+                        placeholder="Pick or type a category"
+                      />
+                    </div>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div><label className="text-xs font-bold text-slate-700 mb-1.5 block">Start Date</label><input type="date" value={form.startDate} onChange={(e) => setForm({ ...form, startDate: e.target.value })} className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 text-sm focus:outline-none focus:border-brand-400" /></div>

@@ -1,20 +1,19 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
-import Image from 'next/image';
+import { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   collection, query, orderBy, onSnapshot, doc, updateDoc, addDoc, deleteDoc,
   serverTimestamp
 } from 'firebase/firestore';
-import { ref as sref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
-import { db, storage } from '@/lib/firebase';
+import { db } from '@/lib/firebase';
 import {
   BookOpen, Plus, Pencil, Trash2, Eye, EyeOff, Star, StarOff, X, Loader2,
-  Upload, ImageIcon, Search, ExternalLink, Tag as TagIcon, Sparkles, Save
+  ImageIcon, Search, ExternalLink, Tag as TagIcon, Sparkles, Save, Link as LinkIcon
 } from 'lucide-react';
 import { useToast } from '@/components/Toast';
 import { useConfirm } from '@/components/ConfirmDialog';
+import ComboInput from '@/components/ComboInput';
 import {
   Post, POST_CATEGORIES, slugify, estimateReadMinutes, formatPostDate
 } from '@/lib/posts';
@@ -43,10 +42,8 @@ export default function BlogAdminPage() {
   const [form, setForm] = useState<Omit<Post, 'id'>>({ ...EMPTY });
   const [tagInput, setTagInput] = useState('');
   const [saving, setSaving] = useState(false);
-  const [uploading, setUploading] = useState(false);
   const [search, setSearch] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'draft' | 'published'>('all');
-  const fileRef = useRef<HTMLInputElement | null>(null);
   const { showToast } = useToast();
   const { confirm } = useConfirm();
 
@@ -103,46 +100,9 @@ export default function BlogAdminPage() {
     setShowEditor(true);
   };
 
-  const handleUpload = async (file: File) => {
-    if (!file) return;
-    if (!file.type.startsWith('image/')) {
-      showToast('error', 'Please choose an image file.');
-      return;
-    }
-    if (file.size > 8 * 1024 * 1024) {
-      showToast('error', 'Image must be under 8 MB.');
-      return;
-    }
-    setUploading(true);
-    try {
-      // Delete previous image if it was a Storage upload.
-      if (form.imagePath) {
-        try { await deleteObject(sref(storage, form.imagePath)); } catch { /* ignore missing */ }
-      }
-      // Preserve the file extension so the storage object has a proper Content-Type hint.
-      const dot = file.name.lastIndexOf('.');
-      const ext = dot > -1 ? file.name.slice(dot + 1).toLowerCase().replace(/[^a-z0-9]/g, '') : '';
-      const baseName = dot > -1 ? file.name.slice(0, dot) : file.name;
-      const safeBase = slugify(baseName) || 'image';
-      const path = `blog/${Date.now()}-${safeBase}${ext ? `.${ext}` : ''}`;
-      const r = sref(storage, path);
-      await uploadBytes(r, file);
-      const url = await getDownloadURL(r);
-      setForm((f) => ({ ...f, imageUrl: url, imagePath: path }));
-      showToast('success', 'Image uploaded.');
-    } catch (err) {
-      console.error(err);
-      showToast('error', 'Upload failed. Check Storage rules and try again.');
-    } finally {
-      setUploading(false);
-      if (fileRef.current) fileRef.current.value = '';
-    }
-  };
-
-  const removeImage = async () => {
-    if (form.imagePath) {
-      try { await deleteObject(sref(storage, form.imagePath)); } catch { /* ignore */ }
-    }
+  // Images are referenced by public URL (Imgur, ImgBB, Cloudinary, Unsplash, etc.).
+  // No upload to Firebase Storage; no CORS or quota to manage.
+  const clearImage = () => {
     setForm((f) => ({ ...f, imageUrl: '', imagePath: '' }));
   };
 
@@ -233,9 +193,6 @@ export default function BlogAdminPage() {
     });
     if (!ok) return;
     try {
-      if (p.imagePath) {
-        try { await deleteObject(sref(storage, p.imagePath)); } catch { /* ignore */ }
-      }
       await deleteDoc(doc(db, 'posts', p.id));
       showToast('success', 'Post deleted.');
     } catch (err) {
@@ -417,41 +374,55 @@ export default function BlogAdminPage() {
                     className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 text-sm focus:outline-none focus:border-brand-400 resize-none" />
                 </div>
 
-                {/* Image */}
+                {/* Image (URL-based) */}
                 <div>
-                  <label className="text-[11px] font-bold text-slate-600 mb-1.5 block">Cover image</label>
-                  {form.imageUrl ? (
-                    <div className="relative rounded-xl overflow-hidden border-2 border-slate-100 aspect-[16/9] bg-slate-100">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={form.imageUrl} alt="cover" className="w-full h-full object-cover" />
-                      <button type="button" onClick={removeImage}
-                        className="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/90 hover:bg-white text-rose-500 flex items-center justify-center shadow-md">
-                        <Trash2 className="w-4 h-4" />
+                  <label className="text-[11px] font-bold text-slate-600 mb-1.5 block">Cover image URL</label>
+                  <div className="relative">
+                    <LinkIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-300" />
+                    <input
+                      type="url"
+                      value={form.imageUrl || ''}
+                      onChange={(e) => setForm({ ...form, imageUrl: e.target.value, imagePath: '' })}
+                      placeholder="https://images.unsplash.com/photo-... or https://i.imgur.com/abc.jpg"
+                      className="w-full pl-9 pr-10 py-3 rounded-xl border-2 border-slate-200 text-sm focus:outline-none focus:border-brand-400" />
+                    {form.imageUrl && (
+                      <button type="button" onClick={clearImage} title="Clear image"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-md text-slate-400 hover:text-rose-500 hover:bg-rose-50 flex items-center justify-center transition-colors">
+                        <X className="w-4 h-4" />
                       </button>
+                    )}
+                  </div>
+                  {/* Live preview */}
+                  {form.imageUrl ? (
+                    <div className="mt-3 relative rounded-xl overflow-hidden border-2 border-slate-100 aspect-[16/9] bg-slate-100">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={form.imageUrl} alt="cover preview" className="w-full h-full object-cover"
+                        onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
                     </div>
                   ) : (
-                    <button type="button" onClick={() => fileRef.current?.click()}
-                      className="w-full aspect-[16/9] rounded-xl border-2 border-dashed border-slate-200 hover:border-brand-300 bg-slate-50 hover:bg-brand-50/40 flex flex-col items-center justify-center gap-2 text-slate-400 hover:text-brand-600 transition-all">
-                      {uploading ? (
-                        <><Loader2 className="w-5 h-5 animate-spin" /> <span className="text-xs font-semibold">Uploading...</span></>
-                      ) : (
-                        <><Upload className="w-5 h-5" /> <span className="text-xs font-semibold">Upload from your computer</span><span className="text-[10px] text-slate-400">JPG / PNG / WebP up to 8 MB</span></>
-                      )}
-                    </button>
+                    <div className="mt-3 w-full aspect-[16/9] rounded-xl border-2 border-dashed border-slate-200 bg-slate-50 flex flex-col items-center justify-center gap-2 text-slate-400">
+                      <ImageIcon className="w-6 h-6" />
+                      <span className="text-xs font-semibold">No image yet</span>
+                    </div>
                   )}
-                  <input ref={fileRef} type="file" accept="image/*" className="hidden"
-                    onChange={(e) => { const f = e.target.files?.[0]; if (f) handleUpload(f); }} />
-                  <p className="text-[10px] text-slate-400 mt-1.5">Shown on the left side of the blog card and as the hero image on the post page.</p>
+                  <p className="text-[10px] text-slate-400 mt-1.5">
+                    Paste a public image URL. Free hosts that work well:{' '}
+                    <a href="https://imgbb.com/" target="_blank" rel="noreferrer" className="text-brand-600 hover:underline">imgbb.com</a>,{' '}
+                    <a href="https://imgur.com/upload" target="_blank" rel="noreferrer" className="text-brand-600 hover:underline">imgur.com</a>,{' '}
+                    <a href="https://unsplash.com/" target="_blank" rel="noreferrer" className="text-brand-600 hover:underline">unsplash.com</a>.
+                  </p>
                 </div>
 
                 {/* Category + author + read minutes */}
                 <div className="grid sm:grid-cols-3 gap-3">
                   <div>
                     <label className="text-[11px] font-bold text-slate-600 mb-1.5 block">Category</label>
-                    <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 text-sm focus:outline-none focus:border-brand-400 bg-white">
-                      {POST_CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
-                    </select>
+                    <ComboInput
+                      value={form.category || ''}
+                      options={POST_CATEGORIES}
+                      onChange={(v) => setForm({ ...form, category: v })}
+                      placeholder="Pick or type a category"
+                    />
                   </div>
                   <div>
                     <label className="text-[11px] font-bold text-slate-600 mb-1.5 block">Author</label>
