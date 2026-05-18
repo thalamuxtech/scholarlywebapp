@@ -6,18 +6,23 @@
       "http://localhost:3000",
       "http://localhost:3001"
     ],
-    "method": ["GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"],
+    "method": ["GET", "HEAD", "POST", "PUT", "DELETE", "PATCH"],
     "responseHeader": [
       "Content-Type",
-      "Authorization",
       "Content-Length",
-      "User-Agent",
+      "Content-Encoding",
+      "ETag",
+      "Cache-Control",
+      "Authorization",
       "x-goog-resumable",
-      "x-goog-meta-*",
+      "x-goog-meta-foo",
       "x-goog-upload-protocol",
       "x-goog-upload-command",
       "x-goog-upload-offset",
-      "x-goog-upload-status"
+      "x-goog-upload-status",
+      "x-goog-upload-url",
+      "x-goog-upload-chunk-granularity",
+      "x-firebase-storage-version"
     ],
     "maxAgeSeconds": 3600
   }

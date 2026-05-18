@@ -1,105 +1,90 @@
-# Fix: blog create from admin shows permission + CORS errors
+# Fix blog admin upload errors (CORS + permissions)
 
-The admin "create post" flow on production fails with two errors:
+The admin "create post" flow shows two related errors on production:
 
-1. `FirebaseError: Missing or insufficient permissions` on the Firestore `posts` collection.
-2. `Access to XMLHttpRequest at firebasestorage.googleapis.com... blocked by CORS policy`.
+1. `Access to XMLHttpRequest at firebasestorage.googleapis.com... blocked by CORS policy` (image upload)
+2. `FirebaseError: Missing or insufficient permissions` (Firestore listener)
 
-Both are infrastructure problems, not code bugs. Code changes in the repo
-fix one half (the rule shape and the upload filename), but you must also
-deploy the rules and apply a CORS policy to the Storage bucket.
+Both are infrastructure problems. The code-side fixes are already committed.
+The remaining step you must run yourself is to apply a **bucket CORS
+policy** to the Firebase Storage bucket. Firebase CLI does not do this.
+You need `gcloud` or `gsutil`.
 
-## What changed in code (already committed)
+## TL;DR fix in 5 minutes
 
-- `firestore.rules` — public `/blog` listing now requires `status == 'published'` and we updated the lib hook to query with that filter explicitly. This satisfies the per-document rule check.
-- `src/lib/posts.ts` — `usePosts()` now adds `where('status', '==', 'published')` so the public page does not try to read drafts (which would be denied per-document and abort the whole listener).
-- `src/app/admin/dashboard/blog/page.tsx` — image upload path now keeps the file extension (e.g. `blog/172...-post1.png` instead of `blog/172...-post1png`).
-- `storage.cors.json` — the CORS policy to apply to the bucket.
-
-## Steps to deploy
-
-### 1. Make sure you are logged in and on the right project
-
-```
+```powershell
+# from the app/ folder
 firebase login
 firebase use scholarly-echo
-```
-
-### 2. Deploy Firestore + Storage rules
-
-```
 firebase deploy --only firestore:rules,storage
-```
 
-If `firebase deploy --only storage` complains the bucket has no rules
-target, run:
+# then apply CORS to the bucket (one-time)
+.\scripts\apply-storage-cors.ps1
 
-```
-firebase init storage
-# Pick the existing scholarly-echo.firebasestorage.app bucket
-# Use storage.rules (already in this repo) when asked
-```
-
-then redo the deploy.
-
-### 3. Apply CORS to the Storage bucket
-
-This is the actual fix for the CORS error. Run via Google Cloud SDK
-(`gcloud`). The bucket name is taken from `firebase.ts`:
-`scholarly-echo.firebasestorage.app`.
-
-```
-gsutil cors set storage.cors.json gs://scholarly-echo.firebasestorage.app
-```
-
-Verify it took effect:
-
-```
-gsutil cors get gs://scholarly-echo.firebasestorage.app
-```
-
-You should see the four allowed origins from `storage.cors.json` printed back.
-
-### 4. Rebuild and deploy the site
-
-```
+# finally redeploy hosting so the code changes go live
 npm run build
 firebase deploy --only hosting
 ```
 
-### 5. Smoke test
+If `apply-storage-cors.ps1` says "Neither gsutil nor gcloud is installed",
+follow the install guide below.
 
-1. Open `https://scholarly-echo.web.app/admin/dashboard/blog`.
-2. Click **New Post**.
-3. Upload an image. Should succeed (no CORS error in browser console).
-4. Fill in title, body, set status to `Published`, save.
-5. Open `https://scholarly-echo.web.app/blog` in an incognito window. The new post should be listed.
+## Install Google Cloud SDK (if you do not have it)
 
-## If the CORS step still fails
+Download from https://cloud.google.com/sdk/docs/install
 
-You probably don't have `gsutil`/`gcloud` installed. Two options:
+After install, open a **new** PowerShell window so `gcloud` is on PATH, then:
 
-**Option A (recommended): install Google Cloud SDK.**
-Download from https://cloud.google.com/sdk/docs/install, then run
-`gcloud auth login` and the `gsutil cors set` command above.
+```powershell
+gcloud auth login
+gcloud config set project scholarly-echo
+```
 
-**Option B: temporarily widen the CORS to `*` to unblock yourself.**
-Edit `storage.cors.json` and change the `origin` array to `["*"]`. This
-should only be used briefly while you finish setup.
+Now `.\scripts\apply-storage-cors.ps1` will work.
 
-## Why both errors happen at once
+## Manual fallback (if you cannot install gcloud)
 
-Firebase Storage runs on the Google Cloud Storage API at
-`firebasestorage.googleapis.com`, which is a different origin from your
-Hosting domain `scholarly-echo.web.app`. The browser sends a CORS
-preflight `OPTIONS` request before any upload. Without a bucket-level
-CORS policy permitting your origin, the preflight returns 403 and the
-upload never starts.
+Open https://console.cloud.google.com/storage/browser/scholarly-echo.firebasestorage.app — sign in as the Google account that owns the project. Click the bucket. Click the **Permissions** tab; CORS is not there. Instead use Cloud Shell:
 
-The Firestore "permission denied" was a separate problem: the previous
-rule allowed reads only when the document's `status == 'published'`, but
-the public `/blog` listener queried *all* posts without filtering,
-including any drafts. Firestore evaluates rules per document, so as
-soon as one draft was in the result the whole listener errored. The
-fix is in `src/lib/posts.ts`: the public hook now filters by `status`
-in the query itself.
+1. Click the **Activate Cloud Shell** icon in the top-right of console.cloud.google.com
+2. In the shell, upload `storage.cors.json` (Cloud Shell has a drag-and-drop file upload)
+3. Run:
+   ```
+   gsutil cors set storage.cors.json gs://scholarly-echo.firebasestorage.app
+   gsutil cors get gs://scholarly-echo.firebasestorage.app
+   ```
+
+That's it. The bucket policy applies in seconds.
+
+## Why this is necessary
+
+Firebase Storage is built on Google Cloud Storage. The browser sends a CORS
+preflight `OPTIONS` request to `firebasestorage.googleapis.com` before any
+upload. Without a bucket-level CORS configuration permitting your origin
+(`https://scholarly-echo.web.app`), the preflight returns 403 and the
+upload never starts. The Firebase CLI manages Firestore rules and Storage
+*security* rules, but the *CORS* policy is a property of the underlying
+GCS bucket and must be set via gsutil/gcloud.
+
+## What changed in code (already committed)
+
+- `firestore.rules`: `posts/{docId}` allows public read only when
+  `status == 'published'`, admin sees all.
+- `src/lib/posts.ts`: `usePosts()` now filters `where('status', '==', 'published')`
+  so the public listener never tries to read drafts (per-doc rule check
+  would otherwise reject the whole listener).
+- `src/app/admin/dashboard/blog/page.tsx`: upload preserves the file
+  extension (`.png`, `.jpg`, `.webp`, etc.) so Cloud Storage sets a
+  correct `Content-Type` and the storage.rules `image/.*` check matches.
+- `storage.cors.json`: the CORS policy file to apply to the bucket.
+- `scripts/apply-storage-cors.ps1`: one-shot PowerShell script that finds
+  gsutil or gcloud and runs the right command.
+
+## Smoke test
+
+1. Open `https://scholarly-echo.web.app/admin/dashboard/blog`
+2. Click **New Post**
+3. Upload an image. Should succeed silently (no error in browser console).
+4. Fill title + body, set **Status** to **Published**, click **Create**.
+5. Open `https://scholarly-echo.web.app/blog` in an incognito window.
+6. The new post should appear in the list. Click it. The full post should render.

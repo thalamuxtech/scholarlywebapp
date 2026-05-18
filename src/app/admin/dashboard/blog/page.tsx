@@ -146,11 +146,24 @@ export default function BlogAdminPage() {
     setForm((f) => ({ ...f, imageUrl: '', imagePath: '' }));
   };
 
+  // Accept a single tag, OR multiple tags separated by commas.
+  // E.g. "ai, learning,homeschool" -> ["ai", "learning", "homeschool"]
   const addTag = () => {
-    const v = tagInput.trim();
-    if (!v) return;
-    if (form.tags?.includes(v)) { setTagInput(''); return; }
-    setForm((f) => ({ ...f, tags: [...(f.tags || []), v] }));
+    const raw = tagInput.trim();
+    if (!raw) return;
+    const parts = raw.split(',').map((x) => x.trim()).filter(Boolean);
+    if (parts.length === 0) { setTagInput(''); return; }
+    setForm((f) => {
+      const existing = new Set((f.tags || []).map((t) => t.toLowerCase()));
+      const added: string[] = [];
+      for (const p of parts) {
+        if (!existing.has(p.toLowerCase())) {
+          added.push(p);
+          existing.add(p.toLowerCase());
+        }
+      }
+      return { ...f, tags: [...(f.tags || []), ...added] };
+    });
     setTagInput('');
   };
   const removeTag = (t: string) => {
@@ -463,7 +476,7 @@ export default function BlogAdminPage() {
                       <input value={tagInput}
                         onChange={(e) => setTagInput(e.target.value)}
                         onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addTag(); } }}
-                        placeholder="Type and press Enter"
+                        placeholder="Type one tag and press Enter, or paste a comma-separated list"
                         className="w-full pl-9 pr-3 py-2.5 rounded-lg border-2 border-slate-200 text-[13px] focus:outline-none focus:border-brand-400" />
                     </div>
                     <button type="button" onClick={addTag} className="px-3 py-2.5 rounded-lg bg-slate-100 text-slate-600 text-[12px] font-bold hover:bg-slate-200">Add</button>

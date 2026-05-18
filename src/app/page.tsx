@@ -1,6 +1,6 @@
 ﻿'use client';
 
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion, useScroll, useTransform, useInView } from 'framer-motion';
@@ -18,6 +18,7 @@ import InfoSessionPopup from '@/components/InfoSessionPopup';
 import { CourseStack } from '@/components/TechLogos';
 import { useEvents, tagColorFor, isPast, isUpcoming, feeLabel, isVisible } from '@/lib/events';
 import type { EventDoc } from '@/lib/events';
+import { usePosts, tagColorFor as postTagColorFor, gradientFor as postGradientFor, formatPostDate } from '@/lib/posts';
 
 /* ─────────────────── Sub-components ─────────────────── */
 
@@ -116,6 +117,14 @@ export default function HomePage() {
   const visibleEvents = dbEvents.filter(isVisible);
   const pastPrograms = visibleEvents.filter(isPast).slice(0, 3);
   const upcomingPrograms = visibleEvents.filter(isUpcoming).slice(0, 3);
+
+  // Featured published posts (max 3). Falls back to latest 3 if nothing is flagged featured.
+  const { posts: allPosts } = usePosts();
+  const featuredPosts = useMemo(() => {
+    const flagged = allPosts.filter((p) => p.featured).slice(0, 3);
+    if (flagged.length > 0) return flagged;
+    return allPosts.slice(0, 3);
+  }, [allPosts]);
   const heroRef = useRef(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] });
   const heroY = useTransform(scrollYProgress, [0, 1], ['0%', '30%']);
@@ -921,6 +930,86 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* ═══ FEATURED FROM THE BLOG ═══ */}
+      {featuredPosts.length > 0 && (
+        <section className="py-16 sm:py-20 md:py-24 bg-white">
+          <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-10">
+            <SectionWrapper className="text-center mb-12">
+              <div className="section-tag mx-auto mb-5">
+                <BookOpen className="w-3.5 h-3.5" /> From the Blog
+              </div>
+              <h2 className="section-heading mb-4">Insights worth your <span className="gradient-text">time</span></h2>
+              <p className="section-subheading mx-auto">Strategy, frameworks, and case-quality writing on coding, AI, and the future of learning.</p>
+            </SectionWrapper>
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+              {featuredPosts.map((post, i) => (
+                <motion.div key={post.id}
+                  initial={{ opacity: 0, y: 28 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.08 }}
+                  className="relative group">
+                  {/* Animated gradient border (reuses the `aurora` keyframe in globals.css) */}
+                  <div aria-hidden
+                    className="absolute -inset-px rounded-3xl opacity-60 group-hover:opacity-100 transition-opacity duration-500"
+                    style={{
+                      background: 'linear-gradient(135deg, #6e42ff, #a855f7, #ec4899, #f59e0b, #6e42ff)',
+                      backgroundSize: '300% 300%',
+                      animation: 'aurora 9s ease infinite',
+                    }} />
+                  <Link href={`/blog/${post.slug}`}
+                    className="relative block rounded-[22px] bg-white overflow-hidden h-full flex flex-col">
+                    {post.imageUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={post.imageUrl} alt={post.title}
+                        className="w-full aspect-[16/9] object-cover group-hover:scale-[1.03] transition-transform duration-700" />
+                    ) : (
+                      <div className={`w-full aspect-[16/9] bg-gradient-to-br ${postGradientFor(post.category)} flex items-center justify-center`}>
+                        <Sparkles className="w-10 h-10 text-white/40" />
+                      </div>
+                    )}
+                    <div className="p-5 flex-1 flex flex-col">
+                      <div className="flex items-center gap-2 mb-3">
+                        {post.category && (
+                          <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${postTagColorFor(post.category)}`}>
+                            {post.category}
+                          </span>
+                        )}
+                        {post.featured && (
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-100">
+                            Featured
+                          </span>
+                        )}
+                      </div>
+                      <h3 className="font-extrabold text-slate-900 text-[15px] sm:text-[16px] leading-snug mb-2 group-hover:text-brand-600 transition-colors flex-1"
+                        style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+                        {post.title}
+                      </h3>
+                      {post.excerpt && (
+                        <p className="text-slate-500 text-[12.5px] leading-relaxed mb-3 line-clamp-2">
+                          {post.excerpt}
+                        </p>
+                      )}
+                      <div className="flex items-center justify-between pt-3 border-t border-slate-100 text-[11px] text-slate-400">
+                        {post.readMinutes ? <span>{post.readMinutes} min read</span> : <span />}
+                        {post.publishedAt && <span>{formatPostDate(post.publishedAt)}</span>}
+                      </div>
+                    </div>
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+
+            <div className="text-center mt-10">
+              <Link href="/blog" className="btn-secondary text-sm">
+                Read the blog <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ═══ PARTNERS LOOP SLIDER (hidden: re-enable when partners are confirmed) ═══ */}
       {/*
