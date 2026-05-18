@@ -11,33 +11,32 @@ import NewsletterForm from '@/components/NewsletterForm';
 
 const footerLinks = {
   Learn: [
-    { label: 'Free Assessment Class', href: '/assessment-class' },
-    { label: 'AI & Product Tracks', href: '/learning-hub#ai-tracks' },
-    { label: 'Code Prodigy', href: '/learning-hub/code-prodigy' },
-    { label: 'Summer 2026', href: '/summer-coding-2026' },
+    { label: 'Learning Hub', href: '/learning-hub' },
+    { label: 'Summer Bootcamp 2026', href: '/summer-coding-2026' },
     { label: 'Idea2MVP Course', href: '/idea2mvp-2026' },
-    { label: 'Pricing', href: '/pricing' },
+    { label: 'Code Prodigy', href: '/learning-hub/code-prodigy' },
+    { label: 'Free Assessment Class', href: '/assessment-class' },
+    { label: 'Enroll', href: '/enroll' },
+  ],
+  Pricing: [
+    { label: 'Pricing & Plans', href: '/pricing' },
     { label: 'Scholarship & Discount', href: '/scholarship-discount' },
+    { label: 'School Bookings', href: '/school-booking' },
   ],
   Inspire: [
     { label: 'Spotlight Media', href: '/spotlight-media' },
     { label: 'Thesis Spotlight', href: '/spotlight-media/thesis' },
     { label: 'Blog & Resources', href: '/blog' },
-    { label: 'Guest Applications', href: '/spotlight-media#apply' },
   ],
   Engage: [
     { label: 'Edutainment', href: '/edutainment' },
     { label: 'Events & Hackathons', href: '/events' },
     { label: 'Sezwor Mode Waitlist', href: '/edutainment#sezwor' },
-    { label: 'School Bookings', href: '/school-booking' },
   ],
   Company: [
     { label: 'About', href: '/about' },
     { label: 'Impact', href: '/impact' },
     { label: 'Contact', href: '/contact' },
-    { label: 'Partner With Us', href: '/contact#partner' },
-    { label: 'Careers', href: '/about#careers' },
-    { label: 'Press', href: '/about#press' },
   ],
 };
 
@@ -102,10 +101,10 @@ export default function Footer() {
         </div>
 
         {/* ── Main Grid ── */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-8 lg:gap-10 mb-14">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-8 lg:gap-10 mb-14">
 
           {/* Brand Column */}
-          <div className="sm:col-span-2">
+          <div className="sm:col-span-2 lg:col-span-2">
             <Link href="/" className="flex items-center gap-2.5 mb-5 w-fit group">
               <div className="relative w-14 h-14 flex-shrink-0">
                 <Image src="/logo-white.png" alt="ScholarlyEcho" fill className="object-contain" />

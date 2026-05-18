@@ -1,38 +1,76 @@
 ﻿'use client';
 
-import { useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   BookOpen, Mic2, Brain, Trophy, ArrowRight, CheckCircle2,
   User, Mail, Phone, MapPin, GraduationCap, Loader2, Sparkles,
-  Tag, X as XIcon, Percent, ShieldCheck
+  Tag, X as XIcon, Percent, ShieldCheck, Sun, Rocket, ExternalLink
 } from 'lucide-react';
 import { submitForm } from '@/lib/formSubmit';
 import { useToast } from '@/components/Toast';
 import { COUNTRIES, US_STATES, US_COUNTRY, OTHER_OPTION } from '@/lib/locations';
 import { computeFee, lookupCoupon, incrementCouponUse, SIBLING_DISCOUNT_PCT, type Coupon } from '@/lib/coupons';
 
+// Cohort programs live on dedicated pages with their own registration flow.
+// They are shown on /enroll as outbound cards rather than inline forms.
+type CohortCard = {
+  id: string;
+  icon: typeof Sun;
+  title: string;
+  subtitle: string;
+  desc: string;
+  color: string;
+  href: string;
+  badge?: string;
+};
+
+const cohortPrograms: CohortCard[] = [
+  {
+    id: 'summer-coding-2026',
+    icon: Sun,
+    title: 'Summer Coding Bootcamp 2026',
+    subtitle: 'Ages 5+ and 9+ · 6 weeks · live online',
+    desc: 'Two age-tailored tracks (Logic Builders and Code Masters), a real capstone project, and Demo Day. Starts June 29, 2026.',
+    color: 'from-amber-400 to-rose-500',
+    href: '/summer-coding-2026',
+    badge: 'OPEN',
+  },
+  {
+    id: 'idea2mvp-2026',
+    icon: Rocket,
+    title: 'Idea2MVP Course 2026',
+    subtitle: 'Ages 11–22 · 10 weeks + Demo Day',
+    desc: 'Ship a real AI-powered product in 10 weeks using free-tier tools. Live URL by week 5, real users by week 7.',
+    color: 'from-brand-500 to-pink-500',
+    href: '/idea2mvp-2026',
+    badge: 'OPEN',
+  },
+];
+
+// On-page application forms (inline on /enroll, deep-link via ?form=<id>).
 const programs = [
   {
     id: 'learning-hub',
     icon: BookOpen,
-    title: 'Learning Hub',
-    subtitle: 'Coding & Tech Education',
-    desc: 'Enroll in our 5-level Coders Ladder: from Scratch to building real SaaS products.',
+    title: 'Learning Hub (Term-time)',
+    subtitle: 'Monthly Coders Ladder enrolment',
+    desc: 'Enroll in our 5-level Coders Ladder: from Scratch to building real SaaS products. Monthly plans, sibling discount stacks.',
     color: 'from-brand-500 to-purple-600',
     light: 'bg-brand-50 text-brand-600 border-brand-100',
     fields: ['name', 'email', 'phone', 'dob', 'country', 'state', 'plan', 'level', 'priorExperience', 'siblings'],
   },
   {
-    id: 'inspire-media',
-    icon: Mic2,
-    title: 'Inspire Media',
-    subtitle: 'Spotlight & Podcast',
-    desc: 'Apply to be featured on the Edu Spotlight Podcast or Thesis Spotlight series.',
+    id: 'code-prodigy',
+    icon: Trophy,
+    title: 'Code Prodigy',
+    subtitle: 'Elite (application only)',
+    desc: 'Apply to our elite program for exceptional learners: hackathons, industry mentors, and real projects.',
     color: 'from-amber-400 to-orange-500',
-    light: 'bg-amber-50 text-amber-600 border-amber-100',
-    fields: ['name', 'email', 'phone', 'topic', 'bio'],
+    light: 'bg-amber-50 text-amber-700 border-amber-100',
+    fields: ['name', 'email', 'phone', 'dob', 'country', 'state', 'priorExperience', 'portfolio', 'motivation'],
   },
   {
     id: 'ai-assessment',
@@ -45,14 +83,14 @@ const programs = [
     fields: ['name', 'email', 'phone', 'dob', 'priorExperience', 'experience'],
   },
   {
-    id: 'code-prodigy',
-    icon: Trophy,
-    title: 'Code Prodigy',
-    subtitle: 'Elite Application',
-    desc: 'Apply to our elite program for exceptional learners: hackathons, industry mentors, and real projects.',
+    id: 'inspire-media',
+    icon: Mic2,
+    title: 'Spotlight Media Application',
+    subtitle: 'Edu Spotlight & Thesis Spotlight',
+    desc: 'Apply to be featured on the Edu Spotlight Podcast or the Thesis Spotlight series.',
     color: 'from-amber-400 to-orange-500',
-    light: 'bg-amber-50 text-amber-700 border-amber-100',
-    fields: ['name', 'email', 'phone', 'dob', 'country', 'state', 'priorExperience', 'portfolio', 'motivation'],
+    light: 'bg-amber-50 text-amber-600 border-amber-100',
+    fields: ['name', 'email', 'phone', 'topic', 'bio'],
   },
 ];
 
@@ -90,8 +128,20 @@ function calculateAge(dob: string): number {
 const levelOptions = ['Explorer (Ages 5+)', 'Builder (Ages 10+)', 'Creator (Ages 13+)', 'AI Developer (Ages 14+)', 'Product Builder (Ages 16+)'];
 const experienceOptions = ['Complete beginner', 'Basic HTML/CSS', 'Comfortable with Python/JS', 'Built apps/projects before', 'Professional developer'];
 
-export default function EnrollPage() {
-  const [active, setActive] = useState<string | null>(null);
+function EnrollPageInner() {
+  const searchParams = useSearchParams();
+  const initialForm = searchParams.get('form');
+  const [active, setActive] = useState<string | null>(
+    initialForm && programs.some((p) => p.id === initialForm) ? initialForm : null
+  );
+  // Re-sync when the user navigates with the back button or the query changes.
+  useEffect(() => {
+    const next = searchParams.get('form');
+    if (next && programs.some((p) => p.id === next) && next !== active) {
+      setActive(next);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
   const [formData, setFormData] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<'idle' | 'loading' | 'success'>('idle');
   const [couponInput, setCouponInput] = useState('');
@@ -259,37 +309,113 @@ export default function EnrollPage() {
                 </motion.div>
               </motion.div>
             ) : !active ? (
-              /* ── Program Selection ── */
-              <motion.div key="select" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                <div className="grid sm:grid-cols-2 gap-5">
-                  {programs.map((prog, i) => {
-                    const Icon = prog.icon;
-                    return (
-                      <motion.button key={prog.id}
-                        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: i * 0.08 }}
-                        onClick={() => { setActive(prog.id); setFormData({}); }}
-                        className="premium-card text-left group relative overflow-hidden">
-                        <div className={`absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r ${prog.color} opacity-60 group-hover:opacity-100 transition-opacity duration-500`} />
-                        <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${prog.color} flex items-center justify-center mb-4 shadow-md group-hover:scale-105 transition-transform duration-500`}>
-                          <Icon className="w-6 h-6 text-white" />
-                        </div>
-                        <div className="text-[10px] font-bold uppercase tracking-[0.1em] text-slate-400 mb-1">{prog.subtitle}</div>
-                        <h3 className="text-lg font-bold text-slate-900 mb-2 group-hover:text-brand-600 transition-colors"
-                          style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>{prog.title}</h3>
-                        <p className="text-slate-500 text-sm leading-relaxed mb-4">{prog.desc}</p>
-                        <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-600 group-hover:gap-2.5 transition-all duration-300">
-                          Apply Now <ArrowRight className="w-4 h-4" />
-                        </span>
-                      </motion.button>
-                    );
-                  })}
+              /* ── Program Hub ── */
+              <motion.div key="select" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                className="space-y-12">
+
+                {/* ── Section 1: Cohort Programs (outbound to dedicated pages) ── */}
+                <div>
+                  <div className="flex items-end justify-between gap-3 mb-5">
+                    <div>
+                      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 text-amber-700 text-[11px] font-bold mb-2 border border-amber-100">
+                        <Sun className="w-3 h-3" /> Cohort Programs
+                      </div>
+                      <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-[-0.02em]"
+                        style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+                        Live, time-boxed cohorts with their own start dates
+                      </h2>
+                      <p className="text-slate-500 text-sm mt-1">Each program has its own dedicated registration page.</p>
+                    </div>
+                  </div>
+                  <div className="grid sm:grid-cols-2 gap-5">
+                    {cohortPrograms.map((prog, i) => {
+                      const Icon = prog.icon;
+                      return (
+                        <motion.div key={prog.id}
+                          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: i * 0.08 }}>
+                          <Link href={prog.href}
+                            className="premium-card block group relative overflow-hidden h-full">
+                            <div className={`absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r ${prog.color} opacity-70 group-hover:opacity-100 transition-opacity duration-500`} />
+                            {prog.badge && (
+                              <span className="absolute top-4 right-4 px-2 py-0.5 rounded-md text-[10px] font-extrabold tracking-wider bg-emerald-500 text-white shadow-sm">
+                                {prog.badge}
+                              </span>
+                            )}
+                            <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${prog.color} flex items-center justify-center mb-4 shadow-md group-hover:scale-105 transition-transform duration-500`}>
+                              <Icon className="w-6 h-6 text-white" />
+                            </div>
+                            <div className="text-[10px] font-bold uppercase tracking-[0.1em] text-slate-400 mb-1">{prog.subtitle}</div>
+                            <h3 className="text-lg font-bold text-slate-900 mb-2 group-hover:text-brand-600 transition-colors"
+                              style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>{prog.title}</h3>
+                            <p className="text-slate-500 text-sm leading-relaxed mb-4">{prog.desc}</p>
+                            <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-600 group-hover:gap-2.5 transition-all duration-300">
+                              View program details <ExternalLink className="w-3.5 h-3.5" />
+                            </span>
+                          </Link>
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* ── Section 2: Term-time Learning Hub + other applications ── */}
+                <div>
+                  <div className="flex items-end justify-between gap-3 mb-5">
+                    <div>
+                      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-50 text-brand-700 text-[11px] font-bold mb-2 border border-brand-100">
+                        <BookOpen className="w-3 h-3" /> Applications & Term-time enrolment
+                      </div>
+                      <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-[-0.02em]"
+                        style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+                        Pick the right form for your situation
+                      </h2>
+                      <p className="text-slate-500 text-sm mt-1">Each form is short. Two minutes is usually enough.</p>
+                    </div>
+                  </div>
+                  <div className="grid sm:grid-cols-2 gap-5">
+                    {programs.map((prog, i) => {
+                      const Icon = prog.icon;
+                      return (
+                        <motion.div key={prog.id}
+                          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: i * 0.06 }}>
+                          <Link href={`/enroll?form=${prog.id}`}
+                            scroll={false}
+                            onClick={(e) => { e.preventDefault(); setActive(prog.id); setFormData({}); window.history.replaceState(null, '', `/enroll?form=${prog.id}`); }}
+                            className="premium-card block text-left group relative overflow-hidden h-full">
+                            <div className={`absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r ${prog.color} opacity-60 group-hover:opacity-100 transition-opacity duration-500`} />
+                            <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${prog.color} flex items-center justify-center mb-4 shadow-md group-hover:scale-105 transition-transform duration-500`}>
+                              <Icon className="w-6 h-6 text-white" />
+                            </div>
+                            <div className="text-[10px] font-bold uppercase tracking-[0.1em] text-slate-400 mb-1">{prog.subtitle}</div>
+                            <h3 className="text-lg font-bold text-slate-900 mb-2 group-hover:text-brand-600 transition-colors"
+                              style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>{prog.title}</h3>
+                            <p className="text-slate-500 text-sm leading-relaxed mb-4">{prog.desc}</p>
+                            <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-600 group-hover:gap-2.5 transition-all duration-300">
+                              Open form <ArrowRight className="w-4 h-4" />
+                            </span>
+                          </Link>
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* ── Help line ── */}
+                <div className="rounded-2xl border border-slate-100 bg-slate-50/60 p-5 sm:p-6 text-center">
+                  <p className="text-slate-600 text-sm">
+                    Not sure which path fits? Book a{' '}
+                    <Link href="/assessment-class" className="text-brand-600 font-semibold hover:underline">free assessment class</Link>{' '}
+                    or message us through{' '}
+                    <Link href="/contact" className="text-brand-600 font-semibold hover:underline">contact</Link>.
+                  </p>
                 </div>
               </motion.div>
             ) : (
               /* ── Form ── */
               <motion.div key="form" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-                <button onClick={() => { setActive(null); setFormData({}); }}
+                <button onClick={() => { setActive(null); setFormData({}); if (typeof window !== 'undefined') window.history.replaceState(null, '', '/enroll'); }}
                   className="text-sm text-slate-400 hover:text-slate-600 mb-6 flex items-center gap-1.5 transition-colors">
                   ← Back to programs
                 </button>
@@ -673,5 +799,17 @@ export default function EnrollPage() {
         </div>
       </section>
     </div>
+  );
+}
+
+export default function EnrollPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center text-slate-400 text-sm">
+        <Loader2 className="w-5 h-5 animate-spin mr-2" /> Loading...
+      </div>
+    }>
+      <EnrollPageInner />
+    </Suspense>
   );
 }

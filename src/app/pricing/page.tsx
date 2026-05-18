@@ -28,6 +28,7 @@ const packages = [
       'Parent progress summary',
     ],
     cta: 'Get Started',
+    href: '/enroll?form=learning-hub',
   },
   {
     name: 'Standard',
@@ -47,6 +48,7 @@ const packages = [
       'Peer learning community access',
     ],
     cta: 'Enroll Now',
+    href: '/enroll?form=learning-hub',
   },
   {
     name: 'Premium 1-on-1',
@@ -66,6 +68,7 @@ const packages = [
       'Priority support',
     ],
     cta: 'Apply Now',
+    href: '/enroll?form=learning-hub',
   },
   {
     name: 'Code Prodigy',
@@ -87,6 +90,7 @@ const packages = [
       'Career & university coaching',
     ],
     cta: 'Apply Now',
+    href: '/enroll?form=code-prodigy',
   },
 ];
 
@@ -187,7 +191,7 @@ export default function PricingPage() {
                   ))}
                 </ul>
 
-                <Link href="/contact"
+                <Link href={(pkg as { href?: string }).href || '/enroll'}
                   className={`w-full py-3.5 rounded-xl font-bold text-[14px] flex items-center justify-center gap-2 transition-all duration-200 ${
                     pkg.popular
                       ? 'btn-primary'
@@ -288,7 +292,7 @@ export default function PricingPage() {
                 </div>
               ))}
             </div>
-            <Link href="/contact" className="btn-primary text-[15px] px-8 py-4">
+            <Link href="/scholarship-discount" className="btn-primary text-[15px] px-8 py-4">
               Apply for Scholarship <ArrowRight className="w-5 h-5" />
             </Link>
           </SectionWrapper>
