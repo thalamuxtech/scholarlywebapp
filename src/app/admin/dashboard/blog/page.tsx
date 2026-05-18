@@ -406,8 +406,9 @@ export default function BlogAdminPage() {
                     </div>
                   )}
                   <p className="text-[10px] text-slate-400 mt-1.5">
-                    Paste a public image URL. Free hosts that work well:{' '}
-                    <a href="https://imgbb.com/" target="_blank" rel="noreferrer" className="text-brand-600 hover:underline">imgbb.com</a>,{' '}
+                    Paste a public image URL. Recommended:{' '}
+                    <a href="https://imgbb.com/" target="_blank" rel="noreferrer" className="text-brand-600 hover:underline font-semibold">imgbb.com</a>{' '}
+                    (drag-and-drop, copy the &quot;Direct link&quot;). Also works:{' '}
                     <a href="https://imgur.com/upload" target="_blank" rel="noreferrer" className="text-brand-600 hover:underline">imgur.com</a>,{' '}
                     <a href="https://unsplash.com/" target="_blank" rel="noreferrer" className="text-brand-600 hover:underline">unsplash.com</a>.
                   </p>
