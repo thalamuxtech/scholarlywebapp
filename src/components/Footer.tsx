@@ -16,19 +16,16 @@ const footerLinks = {
     { label: 'Idea2MVP Course', href: '/idea2mvp-2026' },
     { label: 'Code Prodigy', href: '/learning-hub/code-prodigy' },
     { label: 'Free Assessment Class', href: '/assessment-class' },
-    { label: 'Enroll', href: '/enroll' },
   ],
   Pricing: [
     { label: 'Pricing & Plans', href: '/pricing' },
     { label: 'Scholarship & Discount', href: '/scholarship-discount' },
     { label: 'School Bookings', href: '/school-booking' },
   ],
-  Inspire: [
+  'Inspire & Engage': [
     { label: 'Spotlight Media', href: '/spotlight-media' },
     { label: 'Thesis Spotlight', href: '/spotlight-media/thesis' },
     { label: 'Blog & Resources', href: '/blog' },
-  ],
-  Engage: [
     { label: 'Edutainment', href: '/edutainment' },
     { label: 'Events & Hackathons', href: '/events' },
     { label: 'Sezwor Mode Waitlist', href: '/edutainment#sezwor' },
@@ -101,7 +98,7 @@ export default function Footer() {
         </div>
 
         {/* ── Main Grid ── */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-8 lg:gap-10 mb-14">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-8 lg:gap-10 mb-14">
 
           {/* Brand Column */}
           <div className="sm:col-span-2 lg:col-span-2">
