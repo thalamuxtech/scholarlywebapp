@@ -13,7 +13,6 @@ const navLinks: NavLink[] = [
   { label: 'Learn', href: '/learning-hub' },
   { label: 'Inspire', href: '/spotlight-media' },
   { label: 'Engage', href: '/edutainment' },
-  { label: 'Impact', href: '/impact' },
 ];
 
 export default function Navbar() {
