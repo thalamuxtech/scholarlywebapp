@@ -32,6 +32,7 @@ const EMPTY: Omit<Post, 'id'> = {
   status: 'draft',
   featured: false,
   publishedAt: '',
+  initialLikes: 0,
 };
 
 export default function BlogAdminPage() {
@@ -90,6 +91,7 @@ export default function BlogAdminPage() {
       status: p.status || 'draft',
       featured: !!p.featured,
       publishedAt: p.publishedAt || '',
+      initialLikes: typeof p.initialLikes === 'number' ? p.initialLikes : 0,
     });
     setShowEditor(true);
   };
@@ -479,6 +481,19 @@ export default function BlogAdminPage() {
                       onChange={(e) => setForm({ ...form, readMinutes: Math.max(1, parseInt(e.target.value || '1', 10)) })}
                       className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 text-sm focus:outline-none focus:border-brand-400" />
                   </div>
+                </div>
+
+                {/* Initial likes — seeds the displayed heart count */}
+                <div>
+                  <label className="text-[11px] font-bold text-slate-600 mb-1.5 block">Initial likes (seed value)</label>
+                  <input
+                    type="number" min={0}
+                    value={form.initialLikes ?? 0}
+                    onChange={(e) => setForm({ ...form, initialLikes: Math.max(0, parseInt(e.target.value || '0', 10)) })}
+                    className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 text-sm focus:outline-none focus:border-brand-400" />
+                  <p className="text-[10px] text-slate-400 mt-1.5">
+                    A starting heart count shown to visitors. Real reader clicks add to this number.
+                  </p>
                 </div>
 
                 {/* Tags */}

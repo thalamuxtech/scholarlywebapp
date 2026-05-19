@@ -1,7 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { collection, onSnapshot, query, orderBy, where } from 'firebase/firestore';
+import {
+  collection, onSnapshot, query, orderBy, where,
+  doc, updateDoc, increment,
+} from 'firebase/firestore';
 import { db } from './firebase';
 
 export type PostStatus = 'draft' | 'published';
@@ -21,9 +24,25 @@ export type Post = {
   status?: PostStatus;
   featured?: boolean;
   publishedAt?: string; // ISO date
+  // Admin can set an initial like count (e.g. to seed a post with a
+  // realistic starting number). Public clicks add to `likes`.
+  initialLikes?: number;
+  likes?: number;
   createdAt?: { toDate?: () => Date } | Date | null;
   updatedAt?: { toDate?: () => Date } | Date | null;
 };
+
+/** Total like count = admin-seeded initialLikes + public-click likes. */
+export function totalLikes(p: Post): number {
+  return (p.initialLikes || 0) + (p.likes || 0);
+}
+
+/** Increment the public `likes` counter on a post. */
+export async function likePost(postId: string): Promise<void> {
+  await updateDoc(doc(db, 'posts', postId), {
+    likes: increment(1),
+  });
+}
 
 export const POST_CATEGORIES = [
   'AI Education',
