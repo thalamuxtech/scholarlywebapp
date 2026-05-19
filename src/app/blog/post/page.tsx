@@ -36,6 +36,8 @@ function PostContent() {
   const [status, setStatus] = useState<'loading' | 'ok' | 'not-found'>('loading');
   const [liked, setLiked] = useState(false);
   const [likeBurst, setLikeBurst] = useState(0); // bumps each click to drive a small animation
+  const [optimisticLikes, setOptimisticLikes] = useState(0); // visual bump until the server-side value catches up
+  const [postRevision, setPostRevision] = useState(0); // increments every time the post doc snapshot fires
 
   // All published posts (used to render related/read-more cards at the bottom).
   const { posts: allPosts } = usePosts();
@@ -72,6 +74,7 @@ function PostContent() {
         if (!isPublished(data)) { setStatus('not-found'); return; }
         setPost(data);
         setStatus('ok');
+        setPostRevision((n) => n + 1);
       });
     }, () => setStatus('not-found'));
 
@@ -89,20 +92,31 @@ function PostContent() {
 
   const handleLike = async () => {
     if (!post?.id || liked) return;
+    // Visual bump first: heart fills, count goes up by one, burst animation plays.
     setLiked(true);
     setLikeBurst((n) => n + 1);
+    setOptimisticLikes((n) => n + 1);
     try {
       window.localStorage.setItem(likedKey(post.id), '1');
     } catch { /* ignore quota errors */ }
     try {
       await likePost(post.id);
+      // The post-doc onSnapshot will fire and we'll clear the optimistic bump (see effect below).
     } catch (err) {
-      // If the write fails (network, rule rejection), roll back the visual state.
+      // If the write fails, roll back the visual state.
       console.error('Failed to like post:', err);
       setLiked(false);
+      setOptimisticLikes((n) => Math.max(0, n - 1));
       try { window.localStorage.removeItem(likedKey(post.id)); } catch { /* ignore */ }
     }
   };
+
+  // When a fresh post snapshot arrives, the server-side total has caught up
+  // so we can drop the optimistic bump.
+  useEffect(() => {
+    if (postRevision === 0) return;
+    setOptimisticLikes(0);
+  }, [postRevision]);
 
   // Related published posts: same category preferred, then newest others.
   const related = useMemo(() => {
@@ -114,7 +128,7 @@ function PostContent() {
     return [...sameCat, ...rest].slice(0, 6);
   }, [post, allPosts]);
 
-  const likeCount = post ? totalLikes(post) : 0;
+  const likeCount = (post ? totalLikes(post) : 0) + optimisticLikes;
 
   if (status === 'loading') {
     return (

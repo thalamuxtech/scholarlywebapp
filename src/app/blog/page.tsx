@@ -4,12 +4,12 @@ import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  BookOpen, ArrowRight, Clock, Sparkles, Users, ImageIcon, Filter, Calendar
+  BookOpen, ArrowRight, Clock, Sparkles, Users, ImageIcon, Filter, Calendar, Heart
 } from 'lucide-react';
 import SectionWrapper from '@/components/ui/SectionWrapper';
 import NewsletterForm from '@/components/NewsletterForm';
 import {
-  usePosts, tagColorFor, formatPostDate, type Post,
+  usePosts, tagColorFor, formatPostDate, totalLikes, type Post,
 } from '@/lib/posts';
 
 /** Shared aurora animation (same recipe as event cards). */
@@ -319,6 +319,11 @@ function BlogCard({ post, index, isFeatured = false }: BlogCardProps) {
               {post.publishedAt && (
                 <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-slate-100 text-slate-700 border border-slate-200">
                   <Calendar className="w-3 h-3" /> {formatPostDate(post.publishedAt)}
+                </span>
+              )}
+              {totalLikes(post) > 0 && (
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-rose-50 text-rose-600 border border-rose-100 tabular-nums">
+                  <Heart className="w-3 h-3 fill-rose-500 text-rose-500" /> {totalLikes(post).toLocaleString()}
                 </span>
               )}
             </div>

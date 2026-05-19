@@ -9,13 +9,14 @@ import {
 import { db } from '@/lib/firebase';
 import {
   BookOpen, Plus, Pencil, Trash2, Eye, EyeOff, Star, StarOff, X, Loader2,
-  ImageIcon, Search, ExternalLink, Tag as TagIcon, Sparkles, Save, Link as LinkIcon
+  ImageIcon, Search, ExternalLink, Tag as TagIcon, Sparkles, Save, Link as LinkIcon,
+  Heart
 } from 'lucide-react';
 import { useToast } from '@/components/Toast';
 import { useConfirm } from '@/components/ConfirmDialog';
 import ComboInput from '@/components/ComboInput';
 import {
-  Post, POST_CATEGORIES, slugify, estimateReadMinutes, formatPostDate
+  Post, POST_CATEGORIES, slugify, estimateReadMinutes, formatPostDate, totalLikes
 } from '@/lib/posts';
 
 const EMPTY: Omit<Post, 'id'> = {
@@ -344,12 +345,19 @@ export default function BlogAdminPage() {
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
-                    {published && p.slug && (
-                      <a href={`/blog/${p.slug}`} target="_blank" rel="noreferrer"
-                        className="inline-flex items-center gap-1 text-[11px] text-brand-600 hover:underline">
-                        View <ExternalLink className="w-3 h-3" />
-                      </a>
-                    )}
+                    <div className="flex items-center gap-2">
+                      <span title={`Likes: seed ${p.initialLikes || 0} + clicks ${p.likes || 0}`}
+                        className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-rose-50 text-rose-600 text-[11px] font-bold tabular-nums border border-rose-100">
+                        <Heart className="w-3 h-3 fill-rose-500 text-rose-500" />
+                        {totalLikes(p).toLocaleString()}
+                      </span>
+                      {published && p.slug && (
+                        <a href={`/blog/${p.slug}`} target="_blank" rel="noreferrer"
+                          className="inline-flex items-center gap-1 text-[11px] text-brand-600 hover:underline">
+                          View <ExternalLink className="w-3 h-3" />
+                        </a>
+                      )}
+                    </div>
                   </div>
                 </div>
               </motion.div>

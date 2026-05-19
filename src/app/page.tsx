@@ -18,7 +18,7 @@ import InfoSessionPopup from '@/components/InfoSessionPopup';
 import { CourseStack } from '@/components/TechLogos';
 import { useEvents, tagColorFor, isPast, isUpcoming, feeLabel, isVisible } from '@/lib/events';
 import type { EventDoc } from '@/lib/events';
-import { usePosts, tagColorFor as postTagColorFor, gradientFor as postGradientFor, formatPostDate } from '@/lib/posts';
+import { usePosts, tagColorFor as postTagColorFor, gradientFor as postGradientFor, formatPostDate, totalLikes as postTotalLikes } from '@/lib/posts';
 
 /* ─────────────────── Sub-components ─────────────────── */
 
@@ -992,9 +992,16 @@ export default function HomePage() {
                           {post.excerpt}
                         </p>
                       )}
-                      <div className="flex items-center justify-between pt-3 border-t border-slate-100 text-[11px] text-slate-400">
-                        {post.readMinutes ? <span>{post.readMinutes} min read</span> : <span />}
-                        {post.publishedAt && <span>{formatPostDate(post.publishedAt)}</span>}
+                      <div className="flex items-center justify-between pt-3 border-t border-slate-100 text-[11px] text-slate-400 gap-2">
+                        <div className="flex items-center gap-3 min-w-0">
+                          {post.readMinutes ? <span className="whitespace-nowrap">{post.readMinutes} min read</span> : null}
+                          {postTotalLikes(post) > 0 && (
+                            <span className="inline-flex items-center gap-1 text-rose-500 font-bold tabular-nums">
+                              <Heart className="w-3 h-3 fill-rose-500" /> {postTotalLikes(post).toLocaleString()}
+                            </span>
+                          )}
+                        </div>
+                        {post.publishedAt && <span className="whitespace-nowrap">{formatPostDate(post.publishedAt)}</span>}
                       </div>
                     </div>
                   </Link>
