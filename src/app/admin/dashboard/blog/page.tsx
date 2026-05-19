@@ -491,18 +491,44 @@ export default function BlogAdminPage() {
                   </div>
                 </div>
 
-                {/* Initial likes — seeds the displayed heart count */}
-                <div>
-                  <label className="text-[11px] font-bold text-slate-600 mb-1.5 block">Initial likes (seed value)</label>
-                  <input
-                    type="number" min={0}
-                    value={form.initialLikes ?? 0}
-                    onChange={(e) => setForm({ ...form, initialLikes: Math.max(0, parseInt(e.target.value || '0', 10)) })}
-                    className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 text-sm focus:outline-none focus:border-brand-400" />
-                  <p className="text-[10px] text-slate-400 mt-1.5">
-                    A starting heart count shown to visitors. Real reader clicks add to this number.
-                  </p>
-                </div>
+                {/* Likes: seed (editable) + real clicks (read-only) + total (read-only) */}
+                {(() => {
+                  const seed = form.initialLikes ?? 0;
+                  const realClicks = editing?.likes ?? 0;
+                  const displayed = seed + realClicks;
+                  return (
+                    <div>
+                      <label className="text-[11px] font-bold text-slate-600 mb-1.5 block">Likes</label>
+                      <div className="grid grid-cols-3 gap-2">
+                        <div>
+                          <input
+                            type="number" min={0}
+                            value={form.initialLikes ?? 0}
+                            onChange={(e) => setForm({ ...form, initialLikes: Math.max(0, parseInt(e.target.value || '0', 10)) })}
+                            className="w-full px-3 py-3 rounded-xl border-2 border-slate-200 text-sm focus:outline-none focus:border-brand-400 tabular-nums" />
+                          <div className="text-[10px] text-slate-400 mt-1 text-center">Initial (seed)</div>
+                        </div>
+                        <div>
+                          <div className="w-full px-3 py-3 rounded-xl border-2 border-slate-100 bg-slate-50 text-slate-700 text-sm tabular-nums text-center font-bold">
+                            {realClicks.toLocaleString()}
+                          </div>
+                          <div className="text-[10px] text-slate-400 mt-1 text-center">Real clicks</div>
+                        </div>
+                        <div>
+                          <div className="w-full px-3 py-3 rounded-xl border-2 border-rose-100 bg-rose-50 text-rose-700 text-sm tabular-nums text-center font-extrabold inline-flex items-center justify-center gap-1.5">
+                            <Heart className="w-3.5 h-3.5 fill-rose-500 text-rose-500" />
+                            {displayed.toLocaleString()}
+                          </div>
+                          <div className="text-[10px] text-slate-400 mt-1 text-center">Total shown</div>
+                        </div>
+                      </div>
+                      <p className="text-[10px] text-slate-400 mt-2">
+                        Only the seed is editable. Real visitor clicks accumulate live and stack on top.
+                        The chip on every card always shows <strong>Total shown</strong> (seed + real clicks).
+                      </p>
+                    </div>
+                  );
+                })()}
 
                 {/* Tags */}
                 <div>
