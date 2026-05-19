@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { collection, query, where, limit, onSnapshot, doc as fbDoc } from 'firebase/firestore';
+import { collection, query, where, limit, onSnapshot, doc as fbDoc, getDocs, type FirestoreError } from 'firebase/firestore';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { db } from '@/lib/firebase';
@@ -33,7 +33,7 @@ function PostContent() {
   const searchParams = useSearchParams();
   const [slug, setSlug] = useState<string>('');
   const [post, setPost] = useState<Post | null>(null);
-  const [status, setStatus] = useState<'loading' | 'ok' | 'not-found'>('loading');
+  const [status, setStatus] = useState<'loading' | 'ok' | 'not-found' | 'forbidden'>('loading');
   const [liked, setLiked] = useState(false);
   const [likeBurst, setLikeBurst] = useState(0); // bumps each click to drive a small animation
   const [optimisticLikes, setOptimisticLikes] = useState(0); // visual bump until the server-side value catches up
@@ -53,33 +53,68 @@ function PostContent() {
     setSlug(resolved);
   }, [searchParams]);
 
-  // 1) Find the post id by slug (one-shot listener on the slug query).
-  // 2) Then subscribe to that exact doc so likes update live.
+  // 1) One-shot getDocs by slug. We use getDocs (not onSnapshot) here so that
+  //    rule rejections surface a real error we can introspect and tell the
+  //    visitor "this is a permission problem" rather than a misleading 404.
+  // 2) After we have the doc id, attach an onSnapshot to that exact doc so
+  //    the like count stays live.
   useEffect(() => {
     if (!slug) return;
-    setStatus('loading');
-    const q = query(collection(db, 'posts'), where('slug', '==', slug), limit(1));
-
+    let cancelled = false;
     let docUnsub: (() => void) | undefined;
 
-    const findUnsub = onSnapshot(q, (snap) => {
-      const docRef = snap.docs[0];
-      if (!docRef) { setStatus('not-found'); return; }
+    setStatus('loading');
 
-      // Switch to a per-doc listener so likes are live.
-      if (docUnsub) { docUnsub(); }
-      docUnsub = onSnapshot(fbDoc(db, 'posts', docRef.id), (d) => {
-        if (!d.exists()) { setStatus('not-found'); return; }
-        const data = { id: d.id, ...(d.data() as Omit<Post, 'id'>) } as Post;
-        if (!isPublished(data)) { setStatus('not-found'); return; }
-        setPost(data);
-        setStatus('ok');
-        setPostRevision((n) => n + 1);
-      });
-    }, () => setStatus('not-found'));
+    (async () => {
+      try {
+        const snap = await getDocs(
+          query(collection(db, 'posts'), where('slug', '==', slug), limit(1))
+        );
+        if (cancelled) return;
+
+        const docRef = snap.docs[0];
+        if (!docRef) {
+          setStatus('not-found');
+          return;
+        }
+
+        // Subscribe to live doc updates (likes etc.).
+        docUnsub = onSnapshot(
+          fbDoc(db, 'posts', docRef.id),
+          (d) => {
+            if (cancelled) return;
+            if (!d.exists()) { setStatus('not-found'); return; }
+            const data = { id: d.id, ...(d.data() as Omit<Post, 'id'>) } as Post;
+            if (!isPublished(data)) { setStatus('not-found'); return; }
+            setPost(data);
+            setStatus('ok');
+            setPostRevision((n) => n + 1);
+          },
+          (err: FirestoreError) => {
+            // Live subscription failed but we already have the doc from getDocs.
+            // Leave the page in 'ok' state with the snapshot we have.
+            console.warn('Live post listener stopped:', err.code, err.message);
+          }
+        );
+      } catch (err) {
+        if (cancelled) return;
+        const fbErr = err as FirestoreError;
+        if (fbErr?.code === 'permission-denied') {
+          console.error(
+            'Firestore denied the public read on /posts. ' +
+            'Make sure firestore.rules has been deployed: firebase deploy --only firestore:rules',
+            fbErr
+          );
+          setStatus('forbidden');
+        } else {
+          console.error('Failed to load post:', fbErr?.code, fbErr?.message);
+          setStatus('not-found');
+        }
+      }
+    })();
 
     return () => {
-      findUnsub();
+      cancelled = true;
       if (docUnsub) docUnsub();
     };
   }, [slug]);
@@ -134,6 +169,27 @@ function PostContent() {
     return (
       <div className="min-h-screen flex items-center justify-center text-slate-400 text-sm">
         <Loader2 className="w-5 h-5 animate-spin mr-2" /> Loading article...
+      </div>
+    );
+  }
+
+  if (status === 'forbidden') {
+    return (
+      <div className="min-h-screen flex items-center justify-center pt-24 pb-16 px-5">
+        <div className="text-center max-w-md">
+          <h1 className="text-2xl font-extrabold text-slate-900 mb-2"
+            style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+            We couldn&apos;t load this article
+          </h1>
+          <p className="text-slate-500 text-sm mb-6">
+            The article exists but the site is temporarily unable to fetch it.
+            Please try again in a minute or two, or open the article list.
+          </p>
+          <Link href="/blog" className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-white text-sm font-bold shadow-md"
+            style={{ background: 'linear-gradient(135deg, #6e42ff, #ec4899)' }}>
+            <ArrowLeft className="w-4 h-4" /> Back to Blog
+          </Link>
+        </div>
       </div>
     );
   }
