@@ -442,66 +442,116 @@ function PostContent() {
 /* ─────────── Related posts carousel ─────────── */
 
 /**
- * Horizontal auto-scrolling row of post cards with Next/Prev controls.
- * Scrolls one viewport-page at a time on tap. Auto-advances every 4.5s
- * and pauses on hover (mouse) or focus (keyboard / mobile). Snaps to
- * card edges via CSS scroll-snap.
+ * Continuous, circular horizontal scroll of post cards.
+ *
+ * How the loop works:
+ *  - The card list is rendered twice end-to-end in an inner track.
+ *  - A JS-driven `requestAnimationFrame` loop increments a single offset
+ *    in pixels each frame at a steady speed (px/sec).
+ *  - The transform is `translateX(-offset)`. When offset >= one-set-width
+ *    we subtract the set width, producing a seamless wrap because the
+ *    second copy of cards now occupies the position the first did.
+ *  - Hover, focus, and prev/next clicks pause the rAF loop. Prev/next
+ *    nudge the offset by one card width (with the same wrap math), and
+ *    auto-scroll resumes when the user moves away.
  */
 function RelatedPostsCarousel({ posts }: { posts: Post[] }) {
-  const trackRef = useRef<HTMLDivElement | null>(null);
+  const SCROLL_SPEED_PX_PER_SEC = 38; // tweak for taste (lower = slower)
+
+  const wrapRef = useRef<HTMLDivElement | null>(null);
+  const innerRef = useRef<HTMLDivElement | null>(null);
+  const offsetRef = useRef<number>(0);          // current translateX in px (live, not in React state)
+  const setWidthRef = useRef<number>(0);        // pixel width of a single card-set incl. gap
+  const rafRef = useRef<number | null>(null);
+  const lastTsRef = useRef<number>(0);
   const [paused, setPaused] = useState(false);
-  const [canPrev, setCanPrev] = useState(false);
-  const [canNext, setCanNext] = useState(true);
 
-  // Updates the prev/next enabled state based on current scroll position.
-  const recalcEdges = useCallback(() => {
-    const el = trackRef.current;
-    if (!el) return;
-    const max = el.scrollWidth - el.clientWidth - 1;
-    setCanPrev(el.scrollLeft > 1);
-    setCanNext(el.scrollLeft < max);
+  // Apply the current offset to the inner track (DOM write).
+  const applyTransform = useCallback(() => {
+    if (innerRef.current) {
+      innerRef.current.style.transform = `translate3d(${-offsetRef.current}px, 0, 0)`;
+    }
   }, []);
 
-  const scrollByPage = useCallback((direction: 1 | -1) => {
-    const el = trackRef.current;
-    if (!el) return;
-    // Scroll roughly one viewport width worth, snap-corrected by CSS.
-    const distance = Math.max(280, el.clientWidth * 0.9);
-    el.scrollBy({ left: direction * distance, behavior: 'smooth' });
-  }, []);
+  // Recompute the width of one card-set. Called on resize and after mount.
+  const measure = useCallback(() => {
+    const inner = innerRef.current;
+    if (!inner) return;
+    // Total width of the two duplicated sets. One set is half.
+    const total = inner.scrollWidth;
+    setWidthRef.current = total / 2;
+    // Keep offset within [0, setWidth) after a resize.
+    if (setWidthRef.current > 0) {
+      offsetRef.current = offsetRef.current % setWidthRef.current;
+      applyTransform();
+    }
+  }, [applyTransform]);
 
-  // Auto-advance.
+  useEffect(() => {
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, [measure, posts.length]);
+
+  // The animation loop. Runs only when not paused.
   useEffect(() => {
     if (paused) return;
-    const id = window.setInterval(() => {
-      const el = trackRef.current;
-      if (!el) return;
-      const max = el.scrollWidth - el.clientWidth - 2;
-      if (el.scrollLeft >= max) {
-        // Wrap back to the start with a smooth motion.
-        el.scrollTo({ left: 0, behavior: 'smooth' });
-      } else {
-        scrollByPage(1);
-      }
-    }, 4500);
-    return () => window.clearInterval(id);
-  }, [paused, scrollByPage]);
+    lastTsRef.current = 0;
 
-  // Keep edge state in sync with user scroll / window resize.
-  useEffect(() => {
-    const el = trackRef.current;
-    if (!el) return;
-    recalcEdges();
-    el.addEventListener('scroll', recalcEdges, { passive: true });
-    window.addEventListener('resize', recalcEdges);
-    return () => {
-      el.removeEventListener('scroll', recalcEdges);
-      window.removeEventListener('resize', recalcEdges);
+    const tick = (ts: number) => {
+      if (lastTsRef.current === 0) lastTsRef.current = ts;
+      const dt = (ts - lastTsRef.current) / 1000; // seconds since last frame
+      lastTsRef.current = ts;
+      const w = setWidthRef.current;
+      if (w > 0) {
+        offsetRef.current += SCROLL_SPEED_PX_PER_SEC * dt;
+        if (offsetRef.current >= w) offsetRef.current -= w;
+        applyTransform();
+      }
+      rafRef.current = window.requestAnimationFrame(tick);
     };
-  }, [recalcEdges, posts.length]);
+    rafRef.current = window.requestAnimationFrame(tick);
+    return () => {
+      if (rafRef.current !== null) window.cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    };
+  }, [paused, applyTransform]);
+
+  // Card width estimate for the prev/next nudge: actual first card width + gap.
+  const cardStep = useCallback(() => {
+    const inner = innerRef.current;
+    if (!inner) return 320;
+    const firstCard = inner.querySelector<HTMLElement>('[data-card]');
+    if (!firstCard) return 320;
+    const gap = parseFloat(getComputedStyle(inner).columnGap || '20');
+    return firstCard.offsetWidth + (isNaN(gap) ? 20 : gap);
+  }, []);
+
+  const nudge = useCallback((direction: 1 | -1) => {
+    const w = setWidthRef.current;
+    if (w <= 0) return;
+    const step = cardStep();
+    let next = offsetRef.current + direction * step;
+    // Wrap circularly inside [0, w).
+    next = ((next % w) + w) % w;
+    // Animate the nudge with a short transition for a smoother feel.
+    const inner = innerRef.current;
+    if (inner) {
+      inner.style.transition = 'transform 450ms cubic-bezier(0.22, 1, 0.36, 1)';
+      offsetRef.current = next;
+      applyTransform();
+      window.setTimeout(() => {
+        if (inner) inner.style.transition = '';
+      }, 460);
+    } else {
+      offsetRef.current = next;
+      applyTransform();
+    }
+  }, [applyTransform, cardStep]);
 
   return (
     <div
+      ref={wrapRef}
       className="relative"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
@@ -514,19 +564,24 @@ function RelatedPostsCarousel({ posts }: { posts: Post[] }) {
       <div aria-hidden className="pointer-events-none absolute inset-y-0 right-0 w-8 z-10"
         style={{ background: 'linear-gradient(to left, rgb(248,250,252) 0%, transparent 100%)' }} />
 
-      {/* Scroll track */}
-      <div
-        ref={trackRef}
-        className="flex gap-5 sm:gap-6 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide -mx-1 px-1"
-        style={{ scrollPaddingLeft: '4px', scrollPaddingRight: '4px' }}
-      >
-        <AnimatePresence>
-          {posts.map((p, i) => (
-            <div key={p.id} className="snap-start shrink-0 w-[280px] sm:w-[320px] lg:w-[340px]">
+      {/* Overflow window */}
+      <div className="overflow-hidden">
+        {/* Inner track — rendered twice for seamless wrap */}
+        <div
+          ref={innerRef}
+          className="flex gap-5 sm:gap-6 py-1 pl-1"
+          style={{ willChange: 'transform', transform: 'translate3d(0, 0, 0)' }}
+        >
+          {[...posts, ...posts].map((p, i) => (
+            <div
+              key={`${p.id}-${i}`}
+              data-card
+              className="shrink-0 w-[280px] sm:w-[320px] lg:w-[340px]"
+            >
               <RelatedPostCard post={p} index={i} />
             </div>
           ))}
-        </AnimatePresence>
+        </div>
       </div>
 
       {/* Controls */}
@@ -536,18 +591,16 @@ function RelatedPostsCarousel({ posts }: { posts: Post[] }) {
         </div>
         <div className="flex items-center gap-2">
           <button type="button"
-            onClick={() => scrollByPage(-1)}
-            disabled={!canPrev}
+            onClick={() => nudge(-1)}
             aria-label="Previous"
-            className="w-9 h-9 rounded-full bg-white border border-slate-200 text-slate-600 flex items-center justify-center shadow-sm hover:border-brand-300 hover:text-brand-600 hover:-translate-y-0.5 transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+            className="w-9 h-9 rounded-full bg-white border border-slate-200 text-slate-600 flex items-center justify-center shadow-sm hover:border-brand-300 hover:text-brand-600 hover:-translate-y-0.5 transition-all"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
           <button type="button"
-            onClick={() => scrollByPage(1)}
-            disabled={!canNext}
+            onClick={() => nudge(1)}
             aria-label="Next"
-            className="w-9 h-9 rounded-full bg-white border border-slate-200 text-slate-600 flex items-center justify-center shadow-sm hover:border-brand-300 hover:text-brand-600 hover:-translate-y-0.5 transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+            className="w-9 h-9 rounded-full bg-white border border-slate-200 text-slate-600 flex items-center justify-center shadow-sm hover:border-brand-300 hover:text-brand-600 hover:-translate-y-0.5 transition-all"
           >
             <ChevronRight className="w-4 h-4" />
           </button>
