@@ -9,6 +9,8 @@
     "lint": "next lint",
     "deploy": "next build && firebase deploy --only hosting",
     "deploy:rules": "firebase deploy --only firestore:rules",
+    "deploy:indexes": "firebase deploy --only firestore:indexes",
+    "deploy:firestore": "firebase deploy --only firestore",
     "deploy:hosting": "next build && firebase deploy --only hosting",
     "deploy:full": "next build && firebase deploy",
     "deploy:all": "next build && firebase deploy"

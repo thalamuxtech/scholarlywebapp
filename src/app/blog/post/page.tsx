@@ -67,8 +67,17 @@ function PostContent() {
 
     (async () => {
       try {
+        // IMPORTANT: include where('status', '==', 'published') so the query
+        // aligns with the Firestore rule's read constraint. Without it the
+        // rule engine cannot prove the result set is publishable and rejects
+        // the entire query for unauthenticated visitors.
         const snap = await getDocs(
-          query(collection(db, 'posts'), where('slug', '==', slug), limit(1))
+          query(
+            collection(db, 'posts'),
+            where('slug', '==', slug),
+            where('status', '==', 'published'),
+            limit(1),
+          )
         );
         if (cancelled) return;
 
