@@ -1,9 +1,8 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { collection, query, where, limit, onSnapshot, doc as fbDoc, getDocs, type FirestoreError } from 'firebase/firestore';
 import ReactMarkdown from 'react-markdown';
@@ -11,7 +10,7 @@ import remarkGfm from 'remark-gfm';
 import { db } from '@/lib/firebase';
 import {
   ArrowLeft, Clock, Users, Calendar, Sparkles, ArrowRight, Loader2, Heart,
-  ImageIcon
+  ImageIcon, ChevronLeft, ChevronRight
 } from 'lucide-react';
 import {
   type Post, isPublished, gradientFor, tagColorFor, formatPostDate,
@@ -411,13 +410,7 @@ function PostContent() {
               </Link>
             </div>
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
-              <AnimatePresence>
-                {related.map((p, i) => (
-                  <RelatedPostCard key={p.id} post={p} index={i} />
-                ))}
-              </AnimatePresence>
-            </div>
+            <RelatedPostsCarousel posts={related} />
           </div>
         </section>
       )}
@@ -446,7 +439,125 @@ function PostContent() {
   );
 }
 
-/* ─────────── Related-post card (compact grid version) ─────────── */
+/* ─────────── Related posts carousel ─────────── */
+
+/**
+ * Horizontal auto-scrolling row of post cards with Next/Prev controls.
+ * Scrolls one viewport-page at a time on tap. Auto-advances every 4.5s
+ * and pauses on hover (mouse) or focus (keyboard / mobile). Snaps to
+ * card edges via CSS scroll-snap.
+ */
+function RelatedPostsCarousel({ posts }: { posts: Post[] }) {
+  const trackRef = useRef<HTMLDivElement | null>(null);
+  const [paused, setPaused] = useState(false);
+  const [canPrev, setCanPrev] = useState(false);
+  const [canNext, setCanNext] = useState(true);
+
+  // Updates the prev/next enabled state based on current scroll position.
+  const recalcEdges = useCallback(() => {
+    const el = trackRef.current;
+    if (!el) return;
+    const max = el.scrollWidth - el.clientWidth - 1;
+    setCanPrev(el.scrollLeft > 1);
+    setCanNext(el.scrollLeft < max);
+  }, []);
+
+  const scrollByPage = useCallback((direction: 1 | -1) => {
+    const el = trackRef.current;
+    if (!el) return;
+    // Scroll roughly one viewport width worth, snap-corrected by CSS.
+    const distance = Math.max(280, el.clientWidth * 0.9);
+    el.scrollBy({ left: direction * distance, behavior: 'smooth' });
+  }, []);
+
+  // Auto-advance.
+  useEffect(() => {
+    if (paused) return;
+    const id = window.setInterval(() => {
+      const el = trackRef.current;
+      if (!el) return;
+      const max = el.scrollWidth - el.clientWidth - 2;
+      if (el.scrollLeft >= max) {
+        // Wrap back to the start with a smooth motion.
+        el.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        scrollByPage(1);
+      }
+    }, 4500);
+    return () => window.clearInterval(id);
+  }, [paused, scrollByPage]);
+
+  // Keep edge state in sync with user scroll / window resize.
+  useEffect(() => {
+    const el = trackRef.current;
+    if (!el) return;
+    recalcEdges();
+    el.addEventListener('scroll', recalcEdges, { passive: true });
+    window.addEventListener('resize', recalcEdges);
+    return () => {
+      el.removeEventListener('scroll', recalcEdges);
+      window.removeEventListener('resize', recalcEdges);
+    };
+  }, [recalcEdges, posts.length]);
+
+  return (
+    <div
+      className="relative"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      onFocusCapture={() => setPaused(true)}
+      onBlurCapture={() => setPaused(false)}
+    >
+      {/* Edge fades */}
+      <div aria-hidden className="pointer-events-none absolute inset-y-0 left-0 w-8 z-10"
+        style={{ background: 'linear-gradient(to right, rgb(248,250,252) 0%, transparent 100%)' }} />
+      <div aria-hidden className="pointer-events-none absolute inset-y-0 right-0 w-8 z-10"
+        style={{ background: 'linear-gradient(to left, rgb(248,250,252) 0%, transparent 100%)' }} />
+
+      {/* Scroll track */}
+      <div
+        ref={trackRef}
+        className="flex gap-5 sm:gap-6 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide -mx-1 px-1"
+        style={{ scrollPaddingLeft: '4px', scrollPaddingRight: '4px' }}
+      >
+        <AnimatePresence>
+          {posts.map((p, i) => (
+            <div key={p.id} className="snap-start shrink-0 w-[280px] sm:w-[320px] lg:w-[340px]">
+              <RelatedPostCard post={p} index={i} />
+            </div>
+          ))}
+        </AnimatePresence>
+      </div>
+
+      {/* Controls */}
+      <div className="mt-5 flex items-center justify-between gap-3">
+        <div className="text-[11px] text-slate-400">
+          {paused ? 'Paused — move your cursor away to resume' : 'Auto-scrolling — hover to pause'}
+        </div>
+        <div className="flex items-center gap-2">
+          <button type="button"
+            onClick={() => scrollByPage(-1)}
+            disabled={!canPrev}
+            aria-label="Previous"
+            className="w-9 h-9 rounded-full bg-white border border-slate-200 text-slate-600 flex items-center justify-center shadow-sm hover:border-brand-300 hover:text-brand-600 hover:-translate-y-0.5 transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+          <button type="button"
+            onClick={() => scrollByPage(1)}
+            disabled={!canNext}
+            aria-label="Next"
+            className="w-9 h-9 rounded-full bg-white border border-slate-200 text-slate-600 flex items-center justify-center shadow-sm hover:border-brand-300 hover:text-brand-600 hover:-translate-y-0.5 transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─────────── Related-post card (compact carousel version) ─────────── */
 
 function RelatedPostCard({ post, index }: { post: Post; index: number }) {
   return (
@@ -508,9 +619,16 @@ function RelatedPostCard({ post, index }: { post: Post; index: number }) {
               {post.excerpt}
             </p>
           )}
-          <div className="flex items-center justify-between pt-3 border-t border-slate-100 text-[11px] text-slate-400">
-            {post.publishedAt ? <span>{formatPostDate(post.publishedAt)}</span> : <span />}
-            <span className="inline-flex items-center gap-1 text-brand-600 font-bold">
+          <div className="flex items-center justify-between pt-3 border-t border-slate-100 text-[11px] text-slate-400 gap-2">
+            <div className="flex items-center gap-3 min-w-0">
+              {post.publishedAt && <span className="whitespace-nowrap truncate">{formatPostDate(post.publishedAt)}</span>}
+              {totalLikes(post) > 0 && (
+                <span className="inline-flex items-center gap-1 text-rose-500 font-bold tabular-nums">
+                  <Heart className="w-3 h-3 fill-rose-500" /> {totalLikes(post).toLocaleString()}
+                </span>
+              )}
+            </div>
+            <span className="inline-flex items-center gap-1 text-brand-600 font-bold whitespace-nowrap">
               Read <ArrowRight className="w-3.5 h-3.5" />
             </span>
           </div>
