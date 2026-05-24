@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Video, Loader2, CheckCircle2, Mail, Calendar, Clock } from 'lucide-react';
+import { X, Video, Loader2, CheckCircle2, Mail, Phone, Calendar, Clock } from 'lucide-react';
 import { submitForm } from '@/lib/formSubmit';
 
 const DEFAULT_DATE_ISO = '2026-05-23';
@@ -33,6 +33,7 @@ export default function InfoSessionPopup({ open, onClose, source = 'info-session
   const showTime = !!timeLabel;
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [error, setError] = useState('');
 
@@ -55,6 +56,7 @@ export default function InfoSessionPopup({ open, onClose, source = 'info-session
     const result = await submitForm('info-session', {
       name: name.trim(),
       email: email.trim(),
+      phone: phone.trim(),
       infoSessionDate: effectiveDateIso,
       ...(eventName ? { eventName } : {}),
       source,
@@ -150,6 +152,17 @@ export default function InfoSessionPopup({ open, onClose, source = 'info-session
                       value={email}
                       onChange={(e) => { setEmail(e.target.value); setError(''); }}
                       placeholder="your@email.com"
+                      className="w-full pl-10 pr-3.5 py-3 rounded-xl border-2 border-slate-200 bg-white focus:outline-none focus:border-brand-400 text-slate-800 placeholder:text-slate-300 text-[13px]"
+                    />
+                  </div>
+                  <div className="relative">
+                    <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300" />
+                    <input
+                      type="tel"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      placeholder="Phone (optional)"
+                      autoComplete="tel"
                       className="w-full pl-10 pr-3.5 py-3 rounded-xl border-2 border-slate-200 bg-white focus:outline-none focus:border-brand-400 text-slate-800 placeholder:text-slate-300 text-[13px]"
                     />
                   </div>
