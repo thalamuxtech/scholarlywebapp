@@ -97,11 +97,25 @@ export function useEvents() {
   return { events, loaded };
 }
 
-export function isPast(p: EventDoc) {
-  return (p.status || '').toLowerCase() === 'completed';
+/** Backend status helpers. `status` is the source of truth for whether a program has ended. */
+export function statusOf(p: EventDoc): 'upcoming' | 'active' | 'completed' {
+  const s = (p.status || '').toLowerCase();
+  if (s === 'active') return 'active';
+  if (s === 'upcoming') return 'upcoming';
+  return 'completed';
 }
+export function isActive(p: EventDoc) {
+  return statusOf(p) === 'active';
+}
+export function isCompleted(p: EventDoc) {
+  return statusOf(p) === 'completed';
+}
+export function isPast(p: EventDoc) {
+  return isCompleted(p);
+}
+/** Only programs that have not yet started belong in the "Upcoming" column. */
 export function isUpcoming(p: EventDoc) {
-  return !isPast(p);
+  return statusOf(p) === 'upcoming';
 }
 /** Public pages should hide events flagged as hidden by admin. */
 export function isVisible(p: EventDoc) {

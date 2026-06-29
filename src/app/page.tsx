@@ -16,7 +16,7 @@ import SectionWrapper from '@/components/ui/SectionWrapper';
 import FreeTrialForm, { FreeTrialModal } from '@/components/FreeTrialForm';
 import InfoSessionPopup from '@/components/InfoSessionPopup';
 import { CourseStack } from '@/components/TechLogos';
-import { useEvents, tagColorFor, isPast, isUpcoming, feeLabel, isVisible } from '@/lib/events';
+import { useEvents, tagColorFor, isActive, isCompleted, isUpcoming, feeLabel, isVisible } from '@/lib/events';
 import type { EventDoc } from '@/lib/events';
 import { usePosts, tagColorFor as postTagColorFor, gradientFor as postGradientFor, formatPostDate, totalLikes as postTotalLikes } from '@/lib/posts';
 
@@ -115,7 +115,13 @@ export default function HomePage() {
   const [infoSessionEvent, setInfoSessionEvent] = useState<EventDoc | null>(null);
   const { events: dbEvents, loaded: programsLoaded } = useEvents();
   const visibleEvents = dbEvents.filter(isVisible);
-  const pastPrograms = visibleEvents.filter(isPast).slice(0, 3);
+  // Left "Programs" column = active + completed, with active (still running) shown first.
+  // The Active/Completed tag is driven by the backend `status` (the end-state signal).
+  const runningOrDone = visibleEvents.filter((p) => isActive(p) || isCompleted(p));
+  const programsList = [
+    ...runningOrDone.filter(isActive),
+    ...runningOrDone.filter(isCompleted),
+  ].slice(0, 4);
   const upcomingPrograms = visibleEvents.filter(isUpcoming).slice(0, 3);
 
   // Home shows ONLY posts explicitly flagged Featured (max 3). Non-featured posts live on /blog.
@@ -831,29 +837,45 @@ export default function HomePage() {
           </SectionWrapper>
 
           <div className="grid md:grid-cols-2 gap-8 mb-10">
-            {/* Past Programs */}
+            {/* Programs (active first, then completed) */}
             <SectionWrapper>
               <h3 className="text-lg font-extrabold text-slate-900 mb-5 flex items-center gap-2" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
-                <span className="w-2 h-2 rounded-full bg-emerald-500" /> Completed
+                <span className="w-2 h-2 rounded-full bg-emerald-500" /> Programs
               </h3>
               <div className="space-y-3">
                 {!programsLoaded ? (
                   <div className="premium-card text-slate-400 text-sm">Loading…</div>
-                ) : pastPrograms.length === 0 ? (
-                  <div className="premium-card text-slate-400 text-sm">No past programs to display yet.</div>
-                ) : pastPrograms.map((p, i) => (
-                  <motion.div key={p.id} initial={{ opacity: 0, x: -12 }} whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }} transition={{ delay: i * 0.08 }}
-                    className="premium-card group relative overflow-hidden">
-                    <div className="absolute top-0 left-0 bottom-0 w-[3px] bg-emerald-400 rounded-l-2xl" />
-                    <div className="flex items-start justify-between gap-3 mb-2">
-                      {p.category && <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${tagColorFor(p.category)}`}>{p.category}</span>}
-                      {p.startDate && <span className="text-[11px] text-slate-400 flex-shrink-0">{formatProgramDate(p.startDate)}</span>}
-                    </div>
-                    <h4 className="text-[15px] font-bold text-slate-900 mb-1.5 group-hover:text-brand-600 transition-colors" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>{p.name}</h4>
-                    {p.description && <p className="text-slate-500 text-[13px] leading-relaxed">{p.description}</p>}
-                  </motion.div>
-                ))}
+                ) : programsList.length === 0 ? (
+                  <div className="premium-card text-slate-400 text-sm">No programs to display yet.</div>
+                ) : programsList.map((p, i) => {
+                  const active = isActive(p);
+                  return (
+                    <motion.div key={p.id} initial={{ opacity: 0, x: -12 }} whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }} transition={{ delay: i * 0.08 }}
+                      className="premium-card group relative overflow-hidden">
+                      <div className={`absolute top-0 left-0 bottom-0 w-[3px] rounded-l-2xl ${active ? 'bg-brand-500' : 'bg-emerald-400'}`} />
+                      <div className="flex items-start justify-between gap-3 mb-2 flex-wrap">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          {p.category && <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${tagColorFor(p.category)}`}>{p.category}</span>}
+                          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${active ? 'bg-brand-50 text-brand-600' : 'bg-emerald-50 text-emerald-700'}`}>
+                            {active ? (
+                              <span className="relative flex h-1.5 w-1.5">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75" />
+                                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-brand-500" />
+                              </span>
+                            ) : (
+                              <CheckCircle2 className="w-3 h-3" />
+                            )}
+                            {active ? 'Active' : 'Completed'}
+                          </span>
+                        </div>
+                        {p.startDate && <span className="text-[11px] text-slate-400 flex-shrink-0">{formatProgramDate(p.startDate)}</span>}
+                      </div>
+                      <h4 className="text-[15px] font-bold text-slate-900 mb-1.5 group-hover:text-brand-600 transition-colors" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>{p.name}</h4>
+                      {p.description && <p className="text-slate-500 text-[13px] leading-relaxed">{p.description}</p>}
+                    </motion.div>
+                  );
+                })}
               </div>
             </SectionWrapper>
 

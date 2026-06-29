@@ -12,7 +12,7 @@ import {
 import { submitForm } from '@/lib/formSubmit';
 import { useToast } from '@/components/Toast';
 import { COUNTRIES, US_STATES, US_COUNTRY, OTHER_OPTION } from '@/lib/locations';
-import { computeFee, lookupCoupon, incrementCouponUse, SIBLING_DISCOUNT_PCT, type Coupon } from '@/lib/coupons';
+import { computeFee, lookupCoupon, incrementCouponUse, SIBLING_DISCOUNT_PCT, PLAN_CATALOG, type Coupon } from '@/lib/coupons';
 
 // Cohort programs live on dedicated pages with their own registration flow.
 // They are shown on /enroll as outbound cards rather than inline forms.
@@ -112,7 +112,15 @@ const fieldConfig: Record<string, { label: string; type: string; placeholder: st
   motivation: { label: 'Why Code Prodigy?', type: 'textarea', placeholder: 'Why do you want to join the elite program? What are you building?', icon: Sparkles, rows: 4 },
 };
 
-const planOptions = ['Starter: $110/mo (1 session/week)', 'Standard: $200/mo (2 sessions/week)', 'Premium 1-on-1: $350/mo', 'Code Prodigy: $450/mo (Elite)', 'Not sure: help me choose'];
+// Keep the first four labels byte-for-byte in sync with PLAN_CATALOG in lib/coupons.ts —
+// findPlan() matches on the exact label string, so a mismatch silently zeroes the fee panel.
+const planOptions = [...PLAN_CATALOG.map((p) => p.label), 'Not sure — help me choose'];
+
+// Priced programs that don't ask the applicant to pick a plan — the tier is fixed.
+// They reuse the same animated tuition panel, driven by this implied plan label.
+const FIXED_PROGRAM_PLAN: Record<string, string> = {
+  'code-prodigy': PLAN_CATALOG.find((p) => p.id === 'prodigy')?.label || '',
+};
 const priorExpOptions = ['No prior experience', 'Scratch / block-based coding', 'Basic Python or JavaScript', 'HTML/CSS websites', 'Built apps or projects before', 'Comfortable with multiple languages'];
 const siblingOptions = ['Just me (no siblings)', '1 sibling (10% off 2nd child)', '2 siblings (10% + 15% off)', '3+ siblings (contact us)'];
 
@@ -159,7 +167,11 @@ function EnrollPageInner() {
     return 0;
   })();
   const siblingPlans = Array.from({ length: sibCount }, (_, i) => formData[`sibling${i + 1}_plan`] || '');
-  const fee = computeFee(formData.plan || '', siblingPlans, coupon);
+  // Programs that carry a fixed price but no plan dropdown (e.g. Code Prodigy is always the Elite tier).
+  // They still get the same animated tuition panel, fed by this implied plan.
+  const fixedPlanLabel = active ? FIXED_PROGRAM_PLAN[active] : undefined;
+  const primaryPlan = formData.plan || fixedPlanLabel || '';
+  const fee = computeFee(primaryPlan, siblingPlans, coupon);
 
   // If plan/program changes after coupon applied, re-validate.
   const clearCoupon = () => { setCoupon(null); setCouponInput(''); setCouponError(''); setCouponState('idle'); };
@@ -167,7 +179,7 @@ function EnrollPageInner() {
   const applyCoupon = async () => {
     if (!active) return;
     setCouponState('checking'); setCouponError('');
-    const result = await lookupCoupon(couponInput, active, formData.plan || '');
+    const result = await lookupCoupon(couponInput, active, primaryPlan);
     if (result.ok) {
       setCoupon(result.coupon);
       setCouponState('idle');
@@ -636,8 +648,8 @@ function EnrollPageInner() {
                           );
                         })}
 
-                        {/* ── Fee Summary + Coupon (Learning Hub only) ── */}
-                        {program.fields.includes('plan') && (
+                        {/* ── Fee Summary + Coupon (plan-based or fixed-price programs) ── */}
+                        {(program.fields.includes('plan') || fixedPlanLabel) && (
                           <AnimatePresence>
                             {fee.householdSubtotal > 0 && (
                               <motion.div
@@ -702,7 +714,7 @@ function EnrollPageInner() {
                                         </div>
                                         {s.basePrice > 0 && (
                                           <div className="flex items-center justify-between text-[11px] text-slate-400 pl-7">
-                                            <span className="truncate pr-2">{s.planLabel?.split(': ')[0]} · ${s.basePrice}{s.per === 'mo' && '/mo'}</span>
+                                            <span className="truncate pr-2">{s.planLabel?.split(' — ')[0]} · ${s.basePrice}{s.per === 'mo' && '/mo'}</span>
                                             {s.discountAmount > 0 && (
                                               <span className="text-emerald-600 font-semibold flex items-center gap-1 flex-shrink-0">
                                                 <Percent className="w-2.5 h-2.5" /> {s.discountPct}% off · −${s.discountAmount}
