@@ -9,7 +9,7 @@ import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import {
   LayoutDashboard, Inbox, FolderKanban, BarChart3, Settings, Calendar,
-  LogOut, Bell, ChevronLeft, Menu, X, ExternalLink, Tag, BookOpen
+  LogOut, ChevronLeft, Menu, X, Tag, BookOpen
 } from 'lucide-react';
 
 const sidebarLinks = [
@@ -64,10 +64,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <aside className={`hidden lg:flex flex-col fixed top-0 left-0 bottom-0 z-40 transition-all duration-300 ${collapsed ? 'w-[72px]' : 'w-[260px]'}`}
         style={{ background: 'linear-gradient(180deg, #0c0f1a 0%, #111528 100%)' }}>
 
-        {/* Logo */}
-        <div className={`flex items-center gap-2.5 px-5 h-[64px] border-b border-white/[0.06] ${collapsed ? 'justify-center px-0' : ''}`}>
+        {/* Logo — links to the public site home */}
+        <Link href="/" className={`flex items-center gap-2.5 px-5 h-[64px] border-b border-white/[0.06] hover:bg-white/[0.03] transition-colors ${collapsed ? 'justify-center px-0' : ''}`}>
           <div className="relative w-8 h-8 flex-shrink-0">
-            <Image src="/logo-white.png" alt="SE" fill className="object-contain" />
+            <Image src="/logo-white.png" alt="ScholarlyEcho — go to site home" fill className="object-contain" />
           </div>
           {!collapsed && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
@@ -77,7 +77,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <span className="block text-white/30 text-[9px] tracking-[0.12em] uppercase">Admin</span>
             </motion.div>
           )}
-        </div>
+        </Link>
 
         {/* Nav Links */}
         <nav className="flex-1 py-4 px-3 space-y-1">
@@ -194,10 +194,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </h1>
           </div>
           <div className="flex items-center gap-2">
-            <Link href="/" target="_blank"
-              className="hidden sm:flex items-center gap-1.5 text-[11px] text-slate-400 hover:text-brand-600 px-2.5 py-1.5 rounded-lg hover:bg-brand-50 transition-all">
-              View Site <ExternalLink className="w-3 h-3" />
-            </Link>
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-500 to-purple-600 flex items-center justify-center text-[11px] font-bold text-white lg:hidden">
               {user?.email?.[0]?.toUpperCase() || 'A'}
             </div>

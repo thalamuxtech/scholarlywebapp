@@ -120,7 +120,7 @@ export default function SubmissionsPage() {
     <div>
       {/* Filters + Export */}
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
-        <div className="flex gap-2 overflow-x-auto pb-1 flex-1">
+        <div className="flex flex-wrap gap-2 pb-1 flex-1">
           {['all', 'newsletter', 'contact', 'waitlist', 'enrollment', 'free-trial', 'summer-coding', 'idea2mvp', 'scholarship-discount', 'info-session'].map((f) => (
             <button key={f} onClick={() => { setFilter(f); setChecked(new Set()); }}
               className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all duration-200 ${
