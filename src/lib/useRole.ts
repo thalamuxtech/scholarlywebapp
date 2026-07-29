@@ -16,14 +16,11 @@ export function useRole() {
       if (!user) { setRole(null); setLoading(false); return; }
       try {
         const snap = await getDoc(doc(db, 'admin_users', user.uid));
-        if (snap.exists()) {
-          setRole(snap.data().role as UserRole);
-        } else {
-          // First user (no doc) = admin by default
-          setRole('admin');
-        }
+        // No admin_users doc, or a doc without role: 'admin', means viewer.
+        // Do not fail open — admin status must be explicitly granted.
+        setRole(snap.exists() ? (snap.data().role as UserRole) ?? 'viewer' : 'viewer');
       } catch {
-        setRole('admin'); // fallback if Firestore rules block
+        setRole(null); // fail closed if Firestore rules block the read
       }
       setLoading(false);
     });

@@ -54,7 +54,10 @@ export default function SubmissionsPage() {
     const escape = (v: any) => {
       if (v === null || v === undefined) return '';
       if (v?.toDate) return v.toDate().toISOString();
-      const str = String(v);
+      let str = String(v);
+      // Neutralize spreadsheet formula injection (=, +, -, @ prefixes are
+      // interpreted as formulas by Excel/Sheets when the CSV is opened).
+      if (/^[=+\-@\t\r]/.test(str)) str = `'${str}`;
       return str.includes(',') || str.includes('"') || str.includes('\n') ? `"${str.replace(/"/g, '""')}"` : str;
     };
     const csv = [keys.join(','), ...toExport.map((s) => keys.map((k) => escape(s[k])).join(','))].join('\n');
