@@ -3,11 +3,11 @@
 import { useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { motion, useScroll, useTransform, useInView } from 'framer-motion';
+import { motion, useScroll, useTransform, useInView, useReducedMotion } from 'framer-motion';
 import {
   ArrowRight, BookOpen, Mic2, Gamepad2, Star, Users, Award,
   TrendingUp, CheckCircle2, Play, ChevronRight, Sparkles,
-  Code2, Globe, Trophy, Lightbulb, Brain, Zap,
+  Code2, Globe, Trophy, Brain, Zap,
   Layers, Target, BarChart3, Rocket, Heart, GraduationCap, Briefcase,
   Home, Calendar, Eye, Shield, Ticket, DollarSign, Video
 } from 'lucide-react';
@@ -22,16 +22,85 @@ import { usePosts, tagColorFor as postTagColorFor, gradientFor as postGradientFo
 
 /* ─────────────────── Sub-components ─────────────────── */
 
-function FloatingChip({ children, className, delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
+/** Shared spring-like easing curve for all entrance motion on this page. */
+const EASE_OUT = [0.22, 1, 0.36, 1] as const;
+
+/**
+ * Floating glass chip in the hero visual. Drifts gently after entering, unless
+ * the user prefers reduced motion.
+ */
+function FloatingChip({
+  children, className, delay = 0, driftRange = 7,
+}: { children: React.ReactNode; className?: string; delay?: number; driftRange?: number }) {
+  const reduce = useReducedMotion();
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.75, y: 20 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      transition={{ delay, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-      className={`absolute glass rounded-2xl shadow-2xl border border-white/12 ${className}`}
+      initial={{ opacity: 0, scale: 0.85, y: 16 }}
+      animate={
+        reduce
+          ? { opacity: 1, scale: 1, y: 0 }
+          : { opacity: 1, scale: 1, y: [0, -driftRange, 0] }
+      }
+      transition={
+        reduce
+          ? { duration: 0.4, delay }
+          : {
+              opacity: { delay, duration: 0.6, ease: EASE_OUT },
+              scale: { delay, duration: 0.6, ease: EASE_OUT },
+              y: { delay: delay + 0.6, duration: 5 + driftRange * 0.2, repeat: Infinity, ease: 'easeInOut' },
+            }
+      }
+      className={`absolute rounded-2xl border border-white/[0.14] ${className}`}
+      style={{
+        background: 'rgba(255,255,255,0.07)',
+        backdropFilter: 'blur(18px) saturate(1.6)',
+        WebkitBackdropFilter: 'blur(18px) saturate(1.6)',
+        boxShadow: '0 18px 40px rgba(0,0,0,0.32), inset 0 1px 0 rgba(255,255,255,0.12)',
+      }}
     >
       {children}
     </motion.div>
+  );
+}
+
+/**
+ * Hero headline that animates in word by word. Falls back to a single fade when
+ * reduced motion is requested.
+ */
+function RevealWords({
+  text, className, delay = 0, gradientFrom,
+}: { text: string; className?: string; delay?: number; gradientFrom?: number }) {
+  const reduce = useReducedMotion();
+  const words = text.split(' ');
+
+  if (reduce) return <span className={className}>{text}</span>;
+
+  return (
+    <span className={className}>
+      {words.map((w, i) => (
+        <span key={`${w}-${i}`} className="inline-block overflow-hidden align-bottom">
+          <motion.span
+            className={`inline-block ${gradientFrom !== undefined && i >= gradientFrom ? 'gradient-text-animated' : ''}`}
+            initial={{ y: '108%', opacity: 0 }}
+            animate={{ y: '0%', opacity: 1 }}
+            transition={{ delay: delay + i * 0.07, duration: 0.75, ease: EASE_OUT }}
+          >
+            {w}
+          </motion.span>
+          {i < words.length - 1 && <span>&nbsp;</span>}
+        </span>
+      ))}
+    </span>
+  );
+}
+
+/** Small trust marker in the hero's proof row. */
+function TrustMarker({ icon: Icon, label, tone }: { icon: React.ElementType; label: string; tone: string }) {
+  return (
+    <div className="flex items-center gap-2 text-[12.5px] text-white/60">
+      <Icon className={`w-3.5 h-3.5 flex-shrink-0 ${tone}`} />
+      <span>{label}</span>
+    </div>
   );
 }
 
@@ -42,57 +111,93 @@ function StatPill({ value, suffix, label, color, delay }: { value: number; suffi
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay, duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-      className="flex flex-col items-center text-center px-4 sm:px-6 py-5 relative group"
+      className="flex flex-col items-center text-center px-4 sm:px-6 py-2 sm:py-4 relative"
     >
-      <div className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold mb-1.5 ${color} tracking-tight`}
+      <div className={`text-[2rem] sm:text-4xl md:text-[2.75rem] lg:text-5xl font-extrabold mb-2 ${color} tracking-[-0.03em]`}
         style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
         <AnimatedCounter end={value} suffix={suffix} />
       </div>
-      <div className="text-slate-400 text-xs sm:text-sm font-medium">{label}</div>
+      <div className="eyebrow text-slate-500">{label}</div>
     </motion.div>
   );
 }
 
-function BranchCard({ icon: Icon, title, subtitle, description, color, gradient, href, features, delay }: {
-  icon: React.ElementType; title: string; subtitle: string; description: string;
+/**
+ * One of the three pillars (Learn / Inspire / Engage). The whole card is a link
+ * so the entire surface is clickable, not just the trailing text.
+ */
+function BranchCard({ icon: Icon, index, title, subtitle, description, color, gradient, href, features, delay }: {
+  icon: React.ElementType; index: string; title: string; subtitle: string; description: string;
   color: string; gradient: string; href: string; features: string[]; delay: number;
 }) {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: '-40px' });
+  const reduce = useReducedMotion();
+
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, y: 48 }}
+      initial={reduce ? { opacity: 0 } : { opacity: 0, y: 44 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ delay, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-      className="group relative premium-card overflow-hidden"
+      transition={{ delay: reduce ? 0 : delay, duration: 0.75, ease: EASE_OUT }}
+      className="group relative h-full"
     >
-      {/* Gradient top accent */}
-      <div className={`absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r ${gradient} opacity-60 group-hover:opacity-100 transition-opacity duration-500`} />
-      {/* Glow orb */}
-      <div className={`absolute -top-20 -right-20 w-56 h-56 rounded-full blur-3xl opacity-0 group-hover:opacity-[0.1] transition-opacity duration-700 bg-gradient-to-br ${gradient}`} />
+      <Link
+        href={href}
+        className="relative flex h-full flex-col rounded-[26px] bg-white p-6 sm:p-7 border border-slate-200/70 overflow-hidden cursor-pointer
+                   shadow-[0_1px_2px_rgba(15,23,42,0.04),0_8px_28px_rgba(15,23,42,0.04)]
+                   transition-[transform,box-shadow,border-color] duration-500
+                   hover:-translate-y-2 hover:border-brand-500/25
+                   hover:shadow-[0_32px_64px_rgba(110,66,255,0.14),0_12px_24px_rgba(15,23,42,0.06)]
+                   focus-visible:-translate-y-2"
+      >
+        {/* Top gradient rail: brightens and widens on hover. */}
+        <span aria-hidden
+          className={`absolute top-0 left-0 h-[3px] w-1/3 bg-gradient-to-r ${gradient} opacity-70
+                      transition-[width,opacity] duration-700 ease-out group-hover:w-full group-hover:opacity-100`} />
 
-      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-5 bg-gradient-to-br ${gradient} shadow-lg group-hover:shadow-xl group-hover:scale-105 transition-all duration-500`}>
-        <Icon className="w-6 h-6 text-white" />
-      </div>
+        {/* Ambient corner glow on hover. */}
+        <span aria-hidden
+          className={`absolute -top-24 -right-24 w-64 h-64 rounded-full blur-3xl bg-gradient-to-br ${gradient}
+                      opacity-0 group-hover:opacity-[0.14] transition-opacity duration-700`} />
 
-      <div className={`text-xs font-bold uppercase tracking-[0.1em] mb-1.5 ${color}`}>{subtitle}</div>
-      <h3 className="text-xl font-bold text-slate-900 mb-3" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>{title}</h3>
-      <p className="text-slate-500 text-sm leading-relaxed mb-5">{description}</p>
+        {/* Oversized watermark numeral for editorial weight. */}
+        <span aria-hidden
+          className="absolute top-4 right-6 text-[3.5rem] font-extrabold leading-none text-slate-900/[0.04]
+                     transition-colors duration-500 group-hover:text-slate-900/[0.07] select-none"
+          style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+          {index}
+        </span>
 
-      <ul className="space-y-2.5 mb-6">
-        {features.map((f) => (
-          <li key={f} className="flex items-center gap-2.5 text-sm text-slate-600">
-            <div className={`w-4.5 h-4.5 rounded-full bg-gradient-to-br ${gradient} flex items-center justify-center flex-shrink-0`}>
-              <CheckCircle2 className="w-2.5 h-2.5 text-white" strokeWidth={3} />
-            </div>
-            {f}
-          </li>
-        ))}
-      </ul>
+        <div className="relative z-10 flex flex-col h-full">
+          <div className={`w-[52px] h-[52px] rounded-2xl flex items-center justify-center mb-5 bg-gradient-to-br ${gradient}
+                          shadow-lg transition-transform duration-500 group-hover:scale-[1.06] group-hover:-rotate-3`}>
+            <Icon className="w-6 h-6 text-white" />
+          </div>
 
-      <Link href={href} className={`inline-flex items-center gap-2 text-sm font-semibold ${color} hover:gap-3 transition-all duration-300`}>
-        Explore now <ArrowRight className="w-4 h-4" />
+          <div className={`eyebrow mb-2 ${color}`}>{subtitle}</div>
+          <h3 className="text-[1.375rem] font-extrabold text-slate-900 mb-3 tracking-[-0.02em]"
+            style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+            {title}
+          </h3>
+          <p className="text-slate-600 text-[13.5px] leading-[1.7] mb-6">{description}</p>
+
+          <ul className="space-y-2.5 mb-7">
+            {features.map((f) => (
+              <li key={f} className="flex items-start gap-2.5 text-[13px] text-slate-700 leading-snug">
+                <span className={`mt-[3px] w-4 h-4 rounded-full bg-gradient-to-br ${gradient} flex items-center justify-center flex-shrink-0`}>
+                  <CheckCircle2 className="w-2.5 h-2.5 text-white" strokeWidth={3} />
+                </span>
+                {f}
+              </li>
+            ))}
+          </ul>
+
+          <span className={`mt-auto inline-flex items-center gap-2 text-[13.5px] font-bold ${color}`}>
+            Explore {title}
+            <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+          </span>
+        </div>
       </Link>
     </motion.div>
   );
@@ -131,10 +236,34 @@ export default function HomePage() {
     () => allPosts.filter((p) => p.featured).slice(0, 3),
     [allPosts]
   );
+  const reduce = useReducedMotion();
   const heroRef = useRef(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] });
-  const heroY = useTransform(scrollYProgress, [0, 1], ['0%', '30%']);
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
+  const heroY = useTransform(scrollYProgress, [0, 1], ['0%', '18%']);
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.75], [1, 0]);
+  // Background layers move slower than the foreground for depth.
+  const heroBgY = useTransform(scrollYProgress, [0, 1], ['0%', '8%']);
+
+  // Deterministic star field: generated once so it stays stable across renders
+  // and does not shift between server and client paint.
+  const stars = useMemo(
+    () =>
+      Array.from({ length: 44 }, (_, i) => {
+        // Cheap hash-ish spread; keeps positions varied without Math.random().
+        const a = (i * 9301 + 49297) % 233280 / 233280;
+        const b = (i * 4177 + 12345) % 233280 / 233280;
+        const c = (i * 7919 + 104729) % 233280 / 233280;
+        return {
+          left: `${(a * 100).toFixed(2)}%`,
+          top: `${(b * 100).toFixed(2)}%`,
+          size: 0.8 + c * 1.6,
+          peak: 0.18 + c * 0.42,
+          duration: 2.4 + a * 4.5,
+          delay: b * 4,
+        };
+      }),
+    []
+  );
 
   // Partners list: kept for the (currently hidden) "Trusted by & in partnership with" marquee.
   // eslint-disable-next-line no-unused-vars
@@ -154,52 +283,43 @@ export default function HomePage() {
       <section ref={heroRef} className="relative min-h-screen flex items-center overflow-hidden noise-overlay"
         style={{ background: 'linear-gradient(165deg, #070c1b 0%, #0d1333 25%, #13103a 50%, #0c1a2e 75%, #070c1b 100%)' }}>
 
-        {/* Ambient orbs */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          {/* Primary brand orb */}
-          <motion.div
-            animate={{ scale: [1, 1.15, 1], x: [0, 30, 0], y: [0, -20, 0] }}
-            transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
-            className="absolute top-[10%] left-[15%] w-[500px] h-[500px] rounded-full opacity-[0.15]"
-            style={{ background: 'radial-gradient(circle, #6e42ff 0%, transparent 70%)' }}
-          />
+        {/* ── Ambient background stack ── */}
+        <motion.div aria-hidden style={{ y: heroBgY }} className="absolute inset-0 overflow-hidden pointer-events-none">
+          {/* Primary brand orb (purple) */}
+          <div className="orb-drift absolute -top-[12%] left-[8%] w-[620px] h-[620px] rounded-full opacity-[0.18]"
+            style={{ background: 'radial-gradient(circle, #6e42ff 0%, transparent 68%)' }} />
           {/* Pink accent orb */}
-          <motion.div
-            animate={{ scale: [1, 1.2, 1], x: [0, -25, 0], y: [0, 15, 0] }}
-            transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
-            className="absolute top-[30%] right-[10%] w-[400px] h-[400px] rounded-full opacity-[0.1]"
-            style={{ background: 'radial-gradient(circle, #ec4899 0%, transparent 70%)' }}
-          />
-          {/* Teal accent orb */}
-          <motion.div
-            animate={{ scale: [1, 1.1, 1], x: [0, 20, 0] }}
-            transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut', delay: 4 }}
-            className="absolute bottom-[15%] left-[5%] w-[350px] h-[350px] rounded-full opacity-[0.08]"
-            style={{ background: 'radial-gradient(circle, #10b981 0%, transparent 70%)' }}
-          />
+          <div className="orb-drift absolute top-[24%] -right-[6%] w-[520px] h-[520px] rounded-full opacity-[0.13]"
+            style={{ background: 'radial-gradient(circle, #ec4899 0%, transparent 68%)', animationDelay: '-4s', animationDuration: '17s' }} />
+          {/* Amber warmth low-left */}
+          <div className="orb-drift absolute bottom-[6%] left-[2%] w-[420px] h-[420px] rounded-full opacity-[0.09]"
+            style={{ background: 'radial-gradient(circle, #f59e0b 0%, transparent 68%)', animationDelay: '-8s', animationDuration: '20s' }} />
 
-          {/* Subtle grid */}
-          <div className="absolute inset-0 opacity-[0.03]"
-            style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.4) 1px, transparent 1px)', backgroundSize: '80px 80px' }}
-          />
+          {/* Perspective grid: fades toward the top so the horizon reads as depth. */}
+          <div className="absolute inset-0 opacity-[0.045]"
+            style={{
+              backgroundImage:
+                'linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)',
+              backgroundSize: '80px 80px',
+              maskImage: 'radial-gradient(ellipse 90% 70% at 50% 60%, #000 20%, transparent 75%)',
+              WebkitMaskImage: 'radial-gradient(ellipse 90% 70% at 50% 60%, #000 20%, transparent 75%)',
+            }} />
 
-          {/* Stars */}
-          {[...Array(30)].map((_, i) => (
-            <motion.div key={i} className="absolute rounded-full bg-white"
-              style={{ width: `${0.8 + Math.random() * 1.5}px`, height: `${0.8 + Math.random() * 1.5}px`, left: `${Math.random() * 100}%`, top: `${Math.random() * 100}%`, opacity: Math.random() * 0.3 + 0.05 }}
-              animate={{ opacity: [0.05, Math.random() * 0.5 + 0.15, 0.05] }}
-              transition={{ duration: 2 + Math.random() * 5, repeat: Infinity, delay: Math.random() * 4 }}
+          {/* Star field */}
+          {stars.map((s, i) => (
+            <motion.span key={i} className="absolute rounded-full bg-white"
+              style={{ width: `${s.size}px`, height: `${s.size}px`, left: s.left, top: s.top, opacity: 0.1 }}
+              animate={reduce ? { opacity: 0.22 } : { opacity: [0.06, s.peak, 0.06] }}
+              transition={reduce ? { duration: 0 } : { duration: s.duration, repeat: Infinity, delay: s.delay, ease: 'easeInOut' }}
             />
           ))}
 
-          {/* Horizon glow line */}
+          {/* Horizon: glow line plus an upward wash. */}
           <div className="absolute bottom-0 left-0 right-0 h-px"
-            style={{ background: 'linear-gradient(90deg, transparent 0%, rgba(110,66,255,0.3) 30%, rgba(168,85,247,0.4) 50%, rgba(236,72,153,0.3) 70%, transparent 100%)' }}
-          />
-          <div className="absolute bottom-0 left-0 right-0 h-32"
-            style={{ background: 'linear-gradient(to top, rgba(110,66,255,0.06) 0%, transparent 100%)' }}
-          />
-        </div>
+            style={{ background: 'linear-gradient(90deg, transparent 0%, rgba(245,158,11,0.28) 22%, rgba(236,72,153,0.42) 50%, rgba(110,66,255,0.32) 78%, transparent 100%)' }} />
+          <div className="absolute bottom-0 left-0 right-0 h-40"
+            style={{ background: 'linear-gradient(to top, rgba(110,66,255,0.09) 0%, transparent 100%)' }} />
+        </motion.div>
 
         <motion.div style={{ y: heroY, opacity: heroOpacity }} className="relative z-10 w-full">
           <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-10 pt-28 sm:pt-32 md:pt-36 pb-16 sm:pb-20 md:pb-24">
@@ -207,104 +327,139 @@ export default function HomePage() {
 
               {/* ── Left ── */}
               <div>
-                <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
-                  className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full border border-white/10 bg-white/[0.04] backdrop-blur-xl text-white/70 text-[13px] font-medium mb-8">
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
+                <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: EASE_OUT }}
+                  className="inline-flex items-center gap-2.5 pl-2 pr-4 py-1.5 rounded-full border border-white/[0.12] bg-white/[0.05] backdrop-blur-xl text-white/75 text-[12.5px] font-medium mb-8">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-300 text-[10.5px] font-bold uppercase tracking-[0.1em]">
+                    <span className="relative flex h-1.5 w-1.5">
+                      {!reduce && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />}
+                      <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-400" />
+                    </span>
+                    Live cohorts
                   </span>
-                  The #1 coding & AI program for homeschooling families · 5+ countries
+                  Coding, AI &amp; robotics for ages 5 to 30
                 </motion.div>
 
-                <motion.h1 initial={{ opacity: 0, y: 32 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.1 }}
-                  className="text-[2.4rem] sm:text-[3.2rem] md:text-[4rem] lg:text-[4.8rem] font-extrabold text-white leading-[1.02] tracking-[-0.04em] mb-7"
+                <h1 className="text-[2.6rem] sm:text-[3.4rem] md:text-[4.1rem] lg:text-[4.75rem] font-extrabold text-white leading-[0.98] tracking-[-0.045em] mb-7"
                   style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
-                  Disrupting
-                  <br />
-                  <span className="gradient-text-animated">Education.</span>
-                  <br />
-                  <span className="text-white/90">Globally.</span>
-                </motion.h1>
+                  <RevealWords text="Your child will" className="block text-white/95" delay={0.12} />
+                  <RevealWords text="ship something real." className="block" delay={0.3} gradientFrom={0} />
+                </h1>
 
-                <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: 0.25 }}
-                  className="text-[1rem] sm:text-[1.05rem] text-white/50 leading-[1.8] mb-6 max-w-[480px]">
-                  Coding is the 4th literacy. ScholarlyEcho teaches young people to think critically,
-                  solve real-world problems, and build with technology: developing life skills that go far beyond the screen.
-                  <span className="block mt-3 text-white/65"><span className="text-white font-semibold">Loved by homeschooling families</span>: flexible pacing, parent-friendly progress tracking, and rich cognitive development for growing minds.</span>
+                <motion.p initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.55, ease: EASE_OUT }}
+                  className="text-[1.0625rem] text-white/65 leading-[1.75] mb-8 max-w-[500px]">
+                  Coding is the 4th literacy. In live small-group cohorts, learners build real games,
+                  apps, and AI products with named mentors: then demo them on Demo Day.
+                  <span className="block mt-3 text-white/50">
+                    Flexible scheduling for homeschooling families, parent-visible progress, and a
+                    clear ladder from first block of code to a launched product.
+                  </span>
                 </motion.p>
 
-                <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }}
-                  className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full border border-emerald-400/25 bg-emerald-500/10 text-emerald-300 text-[12px] font-semibold mb-8">
-                  <Brain className="w-3.5 h-3.5" />
-                  Homeschool-friendly · Built for brain development
-                </motion.div>
-
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.35 }}
+                <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: 0.68, ease: EASE_OUT }}
                   className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4">
-                  <button onClick={() => setTrialOpen(true)}
-                    className="group inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl font-bold text-white text-[15px] gradient-bg shadow-[0_8px_32px_rgba(110,66,255,0.4)] hover:shadow-[0_16px_48px_rgba(110,66,255,0.55)] hover:-translate-y-1 transition-all duration-300"
-                    style={{ boxShadow: '0 8px 32px rgba(110,66,255,0.4), inset 0 1px 0 rgba(255,255,255,0.15)' }}>
-                    Book FREE Assessment Class <ArrowRight className="w-5 h-5 group-hover:translate-x-0.5 transition-transform" />
+                  <button onClick={() => setTrialOpen(true)} className="btn-cta group sheen-on-hover w-full sm:w-auto">
+                    <span className="relative z-10 inline-flex items-center gap-2.5">
+                      Book a FREE Assessment Class
+                      <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" />
+                    </span>
                   </button>
-                  <Link href="/learning-hub"
-                    className="inline-flex items-center justify-center gap-3 px-8 py-4 rounded-2xl border border-white/12 text-white/80 font-semibold text-[15px] hover:bg-white/[0.06] hover:border-white/20 transition-all duration-300 backdrop-blur-sm">
-                    <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center border border-white/10">
+                  <Link href="/learning-hub" className="btn-ghost-dark group w-full sm:w-auto">
+                    <span className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center border border-white/12 transition-colors duration-300 group-hover:bg-white/20">
                       <Play className="w-3.5 h-3.5 fill-white text-white ml-0.5" />
-                    </div>
+                    </span>
                     Explore Programs
                   </Link>
                 </motion.div>
 
-                {/* Social proof */}
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.55 }}
-                  className="mt-10 flex flex-wrap items-center gap-3 sm:gap-5">
-                  <div className="flex -space-x-2.5">
-                    {[['AM', '#6e42ff'], ['TK', '#f59e0b'], ['FO', '#10b981'], ['AJ', '#ec4899'], ['ND', '#3b82f6']].map(([init, bg], i) => (
-                      <div key={i} className="w-8 h-8 rounded-full border-2 border-[#0d1333] flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0"
-                        style={{ background: bg as string }}>
-                        {init}
-                      </div>
-                    ))}
+                <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.85 }}
+                  className="mt-4 text-white/40 text-[12.5px]">
+                  30-minute Zoom · no card needed · a custom learning plan you keep
+                </motion.p>
+
+                {/* Proof row */}
+                <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.95, duration: 0.6, ease: EASE_OUT }}
+                  className="mt-9 pt-8 border-t border-white/[0.08]">
+                  <div className="flex flex-wrap items-center gap-x-5 gap-y-3 mb-5">
+                    <div className="flex -space-x-2.5">
+                      {[['AM', '#6e42ff'], ['TK', '#f59e0b'], ['FO', '#10b981'], ['AJ', '#ec4899'], ['ND', '#3b82f6']].map(([init, bg], i) => (
+                        <span key={i}
+                          className="w-8 h-8 rounded-full border-2 border-[#0b1024] flex items-center justify-center text-[10px] font-bold text-white flex-shrink-0"
+                          style={{ background: bg as string }}>
+                          {init}
+                        </span>
+                      ))}
+                    </div>
+                    <div className="text-white/55 text-[13px]">
+                      <span className="text-white font-bold tabular">200+</span> learners across{' '}
+                      <span className="text-white font-bold tabular">5+</span> countries
+                    </div>
+                    <span className="hidden sm:block h-4 w-px bg-white/12" />
+                    <div className="flex items-center gap-1">
+                      {[...Array(5)].map((_, i) => <Star key={i} className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />)}
+                      <span className="text-white/55 text-[13px] ml-1.5 tabular">4.9/5</span>
+                    </div>
                   </div>
-                  <div className="text-white/50 text-[13px]">
-                    <span className="text-white font-bold">200+</span> learners worldwide
-                  </div>
-                  <div className="h-4 w-px bg-white/10" />
-                  <div className="flex items-center gap-1">
-                    {[...Array(5)].map((_, i) => <Star key={i} className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />)}
-                    <span className="text-white/50 text-[13px] ml-1.5">4.9/5</span>
+
+                  <div className="flex flex-wrap gap-x-6 gap-y-2.5">
+                    <TrustMarker icon={Shield} label="Background-checked instructors" tone="text-emerald-400" />
+                    <TrustMarker icon={Home} label="Homeschool-friendly scheduling" tone="text-amber-400" />
+                    <TrustMarker icon={Award} label="Certificate + capstone project" tone="text-brand-400" />
                   </div>
                 </motion.div>
               </div>
 
-              {/* ── Right: Interactive visual ── */}
-              <div className="relative h-[520px] hidden lg:block">
+              {/* ── Right: learner-progress visual ── */}
+              <div className="relative h-[540px] hidden lg:block">
+                {/* Rotating conic halo behind the card. */}
+                {!reduce && (
+                  <div aria-hidden className="absolute inset-10 rounded-[32px] overflow-hidden opacity-[0.5]">
+                    <div className="conic-halo absolute -inset-[40%] blur-2xl" />
+                  </div>
+                )}
+
                 {/* Central card */}
-                <motion.div initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.4, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-                  className="absolute inset-6 hero-card">
-                  <div className="h-full flex flex-col">
-                    <div className="px-6 py-5 flex items-center gap-3 border-b border-white/[0.06]"
-                      style={{ background: 'linear-gradient(135deg, rgba(110,66,255,0.15) 0%, rgba(168,85,247,0.1) 100%)' }}>
-                      <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center border border-white/10">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9, rotateX: 8 }}
+                  animate={{ opacity: 1, scale: 1, rotateX: 0 }}
+                  transition={{ delay: 0.45, duration: 1, ease: EASE_OUT }}
+                  className="absolute inset-6 hero-card"
+                  style={{ perspective: 1000 }}
+                >
+                  {/* Slow vertical scan line for a "live" feel. */}
+                  {!reduce && (
+                    <div aria-hidden className="absolute inset-0 overflow-hidden pointer-events-none rounded-3xl">
+                      <div className="absolute left-0 right-0 h-24"
+                        style={{
+                          background: 'linear-gradient(to bottom, transparent, rgba(139,110,255,0.09), transparent)',
+                          animation: 'scan 7s ease-in-out infinite 2s',
+                        }} />
+                    </div>
+                  )}
+
+                  <div className="relative h-full flex flex-col">
+                    <div className="px-6 py-5 flex items-center gap-3 border-b border-white/[0.07]"
+                      style={{ background: 'linear-gradient(135deg, rgba(110,66,255,0.18) 0%, rgba(236,72,153,0.09) 100%)' }}>
+                      <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center border border-white/12">
                         <Brain className="w-5 h-5 text-purple-300" />
                       </div>
-                      <div className="flex-1">
-                        <div className="text-white font-bold text-[15px]">AI Builder Track</div>
-                        <div className="text-white/40 text-xs">Module 4: Building with GPT APIs</div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-white font-bold text-[15px]">AI Developer Track</div>
+                        <div className="text-white/45 text-xs truncate">Level 4 · Coders Ladder</div>
                       </div>
-                      <div className="text-right">
-                        <div className="text-white font-extrabold text-lg">82%</div>
-                        <div className="text-white/35 text-xs">Complete</div>
+                      <div className="text-right flex-shrink-0">
+                        <div className="text-white font-extrabold text-lg tabular">82%</div>
+                        <div className="text-white/40 text-[10.5px] uppercase tracking-[0.1em] font-bold">Complete</div>
                       </div>
                     </div>
 
-                    <div className="px-5 pt-4 pb-3">
-                      <div className="w-full bg-white/[0.06] rounded-full h-1.5 mb-5 overflow-hidden">
-                        <motion.div initial={{ width: 0 }} animate={{ width: '82%' }} transition={{ delay: 1.2, duration: 1.8, ease: 'easeOut' }}
+                    <div className="px-5 pt-4 pb-3 flex-1 flex flex-col">
+                      <div className="w-full bg-white/[0.07] rounded-full h-1.5 mb-5 overflow-hidden">
+                        <motion.div initial={{ width: 0 }} animate={{ width: '82%' }}
+                          transition={{ delay: 1.3, duration: reduce ? 0 : 1.7, ease: 'easeOut' }}
                           className="h-1.5 rounded-full"
                           style={{ background: 'linear-gradient(90deg, #6e42ff, #a855f7, #ec4899)' }} />
                       </div>
+
                       <div className="space-y-2">
                         {[
                           { t: 'Python for AI Fundamentals', done: true },
@@ -312,63 +467,76 @@ export default function HomePage() {
                           { t: 'Building with GPT APIs', done: true },
                           { t: 'Computer Vision Project', done: false },
                           { t: 'Deploy Your AI App', done: false },
-                        ].map(({ t, done }) => (
-                          <div key={t} className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors ${done ? 'bg-emerald-500/[0.08]' : 'bg-white/[0.03] hover:bg-white/[0.05]'}`}>
-                            <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${done ? 'bg-emerald-500/80' : 'bg-white/10 border border-white/10'}`}>
-                              {done ? <CheckCircle2 className="w-3.5 h-3.5 text-white" strokeWidth={3} /> : <div className="w-1.5 h-1.5 rounded-full bg-white/30" />}
-                            </div>
-                            <span className={done ? 'text-white/70' : 'text-white/30'}>{t}</span>
-                          </div>
+                        ].map(({ t, done }, i) => (
+                          <motion.div key={t}
+                            initial={{ opacity: 0, x: 14 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.9 + i * 0.09, duration: 0.5, ease: EASE_OUT }}
+                            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13.5px] border transition-colors duration-300 ${
+                              done
+                                ? 'bg-emerald-500/[0.09] border-emerald-400/15'
+                                : 'bg-white/[0.03] border-white/[0.05]'
+                            }`}>
+                            <span className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${
+                              done ? 'bg-emerald-500/85' : 'bg-white/[0.08] border border-white/12'
+                            }`}>
+                              {done
+                                ? <CheckCircle2 className="w-3.5 h-3.5 text-white" strokeWidth={3} />
+                                : <span className="w-1.5 h-1.5 rounded-full bg-white/35" />}
+                            </span>
+                            <span className={done ? 'text-white/75' : 'text-white/35'}>{t}</span>
+                          </motion.div>
                         ))}
+                      </div>
+
+                      {/* Footer strip: the deliverable, named. */}
+                      <div className="mt-auto pt-4 mx-[-4px] flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.06]">
+                        <Rocket className="w-4 h-4 text-amber-400 flex-shrink-0" />
+                        <span className="text-white/55 text-[12px]">
+                          Next up: <span className="text-white/80 font-semibold">Demo Day</span> · a live URL of their own
+                        </span>
                       </div>
                     </div>
                   </div>
                 </motion.div>
 
                 {/* Floating chips */}
-                <FloatingChip className="top-0 -left-4 px-4 py-3 text-white" delay={0.9}>
+                <FloatingChip className="top-0 -left-4 px-4 py-3" delay={1.0} driftRange={8}>
                   <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-lg bg-emerald-500/15 flex items-center justify-center">
+                    <span className="w-8 h-8 rounded-lg bg-emerald-500/15 flex items-center justify-center flex-shrink-0">
                       <Trophy className="w-4 h-4 text-emerald-400" />
-                    </div>
-                    <div>
-                      <div className="text-[11px] font-bold text-emerald-300">Achievement Unlocked</div>
-                      <div className="text-[10px] text-white/40">First AI model deployed!</div>
-                    </div>
+                    </span>
+                    <span className="block">
+                      <span className="block text-[11px] font-bold text-emerald-300">Capstone shipped</span>
+                      <span className="block text-[10px] text-white/45">First AI app deployed</span>
+                    </span>
                   </div>
                 </FloatingChip>
 
-                <FloatingChip className="-bottom-2 -right-2 px-4 py-3 text-white" delay={1.1}>
+                <FloatingChip className="-bottom-2 -right-2 px-4 py-3" delay={1.15} driftRange={6}>
                   <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-lg bg-amber-500/15 flex items-center justify-center">
+                    <span className="w-8 h-8 rounded-lg bg-amber-500/15 flex items-center justify-center flex-shrink-0">
                       <Globe className="w-4 h-4 text-amber-400" />
-                    </div>
-                    <div>
-                      <div className="text-[11px] font-bold text-amber-300">5+ Countries</div>
-                      <div className="text-[10px] text-white/40">Global learner community</div>
-                    </div>
+                    </span>
+                    <span className="block">
+                      <span className="block text-[11px] font-bold text-amber-300">5+ countries</span>
+                      <span className="block text-[10px] text-white/45">One global cohort</span>
+                    </span>
                   </div>
                 </FloatingChip>
 
-                <FloatingChip className="bottom-28 -left-6 px-3.5 py-2.5 text-white" delay={1.2}>
-                  <div className="flex items-center gap-2 text-[12px]">
-                    <Brain className="w-4 h-4 text-brand-400" />
-                    <span className="text-white/70">AI-ready curriculum</span>
-                  </div>
+                <FloatingChip className="bottom-32 -left-6 px-3.5 py-2.5" delay={1.25} driftRange={9}>
+                  <span className="flex items-center gap-2 text-[12px]">
+                    <Users className="w-4 h-4 text-brand-300 flex-shrink-0" />
+                    <span className="text-white/70">Small cohorts, real mentors</span>
+                  </span>
                 </FloatingChip>
 
-                <FloatingChip className="top-1/2 -right-2 px-3.5 py-2.5 text-white" delay={1.3}>
-                  <div className="flex items-center gap-2 text-[12px]">
-                    <GraduationCap className="w-4 h-4 text-emerald-400" />
+                <FloatingChip className="top-[46%] -right-3 px-3.5 py-2.5" delay={1.35} driftRange={7}>
+                  <span className="flex items-center gap-2 text-[12px]">
+                    <GraduationCap className="w-4 h-4 text-emerald-400 flex-shrink-0" />
                     <span className="text-white/70">Homeschool-friendly</span>
-                  </div>
-                </FloatingChip>
-
-                <FloatingChip className="top-24 -right-4 px-3.5 py-2.5 text-white" delay={1.0}>
-                  <div className="flex items-center gap-2 text-[12px]">
-                    <Users className="w-4 h-4 text-purple-400" />
-                    <span className="text-white/70"><span className="font-bold text-white">200+</span> enrolled</span>
-                  </div>
+                  </span>
                 </FloatingChip>
               </div>
             </div>
@@ -376,24 +544,29 @@ export default function HomePage() {
         </motion.div>
 
         {/* Scroll cue */}
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.8 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10">
-          <motion.div animate={{ y: [0, 8, 0] }} transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
-            className="w-6 h-10 rounded-full border-2 border-white/15 flex items-start justify-center pt-2">
-            <div className="w-1 h-2 rounded-full bg-white/40" />
-          </motion.div>
+        <motion.div aria-hidden initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.8 }}
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 hidden sm:block">
+          <div className="w-6 h-10 rounded-full border-2 border-white/15 flex items-start justify-center pt-2">
+            <motion.span
+              animate={reduce ? {} : { y: [0, 12, 0], opacity: [0.5, 1, 0.5] }}
+              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+              className="w-1 h-2 rounded-full bg-white/50" />
+          </div>
         </motion.div>
       </section>
 
       {/* ═══ STATS STRIP ═══ */}
-      <section className="py-10 sm:py-12 bg-white border-b border-slate-100/60 relative">
-        <div className="absolute inset-0 opacity-30 mesh-bg" />
+      <section className="py-11 sm:py-14 bg-white border-b border-slate-200/70 relative overflow-hidden">
+        <div aria-hidden className="absolute inset-0 opacity-40 mesh-bg" />
+        {/* Brand hairline seam against the hero above. */}
+        <div aria-hidden className="absolute top-0 left-0 right-0 h-px"
+          style={{ background: 'linear-gradient(90deg, transparent 0%, rgba(110,66,255,0.28) 50%, transparent 100%)' }} />
         <div className="max-w-5xl mx-auto px-5 relative">
-          <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-slate-100">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-y-6 md:gap-y-0 md:divide-x md:divide-slate-200/70">
             {globalNumbers.map(({ v, s, l }, i) => (
               <StatPill key={l} value={v} suffix={s} label={l}
                 color={['gradient-text', 'gradient-text-gold', 'gradient-text-green', 'gradient-text'][i]}
-                delay={i * 0.1} />
+                delay={i * 0.09} />
             ))}
           </div>
         </div>
@@ -410,43 +583,56 @@ export default function HomePage() {
               <Home className="w-3.5 h-3.5" /> Built for Homeschooling Families
             </div>
             <h2 className="section-heading mb-4">
-              The <span className="gradient-text">#1 Coding & AI Program</span> for Homeschoolers
+              Built Around the <span className="gradient-text">Homeschool Rhythm</span>
             </h2>
             <p className="section-subheading mx-auto max-w-2xl">
-              Homeschooling families are at the heart of what we do. Flexible, parent-led, and engineered for serious brain development: our curriculum slots into any homeschool rhythm.
+              Homeschooling families are at the heart of what we do. Every cohort runs as live,
+              instructor-led virtual classes, so your child learns alongside peers across continents
+              without leaving your schedule behind.
             </p>
           </SectionWrapper>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 mb-10">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-12">
             {[
-              { icon: Calendar, title: 'Truly Flexible Scheduling', desc: 'Weekday, weekend, morning or evening slots. Self-paced progression so your homeschool calendar always wins.' },
-              { icon: Brain, title: 'Brain Development First', desc: 'Coding strengthens logic, working memory, focus, and creative problem-solving: the foundations of a sharp young mind.' },
-              { icon: Users, title: 'Sibling Discounts That Stack', desc: 'Built for multi-child homeschool families. Add siblings affordably: the more children, the bigger the savings.' },
-              { icon: Eye, title: 'Parent-Visible Progress', desc: 'Real-time dashboards so parents stay fully in the loop: see milestones, projects, and skill growth at a glance.' },
-              { icon: Shield, title: 'Safe, Screen-Time-Optimal', desc: 'Live mentors, vetted instructors, and a child-safety-first environment. Quality screen time you can feel good about.' },
-              { icon: Trophy, title: 'Real Projects, Real Portfolios', desc: 'From Scratch animations to AI apps. Homeschool learners graduate with portfolios that open scholarship & competition doors.' },
+              { icon: Calendar, title: 'Scheduling That Bends', desc: 'Weekday, weekend, morning or evening slots, so your homeschool calendar always wins.' },
+              { icon: Eye, title: 'Progress Parents Can See', desc: 'Milestones, projects, and skill growth visible at a glance, with periodic notes from mentors.' },
+              { icon: Users, title: 'Sibling Discounts That Stack', desc: 'Built for multi-child families: 10% off the second child, 15% off the third.' },
+              { icon: Shield, title: 'Safe by Design', desc: 'Background-checked instructors, small cohorts, and parents welcome to observe under-13 sessions.' },
             ].map(({ icon: Icon, title, desc }, i) => (
               <motion.div key={title}
-                initial={{ opacity: 0, y: 20 }}
+                initial={reduce ? { opacity: 0 } : { opacity: 0, y: 22 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.07 }}
-                className="rounded-2xl bg-white p-6 border border-amber-100 hover:border-amber-300 hover:-translate-y-1 transition-all duration-300 shadow-sm hover:shadow-md">
-                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center mb-4 shadow-md">
-                  <Icon className="w-5 h-5 text-white" />
+                viewport={{ once: true, margin: '-40px' }}
+                transition={{ delay: i * 0.07, duration: 0.6, ease: EASE_OUT }}
+                className="group relative rounded-[22px] bg-white p-6 border border-amber-200/70 overflow-hidden
+                           shadow-[0_1px_2px_rgba(120,53,15,0.04),0_8px_24px_rgba(120,53,15,0.05)]
+                           transition-[transform,box-shadow,border-color] duration-500
+                           hover:-translate-y-1.5 hover:border-amber-400/70
+                           hover:shadow-[0_24px_48px_rgba(217,119,6,0.16)]">
+                <span aria-hidden
+                  className="absolute -top-16 -right-16 w-40 h-40 rounded-full blur-3xl bg-gradient-to-br from-amber-400 to-orange-500
+                             opacity-0 group-hover:opacity-[0.18] transition-opacity duration-700" />
+                <div className="relative z-10">
+                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center mb-4 shadow-md
+                                  transition-transform duration-500 group-hover:scale-[1.07]">
+                    <Icon className="w-5 h-5 text-white" />
+                  </div>
+                  <div className="font-bold text-slate-900 mb-2 text-[15px]"
+                    style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>{title}</div>
+                  <div className="text-slate-600 text-[13px] leading-[1.7]">{desc}</div>
                 </div>
-                <div className="font-bold text-slate-900 mb-2 text-[15px]">{title}</div>
-                <div className="text-slate-600 text-[13px] leading-relaxed">{desc}</div>
               </motion.div>
             ))}
           </div>
 
           <div className="text-center">
-            <Link href="/assessment-class"
-              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold text-[15px] shadow-lg shadow-orange-500/30 hover:-translate-y-0.5 transition-all">
-              Book a FREE Homeschool Assessment <ArrowRight className="w-5 h-5" />
+            <Link href="/assessment-class" className="btn-cta group sheen-on-hover">
+              <span className="relative z-10 inline-flex items-center gap-2.5">
+                Book a FREE Homeschool Assessment
+                <ArrowRight className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" />
+              </span>
             </Link>
-            <div className="mt-3 text-slate-500 text-[12px]">No card needed · 30-minute Zoom · Custom plan you keep</div>
+            <div className="mt-3.5 text-slate-600 text-[12.5px]">No card needed · 30-minute Zoom · a custom plan you keep</div>
           </div>
         </div>
       </section>
@@ -483,14 +669,15 @@ export default function HomePage() {
         <div className="max-w-5xl mx-auto px-5 sm:px-8 lg:px-10 relative">
           <SectionWrapper className="text-center mb-12">
             <div className="section-tag mx-auto mb-5">
-              <Code2 className="w-3.5 h-3.5" /> The 4th Literacy
+              <Code2 className="w-3.5 h-3.5" /> Why It Matters
             </div>
             <h2 className="section-heading mb-5 max-w-3xl mx-auto">
               Coding &amp; AI: the <span className="gradient-text-animated">4th Literacy</span>
             </h2>
-            <p className="section-subheading mx-auto">
+            <p className="section-subheading mx-auto mb-6">
               Reading, writing, and arithmetic shaped the last century. Coding and AI are the foundational skills shaping this one: the language of technology, creativity, and solving problems that matter.
             </p>
+            <span aria-hidden className="section-rule mx-auto" />
           </SectionWrapper>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -501,34 +688,36 @@ export default function HomePage() {
               { n: '4th', title: 'Coding & AI', desc: 'The language for navigating and shaping the digital world: coding and AI foster creativity, logic, critical thinking, and real-world problem-solving.', icon: Code2, color: 'from-brand-500 to-purple-600', active: true },
             ].map(({ n, title, desc, icon: Icon, color, active }, i) => (
               <motion.div key={title}
-                initial={{ opacity: 0, y: 20 }}
+                initial={reduce ? { opacity: 0 } : { opacity: 0, y: 22 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className={`rounded-2xl p-5 border transition-all duration-500 relative overflow-hidden group ${
+                viewport={{ once: true, margin: '-40px' }}
+                transition={{ delay: i * 0.09, duration: 0.6, ease: EASE_OUT }}
+                className={`rounded-[22px] p-5 sm:p-6 border relative overflow-hidden group
+                            transition-[transform,box-shadow,border-color] duration-500 ${
                   active
-                    ? 'bg-gradient-to-br from-brand-500 to-purple-600 border-transparent text-white shadow-[0_8px_32px_rgba(110,66,255,0.25)]'
-                    : 'bg-white border-slate-100 hover:border-slate-200 hover:shadow-md'
+                    ? 'bg-gradient-to-br from-brand-500 to-purple-600 border-transparent text-white shadow-[0_16px_44px_rgba(110,66,255,0.3)] sm:-translate-y-1'
+                    : 'bg-white border-slate-200/70 hover:border-slate-300 hover:-translate-y-1 hover:shadow-[0_20px_40px_rgba(15,23,42,0.07)]'
                 }`}>
-                {active && (
-                  <motion.div className="absolute inset-0 opacity-20"
+                {active && !reduce && (
+                  <motion.div aria-hidden className="absolute inset-0 opacity-25"
                     animate={{ backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'] }}
-                    transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-                    style={{ backgroundImage: 'radial-gradient(circle at 30% 50%, rgba(255,255,255,0.4) 0%, transparent 60%)', backgroundSize: '200% 200%' }} />
+                    transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+                    style={{ backgroundImage: 'radial-gradient(circle at 30% 50%, rgba(255,255,255,0.45) 0%, transparent 60%)', backgroundSize: '200% 200%' }} />
                 )}
                 <div className="relative z-10">
-                  <div className={`text-[11px] font-extrabold uppercase tracking-[0.15em] mb-3 ${active ? 'text-white/60' : 'text-slate-400'}`}>
+                  <div className={`eyebrow mb-3 ${active ? 'text-white/70' : 'text-slate-500'}`}>
                     {n} Literacy
                   </div>
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-3 ${
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-3.5 ${
                     active ? 'bg-white/20' : `bg-gradient-to-br ${color}`
-                  } group-hover:scale-110 transition-transform duration-300`}>
-                    <Icon className={`w-5 h-5 ${active ? 'text-white' : 'text-white'}`} />
+                  } transition-transform duration-500 group-hover:scale-110`}>
+                    <Icon className="w-5 h-5 text-white" />
                   </div>
-                  <h3 className={`font-extrabold text-lg mb-2 ${active ? 'text-white' : 'text-slate-900'}`} style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
+                  <h3 className={`font-extrabold text-lg mb-2 tracking-[-0.02em] ${active ? 'text-white' : 'text-slate-900'}`}
+                    style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
                     {title}
                   </h3>
-                  <p className={`text-[13px] leading-relaxed ${active ? 'text-white/70' : 'text-slate-500'}`}>{desc}</p>
+                  <p className={`text-[13px] leading-[1.7] ${active ? 'text-white/80' : 'text-slate-600'}`}>{desc}</p>
                 </div>
               </motion.div>
             ))}
@@ -536,28 +725,34 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ═══ BRANCH CARDS ═══ */}
-      <section className="py-16 sm:py-20 md:py-28 mesh-bg relative">
-        <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-10">
-          <SectionWrapper className="text-center mb-16">
+      {/* ═══ THE THREE PILLARS ═══ */}
+      <section className="py-16 sm:py-20 md:py-28 mesh-bg relative overflow-hidden">
+        {/* Top hairline in brand gradient. */}
+        <div aria-hidden className="absolute top-0 left-0 right-0 h-px"
+          style={{ background: 'linear-gradient(90deg, transparent 0%, rgba(245,158,11,0.35) 30%, rgba(236,72,153,0.4) 50%, rgba(110,66,255,0.35) 70%, transparent 100%)' }} />
+
+        <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-10 relative">
+          <SectionWrapper className="text-center mb-14 sm:mb-16">
             <div className="section-tag mx-auto mb-5">
-              <Sparkles className="w-3.5 h-3.5" /> Three Pillars of Growth
+              <Layers className="w-3.5 h-3.5" /> Learn · Inspire · Engage
             </div>
             <h2 className="section-heading mb-5 max-w-3xl mx-auto">
-              Everything the Next Generation Needs to <span className="gradient-text">Thrive</span>
+              Scholarly Echo Sits on <span className="gradient-text">Three Pillars</span>
             </h2>
-            <p className="section-subheading mx-auto">
-              Three powerful branches: build future-ready skills, draw inspiration from real stories,
-              and engage through world-class educational entertainment.
+            <p className="section-subheading mx-auto mb-6">
+              Every program belongs to one of three pillars: build future-ready skills, draw
+              inspiration from real stories, and engage through educational entertainment.
             </p>
+            <span aria-hidden className="section-rule mx-auto" />
           </SectionWrapper>
 
-          <div className="grid md:grid-cols-3 gap-4 md:gap-7">
+          <div className="grid md:grid-cols-3 gap-5 md:gap-7 items-stretch">
             <BranchCard
               icon={BookOpen}
+              index="01"
               title="Learning Hub"
               subtitle="Learn"
-              description="Project-based coding that builds critical thinking, problem-solving, and creativity. Progress through our competency-based Coders Ladder: from visual coding to launching AI-powered products. Students are prepared for international coding competitions."
+              description="Project-based coding that builds critical thinking and creativity. Progress through the competency-based Coders Ladder: from visual blocks to launching AI-powered products."
               color="text-brand-600"
               gradient="from-brand-500 to-purple-600"
               href="/learning-hub"
@@ -566,31 +761,33 @@ export default function HomePage() {
                 'AI Developer track: GPT, ML, OpenCV',
                 'Product Builder: launch real SaaS',
                 '1-on-1, group & bootcamp formats',
-                'Certified global tutors & mentors',
+                'Vetted, background-checked mentors',
               ]}
               delay={0}
             />
             <BranchCard
               icon={Mic2}
+              index="02"
               title="Spotlight Media"
               subtitle="Inspire"
-              description="Global podcast series, success stories, and research-to-impact spotlights. Real people from real places sharing real journeys: from Lagos to London to Silicon Valley."
+              description="A global podcast series, success stories, and research-to-impact spotlights. Real people from real places sharing real journeys: from Lagos to London to Silicon Valley."
               color="text-amber-600"
               gradient="from-amber-400 to-orange-500"
               href="/spotlight-media"
               features={[
                 'Edu Spotlight Podcast: bi-weekly',
                 'Doctorate Thesis Spotlight series',
-                'Youth success story features worldwide',
+                'Youth success stories worldwide',
                 'Research-to-community frameworks',
               ]}
-              delay={0.12}
+              delay={0.1}
             />
             <BranchCard
               icon={Gamepad2}
+              index="03"
               title="Edutainment"
               subtitle="Engage"
-              description="Gamified learning experiences that feel like winning. From our iconic Millionaire Game Show to Sezwor Mode's interactive group quizzes: education has never been this engaging."
+              description="Gamified learning that feels like winning. From the Millionaire Game Show to Sezwor Mode's interactive group quizzes, bookable by schools and communities."
               color="text-emerald-600"
               gradient="from-emerald-400 to-teal-600"
               href="/edutainment"
@@ -600,7 +797,7 @@ export default function HomePage() {
                 'World National Flag Challenge',
                 'School & community event bookings',
               ]}
-              delay={0.24}
+              delay={0.2}
             />
           </div>
         </div>
@@ -704,54 +901,13 @@ export default function HomePage() {
                       </div>
                       <div>
                         <div className="text-[12px] font-bold text-slate-900">98% Completion</div>
-                        <div className="text-[10px] text-slate-400">Across all tracks</div>
+                        <div className="text-[10px] text-slate-500">Across all tracks</div>
                       </div>
                     </div>
                   </motion.div>
                 </div>
               </div>
             </SectionWrapper>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══ WHY SCHOLARLYECHO ═══ */}
-      <section className="py-16 sm:py-20 md:py-28 bg-slate-50/80 relative">
-        <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-10">
-          <SectionWrapper className="text-center mb-16">
-            <div className="section-tag mx-auto mb-5">
-              <Lightbulb className="w-3.5 h-3.5" /> The ScholarlyEcho Difference
-            </div>
-            <h2 className="section-heading mb-5 max-w-3xl mx-auto">
-              More Than Coding: <span className="gradient-text">Life Skills</span>
-            </h2>
-            <p className="section-subheading mx-auto">
-              Coding develops critical thinking, logical reasoning, creativity, and the ability to solve complex problems: skills that transfer to every career and life challenge.
-            </p>
-          </SectionWrapper>
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {[
-              { icon: Lightbulb, title: 'Critical Thinking', desc: 'Every project requires breaking down complex problems into smaller steps: a skill that transfers to academics, careers, and everyday decisions.', color: 'bg-purple-50 text-purple-600', gradient: 'from-purple-500 to-indigo-600' },
-              { icon: Brain, title: 'Problem Solving', desc: 'Debugging code is training the brain to persist, analyze, and find solutions. These are the life skills employers value most.', color: 'bg-blue-50 text-blue-600', gradient: 'from-blue-500 to-brand-600' },
-              { icon: Trophy, title: 'Competition Ready', desc: 'Students are prepared for internationally recognized coding competitions: building confidence, resilience, and a competitive edge.', color: 'bg-amber-50 text-amber-600', gradient: 'from-amber-500 to-orange-500' },
-              { icon: BarChart3, title: 'Measurable Growth', desc: 'Competency-based progression. Every level ends with a real project that demonstrates mastery: not just time spent in a seat.', color: 'bg-emerald-50 text-emerald-600', gradient: 'from-emerald-500 to-teal-600' },
-            ].map(({ icon: Icon, title, desc, color, gradient }, i) => (
-              <motion.div key={title}
-                initial={{ opacity: 0, y: 28 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="premium-card group relative overflow-hidden">
-                {/* Hover glow */}
-                <div className={`absolute -top-12 -right-12 w-32 h-32 rounded-full blur-3xl opacity-0 group-hover:opacity-[0.12] transition-opacity duration-700 bg-gradient-to-br ${gradient}`} />
-                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 ${color} group-hover:scale-105 transition-transform duration-500`}>
-                  <Icon className="w-6 h-6" />
-                </div>
-                <h3 className="font-bold text-slate-900 mb-2.5 text-[15px]" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>{title}</h3>
-                <p className="text-slate-500 text-[13px] leading-relaxed">{desc}</p>
-              </motion.div>
-            ))}
           </div>
         </div>
       </section>
@@ -790,7 +946,7 @@ export default function HomePage() {
                   <Icon className="w-5.5 h-5.5 text-white" />
                 </div>
                 <div>
-                  <div className="text-[10px] font-bold uppercase tracking-[0.1em] text-slate-400 mb-1">{tag}</div>
+                  <div className="text-[10px] font-bold uppercase tracking-[0.1em] text-slate-500 mb-1">{tag}</div>
                   <h4 className="text-[16px] font-bold text-slate-900 mb-1.5 group-hover:text-brand-600 transition-colors duration-300" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>{title}</h4>
                   <p className="text-slate-500 text-[13px] leading-relaxed">{desc}</p>
                 </div>
@@ -802,26 +958,6 @@ export default function HomePage() {
               </motion.div>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* ═══ GLOBAL VIRTUAL CLASSES ═══ */}
-      <section className="py-16 sm:py-20 md:py-28 relative overflow-hidden noise-overlay"
-        style={{ background: 'linear-gradient(165deg, #070c1b 0%, #0d1333 50%, #0c1a2e 100%)' }}>
-        <div className="max-w-4xl mx-auto px-5 sm:px-8 lg:px-10 relative z-10 text-center">
-          <SectionWrapper>
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.06] border border-white/[0.08] text-white/60 text-[13px] font-medium mb-5">
-              <Globe className="w-3.5 h-3.5 text-emerald-400" /> Live Online · Anywhere
-            </div>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white mb-5 leading-tight tracking-[-0.02em]" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
-              Learning Knows <span className="gradient-text-animated">No Borders</span>
-            </h2>
-            <p className="text-white/55 text-base sm:text-lg leading-relaxed max-w-2xl mx-auto">
-              Every ScholarlyEcho cohort is delivered as live, instructor-led virtual classes:
-              wherever your child is, they can learn alongside peers across continents,
-              with mentors who treat distance as no obstacle at all.
-            </p>
-          </SectionWrapper>
         </div>
       </section>
 
@@ -844,9 +980,9 @@ export default function HomePage() {
               </h3>
               <div className="space-y-3">
                 {!programsLoaded ? (
-                  <div className="premium-card text-slate-400 text-sm">Loading…</div>
+                  <div className="premium-card text-slate-500 text-sm">Loading…</div>
                 ) : programsList.length === 0 ? (
-                  <div className="premium-card text-slate-400 text-sm">No programs to display yet.</div>
+                  <div className="premium-card text-slate-500 text-sm">No programs to display yet.</div>
                 ) : programsList.map((p, i) => {
                   const active = isActive(p);
                   return (
@@ -869,7 +1005,7 @@ export default function HomePage() {
                             {active ? 'Active' : 'Completed'}
                           </span>
                         </div>
-                        {p.startDate && <span className="text-[11px] text-slate-400 flex-shrink-0">{formatProgramDate(p.startDate)}</span>}
+                        {p.startDate && <span className="text-[11px] text-slate-500 flex-shrink-0">{formatProgramDate(p.startDate)}</span>}
                       </div>
                       <h4 className="text-[15px] font-bold text-slate-900 mb-1.5 group-hover:text-brand-600 transition-colors" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>{p.name}</h4>
                       {p.description && <p className="text-slate-500 text-[13px] leading-relaxed">{p.description}</p>}
@@ -890,9 +1026,9 @@ export default function HomePage() {
               </h3>
               <div className="space-y-3">
                 {!programsLoaded ? (
-                  <div className="premium-card text-slate-400 text-sm">Loading…</div>
+                  <div className="premium-card text-slate-500 text-sm">Loading…</div>
                 ) : upcomingPrograms.length === 0 ? (
-                  <div className="premium-card text-slate-400 text-sm">No upcoming programs announced yet.</div>
+                  <div className="premium-card text-slate-500 text-sm">No upcoming programs announced yet.</div>
                 ) : upcomingPrograms.map((p, i) => {
                   const fee = feeLabel(p);
                   const hasInfoSession = !!(p.infoSessionEnabled && p.infoSessionDate);
@@ -1014,7 +1150,7 @@ export default function HomePage() {
                           {post.excerpt}
                         </p>
                       )}
-                      <div className="flex items-center justify-between pt-3 border-t border-slate-100 text-[11px] text-slate-400 gap-2">
+                      <div className="flex items-center justify-between pt-3 border-t border-slate-100 text-[11px] text-slate-500 gap-2">
                         <div className="flex items-center gap-3 min-w-0">
                           {post.readMinutes ? <span className="whitespace-nowrap">{post.readMinutes} min read</span> : null}
                           {postTotalLikes(post) > 0 && (
@@ -1123,7 +1259,7 @@ export default function HomePage() {
                 <p className="text-slate-500 text-[13px] leading-relaxed mb-4">{desc}</p>
                 <div className={`pt-3 border-t border-slate-100 flex items-baseline gap-2 ${color}`}>
                   <span className="text-2xl font-extrabold" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>{stat}</span>
-                  <span className="text-[11px] font-semibold text-slate-400">{statLabel}</span>
+                  <span className="text-[11px] font-semibold text-slate-500">{statLabel}</span>
                 </div>
               </motion.div>
             ))}
@@ -1140,8 +1276,8 @@ export default function HomePage() {
               style={{ backgroundImage: 'radial-gradient(ellipse at 80% 20%, rgba(255,255,255,0.25) 0%, transparent 60%)' }} />
             <div className="relative z-10 grid md:grid-cols-3 gap-6 items-center">
               <div className="md:col-span-2">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 text-white text-[11px] font-bold mb-3">
-                  ⚡ THE SCHOLARLYECHO EDGE
+                <div className="eyebrow inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/20 text-white mb-4">
+                  <Zap className="w-3 h-3" /> The ScholarlyEcho Edge
                 </div>
                 <h3 className="text-white text-2xl sm:text-3xl font-extrabold mb-3 leading-tight" style={{ fontFamily: 'Plus Jakarta Sans, sans-serif' }}>
                   Coding competitions. Scholarships. Careers. All from one clear pathway.
