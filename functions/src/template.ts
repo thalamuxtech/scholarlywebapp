@@ -16,9 +16,10 @@ export const BRAND = {
   tagline: 'Learn · Inspire · Engage',
   // Hosted PNG. Must be deployed and returning 200 BEFORE the first send:
   // Gmail caches a failed fetch and recipients keep seeing a broken image.
-  logoUrl: 'https://scholarly-echo.web.app/brand/logo-email.png',
-  siteUrl: 'https://scholarly-echo.web.app',
-  supportEmail: 'scholarlyechos@gmail.com',
+  // Served from the apex domain, which Firebase Hosting also answers.
+  logoUrl: 'https://scholarlyecho.com/brand/logo-email.png',
+  siteUrl: 'https://scholarlyecho.com',
+  supportEmail: 'info@scholarlyecho.com',
   purple: '#6e42ff',
   ink: '#0f172a',
   body: '#475569',

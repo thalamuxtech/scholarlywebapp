@@ -23,9 +23,14 @@ export const SENDER = {
   email: 'info@scholarlyecho.com',
 } as const;
 
+/**
+ * Where replies land. Safe to use info@scholarlyecho.com: Cloudflare Email
+ * Routing publishes MX (route1-3.mx.cloudflare.net) and forwards this address
+ * to the Gmail inbox. Verified by a delivered test message on 2026-07-29.
+ */
 export const REPLY_TO = {
   name: 'ScholarlyEcho',
-  email: 'scholarlyechos@gmail.com',
+  email: 'info@scholarlyecho.com',
 } as const;
 
 export interface Recipient {
