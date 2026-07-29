@@ -1,0 +1,10 @@
+# Compiled output
+lib/
+
+# Dependencies
+node_modules/
+
+# Local runtime config. Secrets live in Secret Manager, never in the repo.
+.env
+.env.*
+.runtimeconfig.json

@@ -3,6 +3,7 @@ import { getAnalytics, isSupported } from 'firebase/analytics';
 import { getFirestore } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import { getStorage } from 'firebase/storage';
+import { getFunctions } from 'firebase/functions';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyA7K2-uii2ZAfk-eKyBKl6RCruTROdRFxs',
@@ -19,6 +20,8 @@ const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0
 const db = getFirestore(app);
 const auth = getAuth(app);
 const storage = getStorage(app);
+// Region must match setGlobalOptions() in functions/src/index.ts.
+const functions = getFunctions(app, 'us-central1');
 
 let analytics: ReturnType<typeof getAnalytics> | null = null;
 if (typeof window !== 'undefined') {
@@ -29,4 +32,4 @@ if (typeof window !== 'undefined') {
   });
 }
 
-export { app, db, auth, storage, analytics };
+export { app, db, auth, storage, functions, analytics };

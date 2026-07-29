@@ -9,12 +9,13 @@ import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import {
   LayoutDashboard, Inbox, FolderKanban, BarChart3, Settings, Calendar,
-  LogOut, ChevronLeft, Menu, X, Tag, BookOpen
+  LogOut, ChevronLeft, Menu, X, Tag, BookOpen, Mail
 } from 'lucide-react';
 
 const sidebarLinks = [
   { label: 'Overview', href: '/admin/dashboard', icon: LayoutDashboard },
   { label: 'Submissions', href: '/admin/dashboard/submissions', icon: Inbox },
+  { label: 'Email', href: '/admin/dashboard/email', icon: Mail },
   { label: 'Course', href: '/admin/dashboard/programs', icon: FolderKanban },
   { label: 'Events', href: '/admin/dashboard/events', icon: Calendar },
   { label: 'Blog', href: '/admin/dashboard/blog', icon: BookOpen },
