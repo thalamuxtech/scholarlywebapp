@@ -27,6 +27,10 @@ export const SENDER = {
  * Where replies land. Safe to use info@scholarlyecho.com: Cloudflare Email
  * Routing publishes MX (route1-3.mx.cloudflare.net) and forwards this address
  * to the Gmail inbox. Verified by a delivered test message on 2026-07-29.
+ *
+ * Gmail "send as" is also configured for info@ via the Brevo SMTP relay, so a
+ * reply typed in Gmail goes back out as info@scholarlyecho.com and the whole
+ * thread stays on the domain.
  */
 export const REPLY_TO = {
   name: 'ScholarlyEcho',
