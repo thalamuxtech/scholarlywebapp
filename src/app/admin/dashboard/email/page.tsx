@@ -3,10 +3,10 @@
 /**
  * Admin email composer.
  *
- * Flow is deliberately gated: compose -> preview -> send a real test to yourself
- * -> only then can you broadcast. The broadcast button stays disabled until a
- * test has actually been delivered for the current draft, so nothing reaches a
- * live audience that has not been seen in a real inbox first.
+ * Flow: compose -> preview -> optionally send a real test -> broadcast. The test
+ * send and CC/BCC are all optional. Testing is not enforced, but the draft is
+ * fingerprinted so the UI can say whether the exact current content has been
+ * tested, and the confirmation dialog calls out an untested send.
  */
 
 import { cloneElement, useCallback, useEffect, useId, useMemo, useState } from 'react';
@@ -23,7 +23,7 @@ import {
 
 const TEMPLATES: { id: TemplateId; label: string; hint: string }[] = [
   { id: 'announcement', label: 'Announcement', hint: 'Cohort news, dates, general updates.' },
-  { id: 'newsletter', label: 'Newsletter', hint: 'Regular roundup. Includes an unsubscribe link.' },
+  { id: 'newsletter', label: 'Newsletter', hint: 'Regular roundup for subscribers.' },
   { id: 'program-invite', label: 'Program invite', hint: 'Invite a list to register for a program.' },
 ];
 
@@ -516,10 +516,10 @@ export default function EmailComposerPage() {
             )}
           </Card>
 
-          <Card title="Test, then send">
+          <Card title="Test and send">
             <div className="mb-4">
               <label htmlFor="test-email" className="block text-[12.5px] font-bold text-slate-800 mb-1.5">
-                Send a test to <span className="text-rose-500 ml-0.5" aria-hidden>*</span>
+                Send a test to <span className="font-normal text-slate-500">(optional)</span>
               </label>
               <div className="flex flex-col sm:flex-row gap-2.5">
                 <input id="test-email" type="email" value={testEmail} aria-describedby="test-email-hint"
@@ -531,17 +531,22 @@ export default function EmailComposerPage() {
                 </button>
               </div>
               <p id="test-email-hint" className="text-[11.5px] text-slate-500 mt-1.5 leading-snug">
-                A real send, so you see exactly what recipients get.
+                A real send to one address, so you see exactly what recipients get.
               </p>
             </div>
 
-            {/* Gate explanation: why Broadcast may be disabled. */}
-            {!hasTestedThisDraft && (
-              <div className="flex items-start gap-2.5 text-[12.5px] text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-3.5 py-2.5 mb-4">
-                <Info className="w-4 h-4 mt-px flex-shrink-0 text-amber-600" />
+            {/* Testing is recommended, not required: this advises rather than blocks. */}
+            {hasTestedThisDraft ? (
+              <div className="flex items-start gap-2.5 text-[12.5px] text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-xl px-3.5 py-2.5 mb-4">
+                <CheckCircle2 className="w-4 h-4 mt-px flex-shrink-0 text-emerald-600" />
+                <span>This exact draft has been tested. Editing any field clears this.</span>
+              </div>
+            ) : (
+              <div className="flex items-start gap-2.5 text-[12.5px] text-slate-700 bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 mb-4">
+                <Info className="w-4 h-4 mt-px flex-shrink-0 text-slate-500" />
                 <span>
-                  Send a test of this exact draft before broadcasting. Editing any field
-                  requires a fresh test.
+                  Not tested yet. A test send is optional, but recommended for anything
+                  going to more than a handful of people.
                 </span>
               </div>
             )}
@@ -552,7 +557,7 @@ export default function EmailComposerPage() {
                 <Eye className="w-4 h-4" /> Refresh preview
               </button>
               <button type="button" onClick={() => setConfirmOpen(true)}
-                disabled={busy || !isComplete || !hasTestedThisDraft || !audienceCount}
+                disabled={busy || !isComplete || !audienceCount}
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-600 to-purple-600 text-white font-bold text-[13px] shadow-md hover:-translate-y-0.5 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0 transition-all cursor-pointer">
                 <Send className="w-4 h-4" /> Broadcast
                 {audienceCount ? ` to ${audienceCount.toLocaleString()}` : ''}
@@ -633,6 +638,12 @@ export default function EmailComposerPage() {
                 <p className="text-slate-600 text-[13px] mt-1 leading-relaxed">
                   This sends immediately and cannot be recalled.
                 </p>
+                {/* With testing optional, this is the last chance to notice. */}
+                {!hasTestedThisDraft && (
+                  <p className="text-amber-800 text-[12.5px] mt-2 leading-relaxed font-semibold">
+                    You have not sent a test of this draft.
+                  </p>
+                )}
               </div>
               <button type="button" onClick={() => setConfirmOpen(false)}
                 aria-label="Cancel" className="ml-auto text-slate-400 hover:text-slate-700 cursor-pointer">
