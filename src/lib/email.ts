@@ -23,6 +23,15 @@ export interface EmailDraft {
   ctaLabel?: string;
   ctaUrl?: string;
   preheader?: string;
+  /** Visible to each recipient. Fixed extras, never the audience itself. */
+  cc?: string[];
+  /** Hidden from recipients. */
+  bcc?: string[];
+}
+
+export interface Recipient {
+  email: string;
+  name?: string;
 }
 
 export interface BroadcastOutcome {
@@ -78,17 +87,45 @@ export async function countAudience(
   }
 }
 
+/** Resolves an audience to the actual addresses, so the admin can edit the list. */
+export async function listAudience(
+  audience: AudienceId,
+  customEmails: string[] = []
+): Promise<{ recipients: Recipient[]; total: number; truncated: boolean }> {
+  try {
+    const fn = httpsCallable<
+      { audience: AudienceId; customEmails: string[] },
+      { recipients: Recipient[]; total: number; truncated: boolean }
+    >(functions, 'listAudience');
+    const res = await fn({ audience, customEmails });
+    return res.data;
+  } catch (err) {
+    throw new Error(toMessage(err, 'Could not load that audience.'));
+  }
+}
+
+/**
+ * Sends the broadcast. When `recipients` is provided it is used verbatim (after
+ * server-side validation) instead of re-resolving the audience, so the admin's
+ * edits to the list are what actually gets sent.
+ */
 export async function sendBroadcast(
   draft: EmailDraft,
   audience: AudienceId,
-  customEmails: string[] = []
+  customEmails: string[] = [],
+  recipients?: Recipient[]
 ): Promise<BroadcastOutcome> {
   try {
     const fn = httpsCallable<
-      EmailDraft & { audience: AudienceId; customEmails: string[]; confirm: true },
+      EmailDraft & {
+        audience: AudienceId;
+        customEmails: string[];
+        recipients?: Recipient[];
+        confirm: true;
+      },
       BroadcastOutcome
     >(functions, 'sendBroadcast');
-    const res = await fn({ ...draft, audience, customEmails, confirm: true });
+    const res = await fn({ ...draft, audience, customEmails, recipients, confirm: true });
     return res.data;
   } catch (err) {
     throw new Error(toMessage(err, 'The broadcast failed to send.'));

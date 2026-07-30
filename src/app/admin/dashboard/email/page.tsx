@@ -12,12 +12,13 @@
 import { cloneElement, useCallback, useEffect, useId, useMemo, useState } from 'react';
 import {
   Mail, Send, Eye, Loader2, CheckCircle2, AlertTriangle, Users, TestTube2,
-  RefreshCw, X, Info,
+  RefreshCw, X, Info, UserPlus,
 } from 'lucide-react';
 import {
-  previewEmail, sendTestEmail, countAudience, sendBroadcast, parseEmailList,
+  previewEmail, sendTestEmail, listAudience, sendBroadcast, parseEmailList,
   whoAmI, claimFirstAdmin,
   type EmailDraft, type AudienceId, type TemplateId, type BroadcastOutcome, type WhoAmI,
+  type Recipient,
 } from '@/lib/email';
 
 const TEMPLATES: { id: TemplateId; label: string; hint: string }[] = [
@@ -56,7 +57,14 @@ export default function EmailComposerPage() {
   const [testEmail, setTestEmail] = useState('');
   const [previewHtml, setPreviewHtml] = useState('');
   const [status, setStatus] = useState<Status>({ kind: 'idle' });
-  const [audienceCount, setAudienceCount] = useState<number | null>(null);
+  /** The editable send list, resolved from the audience then hand-adjusted. */
+  const [recipients, setRecipients] = useState<Recipient[] | null>(null);
+  const [loadingList, setLoadingList] = useState(false);
+  const [truncated, setTruncated] = useState(false);
+  const [addRaw, setAddRaw] = useState('');
+  const [ccRaw, setCcRaw] = useState('');
+  const [bccRaw, setBccRaw] = useState('');
+  const [recipientFilter, setRecipientFilter] = useState('');
   const [outcome, setOutcome] = useState<BroadcastOutcome | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [access, setAccess] = useState<WhoAmI | null>(null);
@@ -90,45 +98,105 @@ export default function EmailComposerPage() {
     }
   };
 
+  const customEmails = useMemo(() => parseEmailList(customRaw), [customRaw]);
+  const ccList = useMemo(() => parseEmailList(ccRaw), [ccRaw]);
+  const bccList = useMemo(() => parseEmailList(bccRaw), [bccRaw]);
+  const isComplete = Boolean(draft.subject.trim() && draft.heading.trim() && draft.bodyText.trim());
+  const audienceCount = recipients?.length ?? null;
+
+  /**
+   * The draft as it will actually be sent. CC/BCC are part of that, so they
+   * belong to the tested fingerprint below: changing either must invalidate a
+   * previous test rather than let it stand.
+   */
+  const draftWithExtras = useMemo<EmailDraft>(
+    () => ({ ...draft, cc: ccList, bcc: bccList }),
+    [draft, ccList, bccList]
+  );
+
   /**
    * Fingerprint of the current draft. A test send is only valid for the exact
    * content that was tested, so editing anything clears the "tested" state.
    */
-  const draftKey = useMemo(() => JSON.stringify(draft), [draft]);
+  const draftKey = useMemo(() => JSON.stringify(draftWithExtras), [draftWithExtras]);
   const [testedKey, setTestedKey] = useState<string | null>(null);
   const hasTestedThisDraft = testedKey === draftKey;
-
-  const customEmails = useMemo(() => parseEmailList(customRaw), [customRaw]);
-  const isComplete = Boolean(draft.subject.trim() && draft.heading.trim() && draft.bodyText.trim());
 
   const set = <K extends keyof EmailDraft>(key: K, value: EmailDraft[K]) =>
     setDraft((d) => ({ ...d, [key]: value }));
 
-  /* ── Audience size ── */
-  const refreshCount = useCallback(async () => {
+  /* ── Recipient list ── */
+
+  /** Loads the audience into the editable list, discarding any prior edits. */
+  const loadList = useCallback(async () => {
+    setLoadingList(true);
     try {
-      setAudienceCount(null);
-      const n = await countAudience(audience, customEmails);
-      setAudienceCount(n);
-    } catch {
-      setAudienceCount(null);
+      const res = await listAudience(audience, customEmails);
+      setRecipients(res.recipients);
+      setTruncated(res.truncated);
+      if (res.truncated) {
+        setStatus({
+          kind: 'error',
+          message: `That audience has ${res.total.toLocaleString()} people; only the first ${res.recipients.length.toLocaleString()} were loaded for editing.`,
+        });
+      }
+    } catch (err) {
+      setRecipients(null);
+      setStatus({ kind: 'error', message: err instanceof Error ? err.message : 'Could not load recipients.' });
+    } finally {
+      setLoadingList(false);
     }
   }, [audience, customEmails]);
 
+  // Reload whenever the audience changes. Edits are intentionally discarded:
+  // silently carrying removals across a different audience would be misleading.
   useEffect(() => {
-    if (audience === 'custom') {
-      setAudienceCount(customEmails.length);
-      return;
+    void loadList();
+  }, [loadList]);
+
+  const removeRecipient = (email: string) =>
+    setRecipients((list) => (list ?? []).filter((r) => r.email !== email));
+
+  /** Adds typed addresses, skipping duplicates and anything malformed. */
+  const addRecipients = () => {
+    const parsed = parseEmailList(addRaw);
+    if (parsed.length === 0) return;
+
+    const existing = new Set((recipients ?? []).map((r) => r.email.toLowerCase()));
+    const valid = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    const additions: Recipient[] = [];
+    const rejected: string[] = [];
+
+    for (const raw of parsed) {
+      const email = raw.toLowerCase();
+      if (!valid.test(email)) { rejected.push(raw); continue; }
+      if (existing.has(email)) continue;
+      existing.add(email);
+      additions.push({ email });
     }
-    void refreshCount();
-  }, [audience, customEmails.length, customEmails, refreshCount]);
+
+    setRecipients((list) => [...(list ?? []), ...additions]);
+    setAddRaw('');
+    setStatus(
+      rejected.length
+        ? { kind: 'error', message: `Skipped ${rejected.length} invalid: ${rejected.slice(0, 3).join(', ')}` }
+        : { kind: 'ok', message: `Added ${additions.length} ${additions.length === 1 ? 'recipient' : 'recipients'}.` }
+    );
+  };
+
+  const visibleRecipients = useMemo(() => {
+    const list = recipients ?? [];
+    const q = recipientFilter.trim().toLowerCase();
+    if (!q) return list;
+    return list.filter((r) => r.email.includes(q) || (r.name ?? '').toLowerCase().includes(q));
+  }, [recipients, recipientFilter]);
 
   /* ── Preview ── */
   const doPreview = async () => {
     if (!isComplete) return;
     setStatus({ kind: 'working', message: 'Rendering preview…' });
     try {
-      const { html } = await previewEmail(draft);
+      const { html } = await previewEmail(draftWithExtras);
       setPreviewHtml(html);
       setStatus({ kind: 'idle' });
     } catch (err) {
@@ -141,7 +209,7 @@ export default function EmailComposerPage() {
     if (!isComplete || !testEmail.trim()) return;
     setStatus({ kind: 'working', message: `Sending test to ${testEmail.trim()}…` });
     try {
-      await sendTestEmail(draft, testEmail.trim());
+      await sendTestEmail(draftWithExtras, testEmail.trim());
       setTestedKey(draftKey);
       setStatus({ kind: 'ok', message: `Test sent to ${testEmail.trim()}. Check the inbox, then broadcast.` });
     } catch (err) {
@@ -155,7 +223,7 @@ export default function EmailComposerPage() {
     setStatus({ kind: 'working', message: 'Sending broadcast. Keep this tab open…' });
     setOutcome(null);
     try {
-      const res = await sendBroadcast(draft, audience, customEmails);
+      const res = await sendBroadcast(draftWithExtras, audience, customEmails, recipients ?? undefined);
       setOutcome(res);
       setStatus({
         kind: res.failed > 0 ? 'error' : 'ok',
@@ -328,21 +396,124 @@ export default function EmailComposerPage() {
 
             <div className="flex items-center gap-2 text-[13px] text-slate-700 bg-slate-50 rounded-xl px-3.5 py-2.5 border border-slate-200">
               <Users className="w-4 h-4 text-slate-500 flex-shrink-0" />
-              {audienceCount === null ? (
-                <span className="text-slate-500">Counting recipients…</span>
+              {loadingList ? (
+                <span className="text-slate-500 inline-flex items-center gap-1.5">
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" /> Loading recipients…
+                </span>
+              ) : audienceCount === null ? (
+                <span className="text-slate-500">No recipients loaded.</span>
               ) : (
                 <span>
                   <span className="font-bold tabular-nums">{audienceCount.toLocaleString()}</span>{' '}
-                  {audienceCount === 1 ? 'recipient' : 'recipients'}
+                  {audienceCount === 1 ? 'recipient' : 'recipients'} will receive this
                 </span>
               )}
-              {audience !== 'custom' && (
-                <button type="button" onClick={refreshCount} disabled={busy}
-                  className="ml-auto inline-flex items-center gap-1 text-[12px] font-semibold text-brand-600 hover:text-brand-700 disabled:opacity-50 cursor-pointer">
-                  <RefreshCw className="w-3.5 h-3.5" /> Refresh
-                </button>
-              )}
+              <button type="button" onClick={loadList} disabled={busy || loadingList}
+                className="ml-auto inline-flex items-center gap-1 text-[12px] font-semibold text-brand-600 hover:text-brand-700 disabled:opacity-50 cursor-pointer">
+                <RefreshCw className="w-3.5 h-3.5" /> Reload
+              </button>
             </div>
+          </Card>
+
+          {/* ─── Editable recipient list ─── */}
+          <Card title="Recipients">
+            <p className="text-[12.5px] text-slate-600 mb-3.5 leading-relaxed">
+              This is the exact list that will be sent to. Remove anyone with the
+              &times;, or add addresses below. Each person receives their own
+              message and never sees the others.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-2.5 mb-3">
+              <input value={addRaw} onChange={(e) => setAddRaw(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addRecipients(); } }}
+                className={inputCls} placeholder="add@example.com, another@example.com"
+                aria-label="Add recipients" />
+              <button type="button" onClick={addRecipients} disabled={!addRaw.trim()}
+                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-slate-900 text-white font-bold text-[13px] whitespace-nowrap hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer">
+                <UserPlus className="w-4 h-4" /> Add
+              </button>
+            </div>
+
+            {(recipients?.length ?? 0) > 8 && (
+              <input value={recipientFilter} onChange={(e) => setRecipientFilter(e.target.value)}
+                className={`${inputCls} mb-2.5`} placeholder="Filter this list…"
+                aria-label="Filter recipients" />
+            )}
+
+            {truncated && (
+              <div className="flex items-start gap-2 text-[12px] text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mb-2.5">
+                <Info className="w-3.5 h-3.5 mt-px flex-shrink-0 text-amber-600" />
+                <span>This audience was too large to load fully. Only the loaded addresses will be sent to.</span>
+              </div>
+            )}
+
+            {loadingList ? (
+              <div className="py-8 text-center text-slate-500 text-[13px]">
+                <Loader2 className="w-5 h-5 animate-spin mx-auto mb-2" /> Loading…
+              </div>
+            ) : (recipients?.length ?? 0) === 0 ? (
+              <div className="py-7 text-center text-slate-500 text-[13px] bg-slate-50 rounded-xl border border-dashed border-slate-300">
+                No recipients. Add addresses above, or pick a different audience.
+              </div>
+            ) : (
+              <>
+                <div className="flex flex-wrap gap-1.5 max-h-[260px] overflow-y-auto p-1 rounded-xl border border-slate-200 bg-slate-50/60">
+                  {visibleRecipients.map((r) => (
+                    <span key={r.email}
+                      className="inline-flex items-center gap-1.5 pl-2.5 pr-1 py-1 rounded-lg bg-white border border-slate-200 text-[12px] text-slate-800 max-w-full">
+                      <span className="truncate" title={r.name ? `${r.name} <${r.email}>` : r.email}>
+                        {r.name ? `${r.name} · ` : ''}{r.email}
+                      </span>
+                      <button type="button" onClick={() => removeRecipient(r.email)}
+                        aria-label={`Remove ${r.email}`}
+                        className="w-5 h-5 rounded-md flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer flex-shrink-0">
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+                {recipientFilter.trim() && (
+                  <p className="text-[11.5px] text-slate-500 mt-2">
+                    Showing {visibleRecipients.length.toLocaleString()} of{' '}
+                    {(recipients?.length ?? 0).toLocaleString()}. Sending goes to the full list,
+                    not just the filtered view.
+                  </p>
+                )}
+              </>
+            )}
+          </Card>
+
+          {/* ─── CC / BCC ─── */}
+          <Card title="CC and BCC">
+            <p className="text-[12.5px] text-slate-600 mb-3.5 leading-relaxed">
+              Added to <em>every</em> message, so keep these to a few fixed
+              addresses such as yourself or a colleague. Putting the audience
+              here would expose every address to everyone.
+            </p>
+
+            <Field label="CC" hint="Visible to the recipient of each message.">
+              <input value={ccRaw} onChange={(e) => setCcRaw(e.target.value)}
+                className={inputCls} placeholder="colleague@scholarlyecho.com" />
+            </Field>
+            <Field label="BCC" hint="Hidden from recipients. Useful for an archive copy.">
+              <input value={bccRaw} onChange={(e) => setBccRaw(e.target.value)}
+                className={inputCls} placeholder="archive@scholarlyecho.com" />
+            </Field>
+
+            {(ccList.length > 0 || bccList.length > 0) && (
+              <div className="text-[12px] text-slate-700 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2">
+                Each of the {(audienceCount ?? 0).toLocaleString()} messages will also copy{' '}
+                {ccList.length > 0 && <><span className="font-semibold">{ccList.length} CC</span></>}
+                {ccList.length > 0 && bccList.length > 0 && ' and '}
+                {bccList.length > 0 && <><span className="font-semibold">{bccList.length} BCC</span></>}
+                .{' '}
+                {(ccList.length + bccList.length) * (audienceCount ?? 0) > 100 && (
+                  <span className="text-amber-800">
+                    That is a lot of extra deliveries against your daily quota.
+                  </span>
+                )}
+              </div>
+            )}
           </Card>
 
           <Card title="Test, then send">
@@ -478,6 +649,18 @@ export default function EmailComposerPage() {
                 <dt className="text-slate-500 w-20 flex-shrink-0">Audience</dt>
                 <dd className="text-slate-800">{AUDIENCES.find((a) => a.id === audience)?.label}</dd>
               </div>
+              {ccList.length > 0 && (
+                <div className="flex gap-2">
+                  <dt className="text-slate-500 w-20 flex-shrink-0">CC</dt>
+                  <dd className="text-slate-800 break-all">{ccList.join(', ')}</dd>
+                </div>
+              )}
+              {bccList.length > 0 && (
+                <div className="flex gap-2">
+                  <dt className="text-slate-500 w-20 flex-shrink-0">BCC</dt>
+                  <dd className="text-slate-800 break-all">{bccList.join(', ')}</dd>
+                </div>
+              )}
             </dl>
 
             <div className="flex gap-2.5 justify-end">

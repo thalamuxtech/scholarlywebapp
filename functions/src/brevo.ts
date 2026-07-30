@@ -42,6 +42,11 @@ export interface Recipient {
   name?: string;
 }
 
+/** Brevo rejects a contact with an empty name, so only include it when set. */
+function toBrevoContact(r: Recipient): { email: string; name?: string } {
+  return r.name?.trim() ? { email: r.email, name: r.name.trim() } : { email: r.email };
+}
+
 export interface SendEmailInput {
   to: Recipient[];
   subject: string;
@@ -50,6 +55,10 @@ export interface SendEmailInput {
   text?: string;
   /** Tag for filtering in Brevo's dashboard, e.g. 'broadcast' or 'test'. */
   tag?: string;
+  /** Visible to every recipient of this message. */
+  cc?: Recipient[];
+  /** Hidden from all recipients. */
+  bcc?: Recipient[];
 }
 
 export interface SendResult {
@@ -78,7 +87,9 @@ export async function sendEmail(apiKey: string, input: SendEmailInput): Promise<
       body: JSON.stringify({
         sender: SENDER,
         replyTo: REPLY_TO,
-        to: input.to.map((r) => (r.name ? { email: r.email, name: r.name } : { email: r.email })),
+        to: input.to.map(toBrevoContact),
+        ...(input.cc?.length ? { cc: input.cc.map(toBrevoContact) } : {}),
+        ...(input.bcc?.length ? { bcc: input.bcc.map(toBrevoContact) } : {}),
         subject: input.subject,
         htmlContent: input.html,
         ...(input.text ? { textContent: input.text } : {}),
@@ -124,6 +135,12 @@ export async function sendBatch(
   recipients: Recipient[],
   build: (r: Recipient) => { subject: string; html: string; text?: string },
   tag: string,
+  /**
+   * Copied on every individual message. These are fixed extras (yourself, a
+   * colleague), never the audience itself: CC is visible to the recipient, so
+   * putting the audience here would disclose every address to everyone.
+   */
+  extras: { cc?: Recipient[]; bcc?: Recipient[] } = {},
   chunkSize = 10
 ): Promise<BatchOutcome> {
   const outcome: BatchOutcome = { sent: 0, failed: 0, errors: [] };
@@ -133,7 +150,10 @@ export async function sendBatch(
     const results = await Promise.all(
       chunk.map(async (r) => {
         const { subject, html, text } = build(r);
-        const res = await sendEmail(apiKey, { to: [r], subject, html, text, tag });
+        const res = await sendEmail(apiKey, {
+          to: [r], subject, html, text, tag,
+          cc: extras.cc, bcc: extras.bcc,
+        });
         return { email: r.email, res };
       })
     );

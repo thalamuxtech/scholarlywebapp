@@ -219,6 +219,11 @@ export const sendTestEmail = onCall({ secrets: [BREVO_API_KEY] }, async (req) =>
   }
   const input = validateCompose(req.data);
 
+  // CC/BCC are included so the test reflects exactly what a real send produces.
+  const d = (req.data ?? {}) as Record<string, unknown>;
+  const cc = parseExtras(d.cc, 'CC');
+  const bcc = parseExtras(d.bcc, 'BCC');
+
   // [TEST] prefix keeps test sends obvious in the inbox.
   const result = await sendEmail(BREVO_API_KEY.value(), {
     to: [{ email: to.trim() }],
@@ -226,6 +231,8 @@ export const sendTestEmail = onCall({ secrets: [BREVO_API_KEY] }, async (req) =>
     html: buildHtml(input, { email: to.trim() }),
     text: buildText(input),
     tag: 'test',
+    cc,
+    bcc,
   });
 
   if (!result.ok) {
@@ -293,6 +300,49 @@ export const countAudience = onCall(async (req) => {
 });
 
 /**
+ * Resolves an audience to the actual recipient list so the admin can review it
+ * and remove people before sending. Capped to keep the payload sane; the count
+ * is reported separately so a truncated list is never mistaken for the whole.
+ */
+export const listAudience = onCall(async (req) => {
+  await assertAdmin(req);
+  const d = (req.data ?? {}) as Record<string, unknown>;
+  const audience = (typeof d.audience === 'string' ? d.audience : 'newsletter') as AudienceId;
+  const custom = Array.isArray(d.customEmails) ? (d.customEmails as string[]) : [];
+
+  const all = await resolveAudience(audience, custom);
+  const LIMIT = 2000;
+  return {
+    recipients: all.slice(0, LIMIT),
+    total: all.length,
+    truncated: all.length > LIMIT,
+  };
+});
+
+/** Parses and de-duplicates a CC or BCC list from client input. */
+function parseExtras(value: unknown, field: string): Recipient[] {
+  if (!Array.isArray(value)) return [];
+  const seen = new Set<string>();
+  const out: Recipient[] = [];
+  for (const raw of value) {
+    const email = typeof raw === 'string' ? raw.trim().toLowerCase() : '';
+    if (!email) continue;
+    if (!isValidEmail(email)) {
+      throw new HttpsError('invalid-argument', `"${email}" in ${field} is not a valid email address.`);
+    }
+    if (!seen.has(email)) {
+      seen.add(email);
+      out.push({ email });
+    }
+  }
+  // Brevo caps recipients per message; keep the fixed extras well under it.
+  if (out.length > 20) {
+    throw new HttpsError('invalid-argument', `${field} is limited to 20 addresses.`);
+  }
+  return out;
+}
+
+/**
  * Broadcasts to a resolved audience, one message per recipient so addresses are
  * never disclosed between them. Writes an audit record to email_broadcasts.
  */
@@ -312,9 +362,32 @@ export const sendBroadcast = onCall(
       throw new HttpsError('failed-precondition', 'Broadcast must be explicitly confirmed.');
     }
 
-    const recipients = await resolveAudience(audience, custom);
+    const cc = parseExtras(d.cc, 'CC');
+    const bcc = parseExtras(d.bcc, 'BCC');
+
+    /**
+     * The admin can send an edited list (people removed, others added) rather
+     * than the raw audience. It is still validated and de-duplicated here: the
+     * client list is a request, not a trusted input.
+     */
+    let recipients: Recipient[];
+    if (Array.isArray(d.recipients) && d.recipients.length > 0) {
+      const seen = new Set<string>();
+      recipients = [];
+      for (const raw of d.recipients as unknown[]) {
+        const r = (raw ?? {}) as { email?: unknown; name?: unknown };
+        const email = typeof r.email === 'string' ? r.email.trim().toLowerCase() : '';
+        if (!isValidEmail(email) || seen.has(email)) continue;
+        seen.add(email);
+        const name = typeof r.name === 'string' && r.name.trim() ? r.name.trim() : undefined;
+        recipients.push(name ? { email, name } : { email });
+      }
+    } else {
+      recipients = await resolveAudience(audience, custom);
+    }
+
     if (recipients.length === 0) {
-      throw new HttpsError('failed-precondition', 'That audience has no valid recipients.');
+      throw new HttpsError('failed-precondition', 'There are no valid recipients to send to.');
     }
 
     const startedAt = admin.firestore.FieldValue.serverTimestamp();
@@ -326,7 +399,8 @@ export const sendBroadcast = onCall(
         html: buildHtml(input, r),
         text: buildText(input),
       }),
-      'broadcast'
+      'broadcast',
+      { cc, bcc }
     );
 
     // Audit trail: who sent what, to how many, and what failed.
@@ -337,6 +411,10 @@ export const sendBroadcast = onCall(
       heading: input.heading,
       templateId: input.templateId,
       recipientCount: recipients.length,
+      cc: cc.map((r) => r.email),
+      bcc: bcc.map((r) => r.email),
+      // Whether the admin hand-edited the list rather than sending the raw audience.
+      listEdited: Array.isArray(d.recipients) && d.recipients.length > 0,
       sent: outcome.sent,
       failed: outcome.failed,
       errors: outcome.errors,
